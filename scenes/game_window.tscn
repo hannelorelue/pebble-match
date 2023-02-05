@@ -1,3 +1,20 @@
-[gd_scene format=2]
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://art/Ruined City Background Preview.png" type="Texture" id=1]
+[ext_resource path="res://scenes/grid.gd" type="Script" id=2]
 
 [node name="game_window" type="Node2D"]
+
+[node name="background" type="TextureRect" parent="."]
+margin_right = 581.0
+margin_bottom = 1024.0
+texture = ExtResource( 1 )
+stretch_mode = 1
+
+[node name="grid" type="Node2D" parent="."]
+script = ExtResource( 2 )
+width = 8
+height = 8
+x_start = 64
+y_start = 800
+offset = 64
