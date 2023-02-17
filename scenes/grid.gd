@@ -16,13 +16,15 @@ export (int) var y_offset
 export (PoolVector2Array) var empty_spaces
 export (PoolVector2Array) var ice_spaces
 export (PoolVector2Array) var lock_spaces
+export (PoolVector2Array) var concrete_spaces
 
 # Obstical signals
 signal make_ice
 signal damage_ice
 signal make_lock
 signal damage_lock
-
+signal make_concrete
+signal damage_concrete
 
 
 var piece_pool = [
@@ -52,6 +54,7 @@ func _ready():
 	spawn_pieces()
 	spawn_ice()
 	spawn_lock()
+	spawn_concrete()
 
 
 func _process(delta):
@@ -61,6 +64,8 @@ func _process(delta):
 
 func restricted_fill(place):
 	if is_in_array(empty_spaces, place):
+		return true	
+	if is_in_array(concrete_spaces, place):
 		return true
 	return false
 
@@ -77,6 +82,11 @@ func is_in_array(array, item):
 	return false
 
 
+func remove_from_array(array, item):
+		for i in array.size():
+			if array[i] == item:
+				array.remove(i)
+
 func make_2d_array():
 	var array = []
 	for i in width:
@@ -89,19 +99,20 @@ func make_2d_array():
 func spawn_pieces():
 	for column in width:
 		for row in height:
-			var list = []
-			for i in piece_pool.size():
-				list.append(i)
-			
-			var rand = list.pop_at(floor(rand_range(0, list.size())))
-			var piece = piece_pool[rand].instance()
-			while match_at(column, row, piece.color) and list.size() > 1:
-				rand = list.pop_at(floor(rand_range(0, list.size())))
-				piece = piece_pool[rand].instance()
+			if !restricted_fill(Vector2(column, row)):
+				var list = []
+				for i in piece_pool.size():
+					list.append(i)
 				
-			add_child(piece)
-			piece.position = grid_to_pixel(column, row)
-			all_pieces[column][row] = piece
+				var rand = list.pop_at(floor(rand_range(0, list.size())))
+				var piece = piece_pool[rand].instance()
+				while match_at(column, row, piece.color) and list.size() > 1:
+					rand = list.pop_at(floor(rand_range(0, list.size())))
+					piece = piece_pool[rand].instance()
+					
+				add_child(piece)
+				piece.position = grid_to_pixel(column, row)
+				all_pieces[column][row] = piece
 
 
 func spawn_ice():
@@ -112,6 +123,11 @@ func spawn_ice():
 func spawn_lock():
 	for i in lock_spaces.size():
 		emit_signal("make_lock", lock_spaces[i])
+
+
+func spawn_concrete():
+	for i in concrete_spaces.size():
+		emit_signal("make_concrete", concrete_spaces[i])
 
 
 func touch_input():
@@ -250,17 +266,33 @@ func destroy_matched():
 		for row in height:
 			if all_pieces[column][row] != null:
 				if all_pieces[column][row].matched:
-					emit_signal("damage_ice", Vector2(column, row))
-					emit_signal("damage_lock", Vector2(column, row))
+					damage_special(column, row)
 					all_pieces[column][row].queue_free()
 					all_pieces[column][row] = null
 	get_parent().get_node("collapse_timer").start()
 
 
+func damage_special(column, row):
+	emit_signal("damage_ice", Vector2(column, row))
+	emit_signal("damage_lock", Vector2(column, row))
+	check_concrete(column, row)
+
+
+func check_concrete(column, row):
+	if column < width - 1:
+		emit_signal("damage_concrete", Vector2(column + 1, row))
+	if column > 0:
+		emit_signal("damage_concrete", Vector2(column - 1, row))
+	if row < height - 1:
+		emit_signal("damage_concrete", Vector2(column, row + 1))
+	if row > 0:
+		emit_signal("damage_concrete", Vector2(column, row - 1))
+		
+		
 func collapse_columns():
 	for column in width:
 		for row in height:
-			if all_pieces[column][row] == null:
+			if all_pieces[column][row] == null and !restricted_fill(Vector2(column, row)):
 				for k in range(row + 1, height):
 					if all_pieces[column][k] != null:
 						all_pieces[column][k].move(grid_to_pixel(column, row))
@@ -273,7 +305,7 @@ func collapse_columns():
 func refill_columns():
 	for column in width:
 		for row in height:
-			if all_pieces[column][row] == null:
+			if all_pieces[column][row] == null and !restricted_fill(Vector2(column, row)):
 				var list = []
 				for i in piece_pool.size():
 					list.append(i)
@@ -304,4 +336,12 @@ func _on_refill_timer_timeout():
 
 
 func _on_lock_holder_remove_lock(place):
-	pass # Replace with function body.
+	for i in lock_spaces.size():
+		if lock_spaces[i] == place:
+			lock_spaces.remove(i)
+
+
+func _on_concrete_holder_remove_concrete(place):
+	for i in concrete_spaces.size():
+		if concrete_spaces[i] == place:
+			concrete_spaces.remove(i)

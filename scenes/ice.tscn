@@ -3,7 +3,9 @@
 [ext_resource path="res://art/Obstacles/Ice.png" type="Texture" id=1]
 [ext_resource path="res://scenes/ice.gd" type="Script" id=2]
 
-[node name="ice" type="Sprite"]
+[node name="ice" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="."]
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 1 )
-script = ExtResource( 2 )
