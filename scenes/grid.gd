@@ -5,7 +5,7 @@ extends Node2D
 enum {wait, move}
 var state
 
-# Variables
+# Grid Variables
 export (int) var width
 export (int) var height
 export (int) var x_start
@@ -13,18 +13,24 @@ export (int) var y_start
 export (int) var offset
 export (int) var y_offset
 
+
+# Obstacle Variables
 export (PoolVector2Array) var empty_spaces
 export (PoolVector2Array) var ice_spaces
 export (PoolVector2Array) var lock_spaces
 export (PoolVector2Array) var concrete_spaces
+export (PoolVector2Array) var slime_spaces
+var damaged_slime = false
 
-# Obstical signals
+# Obstacle signals
 signal make_ice
 signal damage_ice
 signal make_lock
 signal damage_lock
 signal make_concrete
 signal damage_concrete
+signal make_slime
+signal damage_slime
 
 
 var piece_pool = [
@@ -55,6 +61,7 @@ func _ready():
 	spawn_obstacles(ice_spaces, "ice")
 	spawn_obstacles(concrete_spaces, "concrete")
 	spawn_obstacles(lock_spaces, "lock")
+	spawn_obstacles(slime_spaces, "slime")
 
 
 func _process(delta):
@@ -66,6 +73,8 @@ func restricted_fill(place):
 	if is_in_array(empty_spaces, place):
 		return true	
 	if is_in_array(concrete_spaces, place):
+		return true
+	if is_in_array(slime_spaces, place):
 		return true
 	return false
 
@@ -115,24 +124,10 @@ func spawn_pieces():
 				all_pieces[column][row] = piece
 
 
-func spawn_ice():
-	for i in ice_spaces.size():
-		emit_signal("make_ice", ice_spaces[i])
-
 func spawn_obstacles(obstacle_array, name):
 	if obstacle_array !=null:
 		for i in obstacle_array.size():
 			emit_signal("make_" + name, obstacle_array[i])
-
-
-func spawn_lock():
-	for i in lock_spaces.size():
-		emit_signal("make_lock", lock_spaces[i])
-
-
-func spawn_concrete():
-	for i in concrete_spaces.size():
-		emit_signal("make_concrete", concrete_spaces[i])
 
 
 func touch_input():
@@ -236,6 +231,9 @@ func find_matches():
 		get_parent().get_node("destroy_timer").start()
 	else:
 		state = move
+		if !damaged_slime:
+			generate_slime()
+		damaged_slime = false
 	return found_match
 
 
@@ -280,20 +278,21 @@ func destroy_matched():
 func damage_special(column, row):
 	emit_signal("damage_ice", Vector2(column, row))
 	emit_signal("damage_lock", Vector2(column, row))
-	check_concrete(column, row)
+	check_special(column, row, "concrete")
+	check_special(column, row, "slime")
 
 
-func check_concrete(column, row):
+func check_special(column, row, name):
 	if column < width - 1:
-		emit_signal("damage_concrete", Vector2(column + 1, row))
+		emit_signal("damage_" + name, Vector2(column + 1, row))
 	if column > 0:
-		emit_signal("damage_concrete", Vector2(column - 1, row))
+		emit_signal("damage_" + name, Vector2(column - 1, row))
 	if row < height - 1:
-		emit_signal("damage_concrete", Vector2(column, row + 1))
+		emit_signal("damage_" + name, Vector2(column, row + 1))
 	if row > 0:
-		emit_signal("damage_concrete", Vector2(column, row - 1))
-		
-		
+		emit_signal("damage_" + name, Vector2(column, row - 1))
+
+
 func collapse_columns():
 	for column in width:
 		for row in height:
@@ -325,7 +324,44 @@ func refill_columns():
 				piece.position = grid_to_pixel(column, row - y_offset)
 				piece.move(grid_to_pixel(column, row))
 				all_pieces[column][row] = piece
+
 	find_matches()
+	
+
+
+func find_normal_tile(column, row):
+	var list = []
+	if is_in_grid(column + 1, row) and all_pieces[column + 1 ][row] != null:
+		list.append(Vector2(column + 1, row))
+	if is_in_grid(column - 1, row) and all_pieces[column - 1 ][row] != null:
+		list.append(Vector2(column  - 1, row))
+	if is_in_grid(column, row  + 1) and all_pieces[column][row  + 1] != null:
+		list.append(Vector2(column, row  + 1))
+	if is_in_grid(column, row  - 1) and all_pieces[column][row  - 1] != null:
+		list.append(Vector2(column, row  - 1))
+	
+	if list.size() > 0:
+		return list.pop_at(floor(rand_range(0, list.size())))
+	else:
+		return null
+	
+
+func generate_slime():
+	if slime_spaces.size() > 0:
+		var list  = []
+		for i in slime_spaces.size():
+				list.append(slime_spaces[i])
+
+		var slime_made = false
+		while list.size() > 0 and !slime_made:
+			var rand = list.pop_at(floor(rand_range(0, list.size())))
+			var neighbor = find_normal_tile(rand.x, rand.y)
+			if neighbor != null:
+				all_pieces[neighbor.x][neighbor.y].queue_free()
+				all_pieces[neighbor.x][neighbor.y] = null
+				slime_spaces.append(Vector2(neighbor.x, neighbor.y))
+				emit_signal("make_slime", Vector2(neighbor.x, neighbor.y))
+				slime_made = true
 
 
 func _on_destroy_timer_timeout():
@@ -350,3 +386,10 @@ func _on_concrete_holder_remove_concrete(place):
 	for i in range( concrete_spaces.size() -1,  -1, -1):
 		if concrete_spaces[i] == place:
 			concrete_spaces.remove(i)
+
+
+func _on_slime_holder_remove_slime(place):
+	damaged_slime = true
+	for i in range(slime_spaces.size() -1,  -1, -1):
+		if slime_spaces[i] == place:
+			slime_spaces.remove(i)
