@@ -52,9 +52,9 @@ func _ready():
 	randomize()
 	all_pieces = make_2d_array()
 	spawn_pieces()
-	spawn_ice()
-	spawn_lock()
-	spawn_concrete()
+	spawn_obstacles(ice_spaces, "ice")
+	spawn_obstacles(concrete_spaces, "concrete")
+	spawn_obstacles(lock_spaces, "lock")
 
 
 func _process(delta):
@@ -118,6 +118,11 @@ func spawn_pieces():
 func spawn_ice():
 	for i in ice_spaces.size():
 		emit_signal("make_ice", ice_spaces[i])
+
+func spawn_obstacles(obstacle_array, name):
+	if obstacle_array !=null:
+		for i in obstacle_array.size():
+			emit_signal("make_" + name, obstacle_array[i])
 
 
 func spawn_lock():
@@ -336,12 +341,12 @@ func _on_refill_timer_timeout():
 
 
 func _on_lock_holder_remove_lock(place):
-	for i in lock_spaces.size():
+	for i in range(lock_spaces.size() -1,  -1, -1):
 		if lock_spaces[i] == place:
 			lock_spaces.remove(i)
 
 
 func _on_concrete_holder_remove_concrete(place):
-	for i in concrete_spaces.size():
+	for i in range( concrete_spaces.size() -1,  -1, -1):
 		if concrete_spaces[i] == place:
 			concrete_spaces.remove(i)
