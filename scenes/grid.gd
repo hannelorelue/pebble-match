@@ -482,18 +482,27 @@ func generate_slime():
 func match_pieces_in_column(column):
 	for i in height:
 		if all_pieces[column][i] != null:
+			if  all_pieces[column][i].matched:
+				continue
 			if all_pieces[column][i].is_row_bomb:
+				all_pieces[column][i].matched = true
 				match_pieces_in_row(i)
 			if all_pieces[column][i].is_adjacent_bomb:
+				all_pieces[column][i].matched = true
 				match_adjacent_pieces(column, i)
+			all_pieces[column][i].matched = true
 
 
 func match_pieces_in_row(row):
 	for i in width:
 		if all_pieces[i][row] != null:
+			if all_pieces[i][row].matched:
+				continue
 			if all_pieces[i][row].is_column_bomb:
+				all_pieces[i][row].matched = true
 				match_pieces_in_column(i)
 			if all_pieces[i][row].is_adjacent_bomb:
+				all_pieces[i][row].matched = true
 				match_adjacent_pieces(i, row)
 			all_pieces[i][row].matched = true
 
@@ -502,9 +511,13 @@ func match_adjacent_pieces(column, row):
 	for i in range(-1, 2):
 		for j in range(-1, 2):
 			if is_in_grid(column + i, row + j) and all_pieces[column + i][row + j] != null:
+				if all_pieces[column + i][row + j].matched:
+					continue
 				if all_pieces[column + i][row + j].is_column_bomb:
+					all_pieces[column + i][row + j].matched = true
 					match_pieces_in_column(column + i)
 				if all_pieces[column + i][row + j].is_row_bomb:
+					all_pieces[column + i][row + j].matched = true
 					match_pieces_in_row(row + j)
 				all_pieces[column + i][row + j].matched = true
 
