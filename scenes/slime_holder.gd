@@ -23,6 +23,7 @@ func make_2d_array():
 
 
 func _on_grid_damage_slime(bord_position):
+	if slime_pieces.size() > 0:
 		if slime_pieces[bord_position.x][bord_position.y] != null:
 			slime_pieces[bord_position.x][bord_position.y].take_damage(1)
 			if slime_pieces[bord_position.x][bord_position.y].health <= 0:

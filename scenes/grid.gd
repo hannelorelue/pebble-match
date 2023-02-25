@@ -1,60 +1,80 @@
 extends Node2D
 
-# State Machine
 
+# Signals
+# Specical pieces
+signal damage_concrete
+signal damage_ice
+signal damage_lock
+signal damage_slime
+signal make_concrete
+signal make_ice
+signal make_lock
+signal make_slime
+# Score
+signal update_score
+
+
+# Enum
 enum {wait, move}
-var state
 
+
+# Export Variables
 # Grid Variables
-export (int) var width
 export (int) var height
-export (int) var x_start
-export (int) var y_start
 export (int) var offset
+export (int) var width
+export (int) var x_start
 export (int) var y_offset
+export (int) var y_start
 
 
 # Obstacle Variables
+export (PoolVector2Array) var concrete_spaces
 export (PoolVector2Array) var empty_spaces
 export (PoolVector2Array) var ice_spaces
 export (PoolVector2Array) var lock_spaces
-export (PoolVector2Array) var concrete_spaces
 export (PoolVector2Array) var slime_spaces
-var damaged_slime = false
 
-# Obstacle signals
-signal make_ice
-signal damage_ice
-signal make_lock
-signal damage_lock
-signal make_concrete
-signal damage_concrete
-signal make_slime
-signal damage_slime
+# Scoring Variables
+export (int) var piece_value
 
 
+# Public Variables
+# Grid
 var piece_pool = [
-	preload("red.tscn"),
+	#preload("red.tscn"),
 	preload("pink.tscn"),
 	preload("orange.tscn"),
 	preload("green.tscn"),
 	preload("blue.tscn"),
-	preload("black.tscn"),
+	#preload("black.tscn"),
 ]
-
 var all_pieces = []
 var current_matches = []
 
+# Input 
 var first_touch = Vector2(0,0)
 var final_touch = Vector2(0,0)
 var controlling = false
+
+# Obstacle Variables
+var damaged_slime = false
 
 # Swap back variables
 var 	piece_one = null
 var piece_two = null
 var last_place = Vector2(0, 0)
 var last_direction = Vector2(0, 0)
-var  move_checked = false
+var move_checked = false
+
+# Scoring Variables
+var streak = 1
+
+# State Machine
+var state
+
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -74,24 +94,18 @@ func _process(delta):
 
 
 func restricted_fill(place):
-	if is_in_array(empty_spaces, place):
+	if empty_spaces.has(place):
 		return true	
-	if is_in_array(concrete_spaces, place):
+	if concrete_spaces.has(place):
 		return true
-	if is_in_array(slime_spaces, place):
+	if slime_spaces.has(place):
 		return true
 	return false
 
 
 func restricted_move(place):
-	if  is_in_array(lock_spaces, place):
+	if  lock_spaces.has(place):
 		return true
-	return false
-
-func is_in_array(array, item):
-	for i in array.size():
-		if  array[i] == item:
-			return true
 	return false
 
 
@@ -151,7 +165,6 @@ func touch_difference(grid_1, grid_2):
 		if difference.y > 0:
 			swap_pieces(grid_1.x, grid_1.y, Vector2(0, -1))
 			if !find_matches():
-				damaged_slime = true
 				yield(temp_timer, "timeout")
 				swap_pieces(grid_1.x, grid_1.y, Vector2(0, -1))
 				state = move
@@ -159,7 +172,6 @@ func touch_difference(grid_1, grid_2):
 		elif difference.y < 0:
 			swap_pieces(grid_1.x, grid_1.y, Vector2(0, 1))
 			if !find_matches():
-				damaged_slime = true
 				yield(temp_timer, "timeout")
 				swap_pieces(grid_1.x, grid_1.y, Vector2(0, 1))
 				state = move
@@ -168,7 +180,6 @@ func touch_difference(grid_1, grid_2):
 		if difference.x > 0:
 			swap_pieces(grid_1.x, grid_1.y, Vector2(-1,0))
 			if !find_matches():
-				damaged_slime = true
 				yield(temp_timer, "timeout")
 				swap_pieces(grid_1.x, grid_1.y, Vector2(-1,0))
 				state = move
@@ -176,7 +187,6 @@ func touch_difference(grid_1, grid_2):
 		elif difference.x < 0:
 			swap_pieces(grid_1.x, grid_1.y, Vector2(1,0))
 			if !find_matches():
-				damaged_slime = true
 				yield(temp_timer, "timeout")
 				swap_pieces(grid_1.x, grid_1.y, Vector2(1,0))
 				state = move
@@ -221,6 +231,8 @@ func find_matches():
 		for row in height:
 			if all_pieces[column][row] != null:
 				var current_color = all_pieces[column][row].color
+				if all_pieces[column][row].matched == true:
+					found_match = true
 				if column > 0 and column < width - 1:
 					if all_pieces[column - 1][row] != null and all_pieces[column + 1][row] != null:
 						if all_pieces[column - 1][row].color == current_color and all_pieces[column + 1][row].color == current_color:
@@ -245,6 +257,7 @@ func find_matches():
 							add_to_array(Vector2(column, row + 1))
 							found_match = true
 	if found_match: 
+		get_bombed_pieces()
 		get_parent().get_node("destroy_timer").start()
 	else:
 		state = move
@@ -271,15 +284,57 @@ func find_bombs():
 				col_matched +=1
 			if this_row== current_row and current_color == this_color:
 				row_matched +=1
-		if col_matched == 4:
-			print("column bomb")
-		if row_matched == 4:
-			print("row bomb")
-		if col_matched == 3 and row_matched == 3:
-			print("adjacent bomb")
 		if col_matched >= 5 or row_matched >= 5:
-			print("color bomb")
-	pass
+			make_bomb("color bomb", current_color)
+		elif col_matched == 3 and row_matched == 3:
+			make_bomb("adjacent bomb", current_color)
+		elif col_matched == 4:
+			make_bomb("row bomb", current_color)
+		elif row_matched == 4:
+			make_bomb("column bomb", current_color)
+
+
+func check_for_color_bomb(piece_one, piece_two):
+	if piece_one.color == "Color" or piece_two.color == "Color":
+		return true
+	return false
+
+func make_bomb(bomb_type, color):
+	for i in current_matches.size():
+		var current_column = current_matches[i].x
+		var current_row = current_matches[i].y
+		if all_pieces[current_column][current_row] == piece_one and piece_one.color == color:
+			piece_one.matched = false
+			call_bomb(bomb_type, piece_one)
+		if all_pieces[current_column][current_row] == piece_two and piece_two.color == color:
+			piece_two.matched = false
+			call_bomb(bomb_type, piece_two)
+
+
+func call_bomb(bomb_type, piece):
+	if bomb_type == "color bomb":
+		piece.make_color_bomb()
+	elif bomb_type == "adjacent bomb":
+		piece.make_adjacent_bomb()
+	elif bomb_type == "column bomb":
+		piece.make_column_bomb()
+	elif bomb_type == "row bomb":
+		piece.make_row_bomb()
+
+
+func get_bombed_pieces():
+	for column in width:
+		for row in height:
+			if all_pieces[column][row] != null and all_pieces[column][row].matched:
+				if all_pieces[column][row].is_column_bomb:
+					match_pieces_in_column(column)
+				elif all_pieces[column][row].is_row_bomb:
+					match_pieces_in_row(row)
+				elif all_pieces[column][row].is_adjacent_bomb:
+					match_adjacent_pieces(column, row)
+
+
+
 
 func add_to_array(value, traget_array = current_matches):
 	if !traget_array.has(value):
@@ -297,12 +352,23 @@ func swap_pieces(column, row, direction):
 			all_pieces[column + direction.x][row + direction.y] = first_piece
 			first_piece.move(grid_to_pixel(column + direction.x, row + direction.y))
 			other_piece.move(grid_to_pixel(column, row))
+			#if check_for_color_bomb(first_piece, other_piece):
+			if first_piece.is_color_bomb:
+				#if first_piece.color == "Color":
+				match_color(other_piece.color)
+				matched_and_dim(first_piece)
+				add_to_array(Vector2(column, row)) 
+				#if other_piece.color == "Color":
+			if other_piece.is_color_bomb:
+				match_color(first_piece.color)
+				matched_and_dim(other_piece)
+				add_to_array(Vector2(column + direction.x, row + direction.y))
 			if !move_checked:
 				find_matches()
 
 
 func swap_back():
-	if piece_one != null and piece_two  != null:
+	if piece_one != null and piece_two != null:
 		swap_pieces(last_place.x, last_place.y, last_direction)
 	state = move
 	move_checked = false
@@ -313,6 +379,7 @@ func store_info(first_piece, other_piece, place, direction):
 	piece_two = other_piece
 	last_place = place
 	last_direction = direction
+
 
 
 func destroy_matched():
@@ -326,6 +393,7 @@ func destroy_matched():
 					was_matched = true
 					all_pieces[column][row].queue_free()
 					all_pieces[column][row] = null
+					emit_signal("update_score", piece_value * streak)
 	move_checked = true
 	if was_matched:
 		get_parent().get_node("collapse_timer").start()
@@ -366,6 +434,7 @@ func collapse_columns():
 
 
 func refill_columns():
+	streak += 1
 	for column in width:
 		for row in height:
 			if all_pieces[column][row] == null and !restricted_fill(Vector2(column, row)):
@@ -394,6 +463,7 @@ func after_refill():
 				get_parent().get_node("destroy_timer").start()
 				return
 	state = move
+	streak = 1
 	move_checked = false
 	if !damaged_slime:
 		generate_slime()
@@ -415,7 +485,54 @@ func find_normal_tile(column, row):
 		return list.pop_at(floor(rand_range(0, list.size())))
 	else:
 		return null
-	
+
+
+func match_pieces_in_column(column):
+	for i in height:
+		if all_pieces[column][i] != null:
+			if all_pieces[column][i].is_row_bomb:
+				match_pieces_in_row(i)
+			if all_pieces[column][i].is_adjacent_bomb:
+				match_adjacent_pieces(column, i)
+			all_pieces[column][i].matched = true
+
+
+func match_pieces_in_row(row):
+	for i in width:
+		if all_pieces[i][row] != null:
+			if all_pieces[i][row].is_column_bomb:
+				match_pieces_in_column(i)
+			if all_pieces[i][row].is_adjacent_bomb:
+				match_adjacent_pieces(i, row)
+			all_pieces[i][row].matched = true
+
+
+func match_adjacent_pieces(column, row):
+	for i in range(-1, 2):
+		for j in range(-1, 2):
+			if is_in_grid(column + i, row + j) and all_pieces[column + i][row + j] != null:
+				if all_pieces[column + i][row + j].is_column_bomb:
+					match_pieces_in_column(column + i)
+				if all_pieces[column + i][row + j].is_row_bomb:
+					match_pieces_in_row(row + j)
+				all_pieces[column + i][row + j].matched = true
+
+
+func match_color(color):
+	for column in width:
+		for row in height:
+			if all_pieces[column][row] != null and all_pieces[column][row].color == color:
+				matched_and_dim(all_pieces[column][row])
+				add_to_array(Vector2(column, row))
+
+
+func clear_board():
+	for column in width:
+		for row in height:
+			if all_pieces[column][row] != null:
+				all_pieces[column][row].match_and_dim()
+				add_to_array(Vector2(column, row))
+
 
 func generate_slime():
 	if slime_spaces.size() > 0:
@@ -434,6 +551,7 @@ func generate_slime():
 				emit_signal("make_slime", Vector2(neighbor.x, neighbor.y))
 				slime_made = true
 	damaged_slime = false
+
 
 # Signals
 func _on_destroy_timer_timeout():

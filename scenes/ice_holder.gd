@@ -21,11 +21,12 @@ func make_2d_array():
 	return array
 
 func _on_grid_damage_ice(bord_position):
-	if ice_pieces[bord_position.x][bord_position.y] != null:
-		ice_pieces[bord_position.x][bord_position.y].take_damage(1)
-		if ice_pieces[bord_position.x][bord_position.y].health <= 0:
-			ice_pieces[bord_position.x][bord_position.y].queue_free()
-			ice_pieces[bord_position.x][bord_position.y] = null
+	if ice_pieces.size() > 0:
+		if ice_pieces[bord_position.x][bord_position.y] != null:
+			ice_pieces[bord_position.x][bord_position.y].take_damage(1)
+			if ice_pieces[bord_position.x][bord_position.y].health <= 0:
+				ice_pieces[bord_position.x][bord_position.y].queue_free()
+				ice_pieces[bord_position.x][bord_position.y] = null
 
 
 func _on_grid_make_ice(bord_position):

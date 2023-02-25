@@ -23,6 +23,7 @@ func make_2d_array():
 
 
 func _on_grid_damage_concrete(bord_position):
+	if concrete_pieces.size() > 0:
 		if concrete_pieces[bord_position.x][bord_position.y] != null:
 			concrete_pieces[bord_position.x][bord_position.y].take_damage(1)
 			if concrete_pieces[bord_position.x][bord_position.y].health <= 0:

@@ -23,6 +23,7 @@ func make_2d_array():
 
 
 func _on_grid_damage_lock(bord_position):
+	if lock_pieces.size() > 0:
 		if lock_pieces[bord_position.x][bord_position.y] != null:
 			lock_pieces[bord_position.x][bord_position.y].take_damage(1)
 			if lock_pieces[bord_position.x][bord_position.y].health <= 0:
