@@ -75,7 +75,6 @@ var streak = 1
 var state
 
 
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	state = move
@@ -93,35 +92,11 @@ func _process(delta):
 		touch_input()
 
 
-func restricted_fill(place):
-	if empty_spaces.has(place):
-		return true	
-	if concrete_spaces.has(place):
-		return true
-	if slime_spaces.has(place):
-		return true
-	return false
-
-
-func restricted_move(place):
-	if  lock_spaces.has(place):
-		return true
-	return false
-
-
-func make_2d_array():
-	var array = []
-	for i in width:
-		array.append([])
-		for j in height:
-			array[i].append(null)
-	return array
-
-
+# spawm inital grid
 func spawn_pieces():
 	for column in width:
 		for row in height:
-			if !restricted_fill(Vector2(column, row)):
+			if !is_fill_restricted_at(Vector2(column, row)):
 				var list = []
 				for i in piece_pool.size():
 					list.append(i)
@@ -135,6 +110,23 @@ func spawn_pieces():
 				add_child(piece)
 				piece.position = grid_to_pixel(column, row)
 				all_pieces[column][row] = piece
+
+
+# prevents grid places to be filled in place of special tiles
+func is_fill_restricted_at(place):
+	if empty_spaces.has(place):
+		return true	
+	if concrete_spaces.has(place):
+		return true
+	if slime_spaces.has(place):
+		return true
+	return false
+
+
+func restricted_move(place):
+	if  lock_spaces.has(place):
+		return true
+	return false
 
 
 func spawn_obstacles(obstacle_array, name):
@@ -194,7 +186,7 @@ func touch_difference(grid_1, grid_2):
 		pass
 
 
-# Transformations
+# Coordinate transformations
 func grid_to_pixel(column, row):
 	var new_x = x_start + offset * column
 	var new_y = y_start + -offset * row
@@ -264,9 +256,7 @@ func find_matches():
 	return found_match
 
 
-func matched_and_dim(item):
-	item.matched =  true
-	item.dim()
+
 
 
 func find_bombs():
@@ -293,11 +283,6 @@ func find_bombs():
 		elif row_matched == 4:
 			make_bomb("column bomb", current_color)
 
-
-func check_for_color_bomb(piece_one, piece_two):
-	if piece_one.color == "Color" or piece_two.color == "Color":
-		return true
-	return false
 
 func make_bomb(bomb_type, color):
 	for i in current_matches.size():
@@ -336,10 +321,6 @@ func get_bombed_pieces():
 
 
 
-func add_to_array(value, traget_array = current_matches):
-	if !traget_array.has(value):
-		traget_array.append(value)
-
 
 func swap_pieces(column, row, direction):
 	var first_piece = all_pieces[column][row]
@@ -352,13 +333,10 @@ func swap_pieces(column, row, direction):
 			all_pieces[column + direction.x][row + direction.y] = first_piece
 			first_piece.move(grid_to_pixel(column + direction.x, row + direction.y))
 			other_piece.move(grid_to_pixel(column, row))
-			#if check_for_color_bomb(first_piece, other_piece):
 			if first_piece.is_color_bomb:
-				#if first_piece.color == "Color":
 				match_color(other_piece.color)
 				matched_and_dim(first_piece)
 				add_to_array(Vector2(column, row)) 
-				#if other_piece.color == "Color":
 			if other_piece.is_color_bomb:
 				match_color(first_piece.color)
 				matched_and_dim(other_piece)
@@ -374,11 +352,6 @@ func swap_back():
 	move_checked = false
 
 
-func store_info(first_piece, other_piece, place, direction):
-	piece_one =  first_piece
-	piece_two = other_piece
-	last_place = place
-	last_direction = direction
 
 
 
@@ -423,7 +396,7 @@ func check_special(column, row, name):
 func collapse_columns():
 	for column in width:
 		for row in height:
-			if all_pieces[column][row] == null and !restricted_fill(Vector2(column, row)):
+			if all_pieces[column][row] == null and !is_fill_restricted_at(Vector2(column, row)):
 				for k in range(row + 1, height):
 					if all_pieces[column][k] != null:
 						all_pieces[column][k].move(grid_to_pixel(column, row))
@@ -437,7 +410,7 @@ func refill_columns():
 	streak += 1
 	for column in width:
 		for row in height:
-			if all_pieces[column][row] == null and !restricted_fill(Vector2(column, row)):
+			if all_pieces[column][row] == null and !is_fill_restricted_at(Vector2(column, row)):
 				var list = []
 				for i in piece_pool.size():
 					list.append(i)
@@ -487,6 +460,25 @@ func find_normal_tile(column, row):
 		return null
 
 
+func generate_slime():
+	if slime_spaces.size() > 0:
+		var list  = []
+		for i in slime_spaces.size():
+				list.append(slime_spaces[i])
+		var slime_made = false
+		while list.size() > 0 and !slime_made:
+			var rand = list.pop_at(floor(rand_range(0, list.size())))
+			var neighbor = find_normal_tile(rand.x, rand.y)
+			if neighbor != null:
+				all_pieces[neighbor.x][neighbor.y].queue_free()
+				all_pieces[neighbor.x][neighbor.y] = null
+				slime_spaces.append(Vector2(neighbor.x, neighbor.y))
+				emit_signal("make_slime", Vector2(neighbor.x, neighbor.y))
+				slime_made = true
+	damaged_slime = false
+
+
+# Match pieces in columns and rows, adjacent to a piece and the whole board
 func match_pieces_in_column(column):
 	for i in height:
 		if all_pieces[column][i] != null:
@@ -494,7 +486,6 @@ func match_pieces_in_column(column):
 				match_pieces_in_row(i)
 			if all_pieces[column][i].is_adjacent_bomb:
 				match_adjacent_pieces(column, i)
-			all_pieces[column][i].matched = true
 
 
 func match_pieces_in_row(row):
@@ -534,23 +525,32 @@ func clear_board():
 				add_to_array(Vector2(column, row))
 
 
-func generate_slime():
-	if slime_spaces.size() > 0:
-		var list  = []
-		for i in slime_spaces.size():
-				list.append(slime_spaces[i])
 
-		var slime_made = false
-		while list.size() > 0 and !slime_made:
-			var rand = list.pop_at(floor(rand_range(0, list.size())))
-			var neighbor = find_normal_tile(rand.x, rand.y)
-			if neighbor != null:
-				all_pieces[neighbor.x][neighbor.y].queue_free()
-				all_pieces[neighbor.x][neighbor.y] = null
-				slime_spaces.append(Vector2(neighbor.x, neighbor.y))
-				emit_signal("make_slime", Vector2(neighbor.x, neighbor.y))
-				slime_made = true
-	damaged_slime = false
+# helper functions
+func make_2d_array():
+	var array = []
+	for i in width:
+		array.append([])
+		for j in height:
+			array[i].append(null)
+	return array
+
+
+func add_to_array(value, traget_array = current_matches):
+	if !traget_array.has(value):
+		traget_array.append(value)
+
+
+func store_info(first_piece, other_piece, place, direction):
+	piece_one =  first_piece
+	piece_two = other_piece
+	last_place = place
+	last_direction = direction
+
+
+func matched_and_dim(item):
+	item.matched =  true
+	item.dim()
 
 
 # Signals
@@ -565,7 +565,7 @@ func _on_collapse_timer_timeout():
 func _on_refill_timer_timeout():
 	refill_columns()
 
-
+# Obstacle signals
 func _on_lock_holder_remove_lock(place):
 	for i in range(lock_spaces.size() -1,  -1, -1):
 		if lock_spaces[i] == place:
