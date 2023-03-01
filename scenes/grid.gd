@@ -319,9 +319,6 @@ func get_bombed_pieces():
 					match_adjacent_pieces(column, row)
 
 
-
-
-
 func swap_pieces(column, row, direction):
 	var first_piece = all_pieces[column][row]
 	var other_piece = all_pieces[column + direction.x][row + direction.y]
@@ -350,9 +347,6 @@ func swap_back():
 		swap_pieces(last_place.x, last_place.y, last_direction)
 	state = move
 	move_checked = false
-
-
-
 
 
 func destroy_matched():
