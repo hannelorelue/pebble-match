@@ -74,6 +74,11 @@ var streak = 1
 # State Machine
 var state
 
+# Bomb variables
+var color_bomb_used = false
+
+# Particle effects
+var particle_effects = preload("res://scenes/ParticleEffect.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -260,28 +265,29 @@ func find_matches():
 
 
 func find_bombs():
-	for i in current_matches.size():
-		var current_column = current_matches[i].x
-		var current_row = current_matches[i].y
-		var current_color = all_pieces[current_column][current_row].color
-		var col_matched = 0
-		var row_matched = 0
-		for j in current_matches.size():
-			var this_column = current_matches[j].x
-			var this_row = current_matches[j].y
-			var this_color = all_pieces[this_column][this_row].color
-			if this_column == current_column and current_color == this_color:
-				col_matched +=1
-			if this_row== current_row and current_color == this_color:
-				row_matched +=1
-		if col_matched >= 5 or row_matched >= 5:
-			make_bomb("color bomb", current_color)
-		elif col_matched == 3 and row_matched == 3:
-			make_bomb("adjacent bomb", current_color)
-		elif col_matched == 4:
-			make_bomb("row bomb", current_color)
-		elif row_matched == 4:
-			make_bomb("column bomb", current_color)
+	if !color_bomb_used:
+		for i in current_matches.size():
+			var current_column = current_matches[i].x
+			var current_row = current_matches[i].y
+			var current_color = all_pieces[current_column][current_row].color
+			var col_matched = 0
+			var row_matched = 0
+			for j in current_matches.size():
+				var this_column = current_matches[j].x
+				var this_row = current_matches[j].y
+				var this_color = all_pieces[this_column][this_row].color
+				if this_column == current_column and current_color == this_color:
+					col_matched +=1
+				if this_row== current_row and current_color == this_color:
+					row_matched +=1
+			if col_matched >= 5 or row_matched >= 5:
+				make_bomb("color bomb", current_color)
+			elif col_matched == 3 and row_matched == 3:
+				make_bomb("adjacent bomb", current_color)
+			elif col_matched == 4:
+				make_bomb("row bomb", current_color)
+			elif row_matched == 4:
+				make_bomb("column bomb", current_color)
 
 
 func make_bomb(bomb_type, color):
@@ -334,10 +340,12 @@ func swap_pieces(column, row, direction):
 				match_color(other_piece.color)
 				matched_and_dim(first_piece)
 				add_to_array(Vector2(column, row)) 
+				color_bomb_used = true
 			if other_piece.is_color_bomb:
 				match_color(first_piece.color)
 				matched_and_dim(other_piece)
 				add_to_array(Vector2(column + direction.x, row + direction.y))
+				color_bomb_used = true
 			if !move_checked:
 				find_matches()
 
@@ -360,6 +368,7 @@ func destroy_matched():
 					was_matched = true
 					all_pieces[column][row].queue_free()
 					all_pieces[column][row] = null
+					make_effect(particle_effects, column, row)
 					emit_signal("update_score", piece_value * streak)
 	move_checked = true
 	if was_matched:
@@ -368,6 +377,11 @@ func destroy_matched():
 		swap_back()
 	current_matches.clear()
 
+
+func make_effect(effect, column, row):
+	var curent = effect.instance()
+	curent.position = grid_to_pixel(column, row)
+	add_child(curent)
 
 func damage_special(column, row):
 	emit_signal("damage_ice", Vector2(column, row))
@@ -435,6 +449,7 @@ func after_refill():
 	if !damaged_slime:
 		generate_slime()
 	damaged_slime = false
+	color_bomb_used = false
 
 # returns a random non-slime neighbor
 func find_normal_tile(column, row):
