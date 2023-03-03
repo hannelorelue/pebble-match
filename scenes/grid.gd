@@ -78,7 +78,8 @@ var state
 var color_bomb_used = false
 
 # Particle effects
-var particle_effects = preload("res://scenes/ParticleEffect.tscn")
+var particle_effect = preload("res://scenes/ParticleEffect.tscn")
+var animated_effect = preload("res://scenes/animatedExplosion.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -368,7 +369,8 @@ func destroy_matched():
 					was_matched = true
 					all_pieces[column][row].queue_free()
 					all_pieces[column][row] = null
-					make_effect(particle_effects, column, row)
+					make_effect(particle_effect, column, row)
+					make_effect(animated_effect, column, row)
 					emit_signal("update_score", piece_value * streak)
 	move_checked = true
 	if was_matched:

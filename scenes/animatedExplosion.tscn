@@ -1,0 +1,29 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://art/Particles and effects/Explosion V2/explode_4_1.png" type="Texture" id=1]
+[ext_resource path="res://art/Particles and effects/Explosion V2/explode_6_1.png" type="Texture" id=2]
+[ext_resource path="res://art/Particles and effects/Explosion V2/explode_7.png" type="Texture" id=3]
+[ext_resource path="res://art/Particles and effects/Explosion V2/explode_5_1.png" type="Texture" id=4]
+[ext_resource path="res://art/Particles and effects/Explosion V2/explode_1_1.png" type="Texture" id=5]
+[ext_resource path="res://art/Particles and effects/Explosion V2/explode_3_1.png" type="Texture" id=6]
+[ext_resource path="res://art/Particles and effects/Explosion V2/explode_2_1.png" type="Texture" id=7]
+[ext_resource path="res://animtedExplosion.gd" type="Script" id=8]
+
+[sub_resource type="SpriteFrames" id=1]
+animations = [ {
+"frames": [ ExtResource( 5 ), ExtResource( 7 ), ExtResource( 6 ), ExtResource( 1 ), ExtResource( 4 ), ExtResource( 4 ), ExtResource( 2 ), ExtResource( 2 ), ExtResource( 2 ), ExtResource( 3 ) ],
+"loop": true,
+"name": "explosion",
+"speed": 16.0
+} ]
+
+[node name="animatedExplosion" type="Node2D"]
+script = ExtResource( 8 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+scale = Vector2( 0.7, 0.7 )
+frames = SubResource( 1 )
+animation = "explosion"
+frame = 3
+
+[connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
