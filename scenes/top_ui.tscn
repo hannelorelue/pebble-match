@@ -33,7 +33,7 @@ text = "000"
 align = 1
 valign = 3
 
-[node name="Label2" type="Label" parent="MarginContainer/HBoxContainer"]
+[node name="CounterLabel" type="Label" parent="MarginContainer/HBoxContainer"]
 margin_left = 190.0
 margin_right = 361.0
 margin_bottom = 120.0

@@ -13,7 +13,10 @@ signal make_lock
 signal make_slime
 # Score
 signal update_score
-
+# Counter
+signal update_counter
+# Game Over
+signal game_over
 
 # Enum
 enum {wait, move}
@@ -39,6 +42,9 @@ export (PoolVector2Array) var slime_spaces
 # Scoring Variables
 export (int) var piece_value
 
+# Counter
+export (int) var current_counter_value
+export (bool) var is_move
 
 # Public Variables
 # Grid
@@ -71,6 +77,7 @@ var move_checked = false
 # Scoring Variables
 var streak = 1
 
+
 # State Machine
 var state
 
@@ -91,6 +98,10 @@ func _ready():
 	spawn_obstacles(concrete_spaces, "concrete")
 	spawn_obstacles(lock_spaces, "lock")
 	spawn_obstacles(slime_spaces, "slime")
+	emit_signal("update_counter", current_counter_value)
+	if !is_move:
+		$Timer.start()
+
 
 
 func _process(delta):
@@ -452,6 +463,11 @@ func after_refill():
 		generate_slime()
 	damaged_slime = false
 	color_bomb_used = false
+	if is_move:
+		current_counter_value -=1
+		emit_signal("update_counter")
+		if current_counter_value == 0:
+			game_over()
 
 # returns a random non-slime neighbor
 func find_normal_tile(column, row):
@@ -577,6 +593,10 @@ func matched_and_dim(item):
 	item.dim()
 
 
+func game_over():
+	emit_signal("game_over")
+	state = wait
+
 # Signals
 func _on_destroy_timer_timeout():
 	destroy_matched()
@@ -607,3 +627,11 @@ func _on_slime_holder_remove_slime(place):
 	for i in range(slime_spaces.size() -1,  -1, -1):
 		if slime_spaces[i] == place:
 			slime_spaces.remove(i)
+
+
+func _on_Timer_timeout():
+	current_counter_value -= 1
+	emit_signal("update_counter")
+	if current_counter_value  == 0:
+		game_over()
+		$Timer.stop()
