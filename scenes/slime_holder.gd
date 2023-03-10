@@ -22,7 +22,7 @@ func make_2d_array():
 	return array
 
 
-func _on_grid_damage_slime(bord_position):
+func damage_slime(bord_position):
 	if slime_pieces.size() > 0:
 		if slime_pieces[bord_position.x][bord_position.y] != null:
 			slime_pieces[bord_position.x][bord_position.y].take_damage(1)
@@ -32,10 +32,16 @@ func _on_grid_damage_slime(bord_position):
 				emit_signal("remove_slime", bord_position)
 
 
-func _on_grid_make_slime(bord_position):
+func make_slime(slime_positions_array):
+	if slime_positions_array == null:
+		return
+		
 	if slime_pieces.size() == 0:
 		slime_pieces = make_2d_array()
-	var current = slime.instance()
-	add_child(current)
-	current.position = Vector2(bord_position.x  * 64 + 64, -bord_position.y * 64 + 800)
-	slime_pieces[bord_position.x][bord_position.y] = current
+		
+	for i in slime_positions_array.size():
+		var current = slime.instance()
+		var pos = slime_positions_array[i]
+		add_child(current)
+		current.position = Vector2(pos.x  * 64 + 64, -pos.y * 64 + 800)
+		slime_pieces[pos.x][pos.y] = current

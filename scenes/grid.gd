@@ -111,7 +111,8 @@ func _ready():
 	spawn_obstacles(ice_spaces, "ice")
 	spawn_obstacles(concrete_spaces, "concrete")
 	spawn_obstacles(lock_spaces, "lock")
-	spawn_obstacles(slime_spaces, "slime")
+	#spawn_obstacles(slime_spaces, "slime")
+	$slime_holder.make_slime(slime_spaces)
 	emit_signal("update_counter", current_counter_value)
 	emit_signal("set_max_score", max_score)
 	if !is_move:
@@ -433,18 +434,23 @@ func damage_special(column, row):
 	emit_signal("damage_ice", Vector2(column, row))
 	emit_signal("damage_lock", Vector2(column, row))
 	check_special(column, row, "concrete")
-	check_special(column, row, "slime")
+	#check_special(column, row, "slime")
 
 
 func check_special(column, row, name):
 	if column < width - 1:
+		$slime_holder.damage_slime(Vector2(column + 1, row))
 		emit_signal("damage_" + name, Vector2(column + 1, row))
 	if column > 0:
+		$slime_holder.damage_slime(Vector2(column - 1, row))
 		emit_signal("damage_" + name, Vector2(column - 1, row))
 	if row < height - 1:
+		$slime_holder.damage_slime(Vector2(column, row + 1))
 		emit_signal("damage_" + name, Vector2(column, row + 1))
 	if row > 0:
+		$slime_holder.damage_slime(Vector2(column, row - 1))
 		emit_signal("damage_" + name, Vector2(column, row - 1))
+	
 
 
 func collapse_columns():
@@ -546,7 +552,8 @@ func generate_slime():
 				all_pieces[neighbor.x][neighbor.y].queue_free()
 				all_pieces[neighbor.x][neighbor.y] = null
 				slime_spaces.append(Vector2(neighbor.x, neighbor.y))
-				emit_signal("make_slime", Vector2(neighbor.x, neighbor.y))
+				#emit_signal("make_slime", Vector2(neighbor.x, neighbor.y))
+				$slime_holder.make_slime([Vector2(neighbor.x, neighbor.y)])
 				slime_made = true
 	damaged_slime = false
 
