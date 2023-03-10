@@ -13,8 +13,11 @@ signal make_lock
 signal make_slime
 # Score
 signal update_score
+signal set_max_score
 # Counter
 signal update_counter
+# Goals
+signal check_goal
 # Game Over
 signal game_over
 
@@ -40,6 +43,7 @@ export (PoolVector2Array) var slime_spaces
 
 # Scoring Variables
 export (int) var piece_value
+export (int) var max_score
 
 # Counter
 export (int) var current_counter_value
@@ -109,6 +113,7 @@ func _ready():
 	spawn_obstacles(lock_spaces, "lock")
 	spawn_obstacles(slime_spaces, "slime")
 	emit_signal("update_counter", current_counter_value)
+	emit_signal("set_max_score", max_score)
 	if !is_move:
 		$Timer.start()
 
@@ -165,7 +170,7 @@ func spawn_obstacles(obstacle_array, name):
 func spawn_sinker(number):
 	var allowed_places = []
 	for i in width:
-		if !is_fill_restricted_at(Vector2(i,height - 1)):
+		if !is_fill_restricted_at(Vector2(i, height - 1)):
 			allowed_places.append(i)
 	for j in number:
 		var rand = allowed_places.pop_at(floor(rand_range(0, allowed_places.size())))
@@ -268,7 +273,7 @@ func find_matches():
 	var found_match = false
 	for column in width:
 		for row in height:
-			if all_pieces[column][row] != null and !is_sinker(column, row):
+			if all_pieces[column][row] != null:
 				var current_color = all_pieces[column][row].color
 				if all_pieces[column][row].matched == true:
 					found_match = true
@@ -301,9 +306,6 @@ func find_matches():
 	else:
 		state = move
 	return found_match
-
-
-
 
 
 func find_bombs():
@@ -406,6 +408,7 @@ func destroy_matched():
 		for row in height:
 			if all_pieces[column][row] != null:
 				if all_pieces[column][row].matched:
+					emit_signal("check_goal", all_pieces[column][row].color)
 					damage_special(column, row)
 					was_matched = true
 					all_pieces[column][row].queue_free()

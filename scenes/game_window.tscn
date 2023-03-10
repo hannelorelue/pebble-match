@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://art/Ruined City Background Preview.png" type="Texture" id=1]
 [ext_resource path="res://scenes/grid.gd" type="Script" id=2]
@@ -9,6 +9,8 @@
 [ext_resource path="res://scenes/top_ui.tscn" type="PackedScene" id=7]
 [ext_resource path="res://scenes/GameOverScreen.tscn" type="PackedScene" id=8]
 [ext_resource path="res://scenes/sinker.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/GoalHolder.gd" type="Script" id=10]
+[ext_resource path="res://scenes/Goal.tscn" type="PackedScene" id=11]
 
 [node name="game_window" type="Node2D"]
 
@@ -31,6 +33,7 @@ y_start = 800
 empty_spaces = PoolVector2Array( 4, 4, 4, 5 )
 slime_spaces = PoolVector2Array( 2, 3, 3, 4 )
 piece_value = 10
+max_score = 4000
 current_counter_value = 12
 is_move = true
 sinker_piece = ExtResource( 9 )
@@ -73,6 +76,18 @@ one_shot = true
 
 [node name="GameOverScreen" parent="." instance=ExtResource( 8 )]
 
+[node name="GoalHolder" type="Node" parent="."]
+script = ExtResource( 10 )
+
+[node name="Goal" parent="GoalHolder" instance=ExtResource( 11 )]
+max_needed = 5
+goal_string = "blue"
+
+[node name="Goal2" parent="GoalHolder" instance=ExtResource( 11 )]
+max_needed = 2
+goal_string = "pink"
+
+[connection signal="check_goal" from="grid" to="GoalHolder" method="_on_grid_check_goal"]
 [connection signal="damage_concrete" from="grid" to="concrete_holder" method="_on_grid_damage_concrete"]
 [connection signal="damage_ice" from="grid" to="ice_holder" method="_on_grid_damage_ice"]
 [connection signal="damage_lock" from="grid" to="lock_holder" method="_on_grid_damage_lock"]
@@ -82,6 +97,7 @@ one_shot = true
 [connection signal="make_ice" from="grid" to="ice_holder" method="_on_grid_make_ice"]
 [connection signal="make_lock" from="grid" to="lock_holder" method="_on_grid_make_lock"]
 [connection signal="make_slime" from="grid" to="slime_holder" method="_on_grid_make_slime"]
+[connection signal="set_max_score" from="grid" to="top_ui" method="_on_grid_set_max_score"]
 [connection signal="update_counter" from="grid" to="top_ui" method="_on_grid_update_counter"]
 [connection signal="update_score" from="grid" to="top_ui" method="_on_grid_update_score"]
 [connection signal="timeout" from="grid/Timer" to="grid" method="_on_Timer_timeout"]
