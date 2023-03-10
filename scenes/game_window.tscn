@@ -30,15 +30,36 @@ width = 8
 x_start = 64
 y_offset = -2
 y_start = 800
+concrete_spaces = PoolVector2Array( 6, 6 )
 empty_spaces = PoolVector2Array( 4, 4, 4, 5 )
+ice_spaces = PoolVector2Array( 5, 5, 0, 4 )
+lock_spaces = PoolVector2Array( 0, 0 )
 slime_spaces = PoolVector2Array( 2, 3, 3, 4 )
 piece_value = 10
-max_score = 4000
-current_counter_value = 12
+max_score = 400
+current_counter_value = 4
 is_move = true
 sinker_piece = ExtResource( 9 )
 sinker_in_scene = true
 max_sinkers = 2
+
+[node name="ice_holder" type="Node2D" parent="grid"]
+z_index = 1
+script = ExtResource( 5 )
+width = 8
+height = 8
+
+[node name="lock_holder" type="Node2D" parent="grid"]
+z_index = 1
+script = ExtResource( 3 )
+width = 8
+height = 8
+
+[node name="concrete_holder" type="Node2D" parent="grid"]
+z_index = 1
+script = ExtResource( 4 )
+width = 8
+height = 8
 
 [node name="slime_holder" type="Node2D" parent="grid"]
 script = ExtResource( 6 )
@@ -46,21 +67,6 @@ width = 8
 height = 8
 
 [node name="Timer" type="Timer" parent="grid"]
-
-[node name="ice_holder" type="Node2D" parent="."]
-script = ExtResource( 5 )
-width = 8
-height = 8
-
-[node name="lock_holder" type="Node2D" parent="."]
-script = ExtResource( 3 )
-width = 8
-height = 8
-
-[node name="concrete_holder" type="Node2D" parent="."]
-script = ExtResource( 4 )
-width = 8
-height = 8
 
 [node name="destroy_timer" type="Timer" parent="."]
 wait_time = 0.122
@@ -88,22 +94,14 @@ max_needed = 2
 goal_string = "pink"
 
 [connection signal="check_goal" from="grid" to="GoalHolder" method="_on_grid_check_goal"]
-[connection signal="damage_concrete" from="grid" to="concrete_holder" method="_on_grid_damage_concrete"]
-[connection signal="damage_ice" from="grid" to="ice_holder" method="_on_grid_damage_ice"]
-[connection signal="damage_lock" from="grid" to="lock_holder" method="_on_grid_damage_lock"]
-[connection signal="damage_slime" from="grid" to="grid/slime_holder" method="_on_grid_damage_slime"]
 [connection signal="game_over" from="grid" to="GameOverScreen" method="_on_grid_game_over"]
-[connection signal="make_concrete" from="grid" to="concrete_holder" method="_on_grid_make_concrete"]
-[connection signal="make_ice" from="grid" to="ice_holder" method="_on_grid_make_ice"]
-[connection signal="make_lock" from="grid" to="lock_holder" method="_on_grid_make_lock"]
-[connection signal="make_slime" from="grid" to="grid/slime_holder" method="_on_grid_make_slime"]
 [connection signal="set_max_score" from="grid" to="top_ui" method="_on_grid_set_max_score"]
 [connection signal="update_counter" from="grid" to="top_ui" method="_on_grid_update_counter"]
 [connection signal="update_score" from="grid" to="top_ui" method="_on_grid_update_score"]
-[connection signal="remove_slime" from="grid/slime_holder" to="grid" method="_on_slime_holder_remove_slime"]
+[connection signal="lock_destroyed" from="grid/lock_holder" to="grid" method="_on_lock_holder_lock_destroyed"]
+[connection signal="concrete_destroyed" from="grid/concrete_holder" to="grid" method="_on_concrete_holder_concrete_destroyed"]
+[connection signal="slime_destroyed" from="grid/slime_holder" to="grid" method="_on_slime_holder_slime_destroyed"]
 [connection signal="timeout" from="grid/Timer" to="grid" method="_on_Timer_timeout"]
-[connection signal="remove_lock" from="lock_holder" to="grid" method="_on_lock_holder_remove_lock"]
-[connection signal="remove_concrete" from="concrete_holder" to="grid" method="_on_concrete_holder_remove_concrete"]
 [connection signal="timeout" from="destroy_timer" to="grid" method="_on_destroy_timer_timeout"]
 [connection signal="timeout" from="collapse_timer" to="grid" method="_on_collapse_timer_timeout"]
 [connection signal="timeout" from="refill_timer" to="grid" method="_on_refill_timer_timeout"]

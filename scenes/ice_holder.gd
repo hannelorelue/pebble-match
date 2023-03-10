@@ -20,7 +20,7 @@ func make_2d_array():
 			array[i].append(null)
 	return array
 
-func _on_grid_damage_ice(bord_position):
+func damage(bord_position):
 	if ice_pieces.size() > 0:
 		if ice_pieces[bord_position.x][bord_position.y] != null:
 			ice_pieces[bord_position.x][bord_position.y].take_damage(1)
@@ -29,11 +29,17 @@ func _on_grid_damage_ice(bord_position):
 				ice_pieces[bord_position.x][bord_position.y] = null
 
 
-func _on_grid_make_ice(bord_position):
+func make(ice_positions_array):
+	if ice_positions_array == null:
+		return
+
 	if ice_pieces.size() == 0:
 		ice_pieces = make_2d_array()
-	var current = ice.instance()
-	add_child(current)
-	current.position = Vector2(bord_position.x  * 64 + 64, -bord_position.y * 64 + 800)
-	ice_pieces[bord_position.x][bord_position.y] = current
+		
+	for i in ice_positions_array.size():
+		var current = ice.instance()
+		var pos = ice_positions_array[i]
+		add_child(current)
+		current.position = Vector2(pos.x  * 64 + 64, -pos.y * 64 + 800)
+		ice_pieces[pos.x][pos.y] = current
 

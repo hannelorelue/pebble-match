@@ -2,15 +2,7 @@ extends Node2D
 
 
 # Signals
-# Specical pieces
-signal damage_concrete
-signal damage_ice
-signal damage_lock
-signal damage_slime
-signal make_concrete
-signal make_ice
-signal make_lock
-signal make_slime
+
 # Score
 signal update_score
 signal set_max_score
@@ -22,7 +14,7 @@ signal check_goal
 signal game_over
 
 # Enum
-enum {wait, move}
+enum {WAIT, MOVE}
 
 
 # Export Variables
@@ -102,26 +94,24 @@ var current_sinkers = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	state = move
+	state = MOVE
 	randomize()
 	all_pieces = make_2d_array()
 	if sinker_in_scene:
 		spawn_sinker(max_sinkers)
+	$concrete_holder.make(concrete_spaces)
+	$lock_holder.make(lock_spaces)
+	$ice_holder.make(ice_spaces)
+	$slime_holder.make(slime_spaces)
 	spawn_pieces()
-	spawn_obstacles(ice_spaces, "ice")
-	spawn_obstacles(concrete_spaces, "concrete")
-	spawn_obstacles(lock_spaces, "lock")
-	#spawn_obstacles(slime_spaces, "slime")
-	$slime_holder.make_slime(slime_spaces)
 	emit_signal("update_counter", current_counter_value)
 	emit_signal("set_max_score", max_score)
 	if !is_move:
 		$Timer.start()
 
 
-
 func _process(delta):
-	if state == move:
+	if state == MOVE:
 		touch_input()
 
 
@@ -133,13 +123,11 @@ func spawn_pieces():
 				continue
 			if !is_fill_restricted_at(Vector2(column, row)):
 				var list = range(piece_pool.size())
-				
 				var rand = list.pop_at(floor(rand_range(0, list.size())))
 				var piece = piece_pool[rand].instance()
 				while match_at(column, row, piece.color) and list.size() > 1:
 					rand = list.pop_at(floor(rand_range(0, list.size())))
 					piece = piece_pool[rand].instance()
-					
 				add_child(piece)
 				piece.position = grid_to_pixel(column, row)
 				all_pieces[column][row] = piece
@@ -161,11 +149,6 @@ func restricted_move(place):
 		return true
 	return false
 
-
-func spawn_obstacles(obstacle_array, name):
-	if obstacle_array !=null:
-		for i in obstacle_array.size():
-			emit_signal("make_" + name, obstacle_array[i])
 
 
 func spawn_sinker(number):
@@ -206,14 +189,14 @@ func touch_difference(grid_1, grid_2):
 			if !find_matches():
 				yield(temp_timer, "timeout")
 				swap_pieces(grid_1.x, grid_1.y, Vector2(0, -1))
-				state = move
+				state = MOVE
 
 		elif difference.y < 0:
 			swap_pieces(grid_1.x, grid_1.y, Vector2(0, 1))
 			if !find_matches():
 				yield(temp_timer, "timeout")
 				swap_pieces(grid_1.x, grid_1.y, Vector2(0, 1))
-				state = move
+				state = MOVE
 
 	elif abs(difference.x) > abs(difference.y):
 		if difference.x > 0:
@@ -221,14 +204,14 @@ func touch_difference(grid_1, grid_2):
 			if !find_matches():
 				yield(temp_timer, "timeout")
 				swap_pieces(grid_1.x, grid_1.y, Vector2(-1,0))
-				state = move
+				state = MOVE
 			
 		elif difference.x < 0:
 			swap_pieces(grid_1.x, grid_1.y, Vector2(1,0))
 			if !find_matches():
 				yield(temp_timer, "timeout")
 				swap_pieces(grid_1.x, grid_1.y, Vector2(1,0))
-				state = move
+				state = MOVE
 	else:
 		pass
 
@@ -305,7 +288,7 @@ func find_matches():
 		get_bombed_pieces()
 		get_parent().get_node("destroy_timer").start()
 	else:
-		state = move
+		state = MOVE
 	return found_match
 
 
@@ -376,7 +359,7 @@ func swap_pieces(column, row, direction):
 	if first_piece != null and other_piece != null:
 		if !restricted_move(Vector2(column, row)) and !restricted_move(Vector2(column, row) + direction):
 			store_info(first_piece, other_piece, Vector2(column, row), direction)
-			state = wait
+			state = WAIT
 			all_pieces[column][row] = other_piece
 			all_pieces[column + direction.x][row + direction.y] = first_piece
 			first_piece.move(grid_to_pixel(column + direction.x, row + direction.y))
@@ -398,7 +381,7 @@ func swap_pieces(column, row, direction):
 func swap_back():
 	if piece_one != null and piece_two != null:
 		swap_pieces(last_place.x, last_place.y, last_direction)
-	state = move
+	state = MOVE
 	move_checked = false
 
 
@@ -431,26 +414,24 @@ func make_effect(effect, column, row):
 	add_child(curent)
 
 func damage_special(column, row):
-	emit_signal("damage_ice", Vector2(column, row))
-	emit_signal("damage_lock", Vector2(column, row))
-	check_special(column, row, "concrete")
-	#check_special(column, row, "slime")
+	$ice_holder.damage(Vector2(column, row))
+	$lock_holder.damage(Vector2(column, row))
+	check_special(column, row)
 
 
-func check_special(column, row, name):
+func check_special(column, row):
 	if column < width - 1:
-		$slime_holder.damage_slime(Vector2(column + 1, row))
-		emit_signal("damage_" + name, Vector2(column + 1, row))
-	if column > 0:
-		$slime_holder.damage_slime(Vector2(column - 1, row))
-		emit_signal("damage_" + name, Vector2(column - 1, row))
+		$slime_holder.damage(Vector2(column + 1, row))
+		$concrete_holder.damage(Vector2(column + 1, row))
+	if column > 0 and column < width:
+		$slime_holder.damage(Vector2(column - 1, row))
+		$concrete_holder.damage(Vector2(column - 1, row))
 	if row < height - 1:
-		$slime_holder.damage_slime(Vector2(column, row + 1))
-		emit_signal("damage_" + name, Vector2(column, row + 1))
-	if row > 0:
-		$slime_holder.damage_slime(Vector2(column, row - 1))
-		emit_signal("damage_" + name, Vector2(column, row - 1))
-	
+		$slime_holder.damage(Vector2(column, row + 1))
+		$concrete_holder.damage(Vector2(column, row + 1))
+	if row > 0 and row < height:
+		$slime_holder.damage(Vector2(column, row - 1))
+		$concrete_holder.damage(Vector2(column, row - 1))
 
 
 func collapse_columns():
@@ -498,7 +479,7 @@ func after_refill():
 				find_matches()
 				get_parent().get_node("destroy_timer").start()
 				return
-	state = move
+	state = MOVE
 	streak = 1
 	move_checked = false
 	if !damaged_slime:
@@ -553,7 +534,7 @@ func generate_slime():
 				all_pieces[neighbor.x][neighbor.y] = null
 				slime_spaces.append(Vector2(neighbor.x, neighbor.y))
 				#emit_signal("make_slime", Vector2(neighbor.x, neighbor.y))
-				$slime_holder.make_slime([Vector2(neighbor.x, neighbor.y)])
+				$slime_holder.make([Vector2(neighbor.x, neighbor.y)])
 				slime_made = true
 	damaged_slime = false
 
@@ -652,7 +633,7 @@ func matched_and_dim(item):
 
 func game_over():
 	emit_signal("game_over")
-	state = wait
+	state = WAIT
 
 # Signals
 func _on_destroy_timer_timeout():
@@ -667,19 +648,19 @@ func _on_refill_timer_timeout():
 	refill_columns()
 
 # Obstacle signals
-func _on_lock_holder_remove_lock(place):
+func _on_lock_holder_lock_destroyed(place):
 	for i in range(lock_spaces.size() -1,  -1, -1):
 		if lock_spaces[i] == place:
 			lock_spaces.remove(i)
 
 
-func _on_concrete_holder_remove_concrete(place):
-	for i in range( concrete_spaces.size() -1,  -1, -1):
+func _on_concrete_holder_concrete_destroyed(place):
+	for i in range(concrete_spaces.size() -1,  -1, -1):
 		if concrete_spaces[i] == place:
 			concrete_spaces.remove(i)
 
 
-func _on_slime_holder_remove_slime(place):
+func _on_slime_holder_slime_destroyed(place):
 	damaged_slime = true
 	for i in range(slime_spaces.size() -1,  -1, -1):
 		if slime_spaces[i] == place:

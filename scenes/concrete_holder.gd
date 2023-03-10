@@ -1,6 +1,6 @@
 extends Node2D
 
-signal remove_concrete
+signal concrete_destroyed
 
 var concrete_pieces = []
 var concrete = preload("res://scenes/concrete.tscn")
@@ -22,20 +22,26 @@ func make_2d_array():
 	return array
 
 
-func _on_grid_damage_concrete(bord_position):
+func damage(bord_position):
 	if concrete_pieces.size() > 0:
 		if concrete_pieces[bord_position.x][bord_position.y] != null:
 			concrete_pieces[bord_position.x][bord_position.y].take_damage(1)
 			if concrete_pieces[bord_position.x][bord_position.y].health <= 0:
 				concrete_pieces[bord_position.x][bord_position.y].queue_free()
 				concrete_pieces[bord_position.x][bord_position.y] = null
-				emit_signal("remove_concrete", bord_position)
+				emit_signal("concrete_destroyed", bord_position)
 
 
-func _on_grid_make_concrete(bord_position):
+func make(concrete_positions_array):
+	if concrete_positions_array == null:
+		return
+		
 	if concrete_pieces.size() == 0:
 		concrete_pieces = make_2d_array()
-	var current = concrete.instance()
-	add_child(current)
-	current.position = Vector2(bord_position.x  * 64 + 64, -bord_position.y * 64 + 800)
-	concrete_pieces[bord_position.x][bord_position.y] = current
+		
+	for i in concrete_positions_array.size():
+		var current = concrete.instance()
+		var pos = concrete_positions_array[i]
+		add_child(current)
+		current.position = Vector2(pos.x  * 64 + 64, -pos.y * 64 + 800)
+		concrete_pieces[pos.x][pos.y] = current

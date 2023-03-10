@@ -1,6 +1,6 @@
 extends Node2D
 
-signal remove_slime
+signal slime_destroyed
 
 var slime_pieces = []
 var slime = preload("res://scenes/slime.tscn")
@@ -22,17 +22,17 @@ func make_2d_array():
 	return array
 
 
-func damage_slime(bord_position):
-	if slime_pieces.size() > 0:
+func damage(bord_position):
+	if slime_pieces != null :
 		if slime_pieces[bord_position.x][bord_position.y] != null:
 			slime_pieces[bord_position.x][bord_position.y].take_damage(1)
 			if slime_pieces[bord_position.x][bord_position.y].health <= 0:
 				slime_pieces[bord_position.x][bord_position.y].queue_free()
 				slime_pieces[bord_position.x][bord_position.y] = null
-				emit_signal("remove_slime", bord_position)
+				emit_signal("slime_destroyed", bord_position)
 
 
-func make_slime(slime_positions_array):
+func make(slime_positions_array):
 	if slime_positions_array == null:
 		return
 		
