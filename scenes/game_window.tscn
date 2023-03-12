@@ -74,15 +74,15 @@ height = 8
 [node name="Timer" type="Timer" parent="grid"]
 
 [node name="destroy_timer" type="Timer" parent="."]
-wait_time = 0.122
+wait_time = 0.1
 one_shot = true
 
 [node name="collapse_timer" type="Timer" parent="."]
-wait_time = 0.49
+wait_time = 0.2
 one_shot = true
 
 [node name="refill_timer" type="Timer" parent="."]
-wait_time = 0.49
+wait_time = 0.2
 one_shot = true
 
 [node name="GameOverScreen" parent="." instance=ExtResource( 8 )]
@@ -97,7 +97,7 @@ goal_string = "ice"
 
 [node name="Goal2" parent="GoalHolder" instance=ExtResource( 11 )]
 goal_texture = ExtResource( 13 )
-max_needed = 2
+max_needed = 20
 goal_string = "pink"
 
 [node name="WinScreen" parent="." instance=ExtResource( 15 )]

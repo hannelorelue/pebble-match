@@ -13,7 +13,7 @@ signal check_goal
 signal game_over
 
 # Enum
-enum {WAIT, MOVE}
+enum {WAIT, MOVE, WON}
 
 
 # Export Variables
@@ -120,22 +120,23 @@ func spawn_pieces():
 		for row in height:
 			if all_pieces[column][row] != null:
 				continue
-			if !is_fill_restricted_at(Vector2(column, row)):
-				var list = range(piece_pool.size())
-				var rand = list.pop_at(floor(rand_range(0, list.size())))
-				var piece = piece_pool[rand].instance()
-				while is_match_at(column, row, piece.color) and list.size() > 1:
-					rand = list.pop_at(floor(rand_range(0, list.size())))
-					piece = piece_pool[rand].instance()
-				add_child(piece)
-				piece.position = grid_to_pixel(column, row)
-				all_pieces[column][row] = piece
+			if is_fill_restricted_at(Vector2(column, row)):
+				continue
+			var list = range(piece_pool.size())
+			var rand = list.pop_at(floor(rand_range(0, list.size())))
+			var piece = piece_pool[rand].instance()
+			while is_match_at(column, row, piece.color) and list.size() > 1:
+				rand = list.pop_at(floor(rand_range(0, list.size())))
+				piece = piece_pool[rand].instance()
+			add_child(piece)
+			piece.position = grid_to_pixel(column, row)
+			all_pieces[column][row] = piece
 
 
 # prevents grid places to be filled in place of special tiles
 func is_fill_restricted_at(place):
 	if empty_spaces.has(place):
-		return true	
+		return true
 	if concrete_spaces.has(place):
 		return true
 	if slime_spaces.has(place):
@@ -231,10 +232,11 @@ func pixel_to_grid(pixel_x, pixel_y):
 
 # Check functions
 func is_in_grid(column, row):
-	if column >= 0 and column < width:
-		if row >= 0 and  row < height:
-			return true
-	return false	
+	if column < 0 or column >= width:
+		return false
+	if row < 0 or row >= height:
+		return false
+	return true
 
 func is_match_at(column, row, color):
 	if column > 1:
@@ -260,9 +262,9 @@ func find_matches():
 		for row in height:
 			if all_pieces[column][row] == null:
 				continue
-			var current_color = all_pieces[column][row].color
 			if all_pieces[column][row].matched == true:
 				found_match = true
+			var current_color = all_pieces[column][row].color
 			if column > 0 and column < width - 1:
 				if all_pieces[column - 1][row] != null and all_pieces[column + 1][row] != null:
 					if all_pieces[column - 1][row].color == current_color and all_pieces[column + 1][row].color == current_color:
@@ -309,7 +311,7 @@ func find_bombs():
 			var this_color = all_pieces[this_column][this_row].color
 			if this_column == current_column and current_color == this_color:
 				col_matched +=1
-			if this_row== current_row and current_color == this_color:
+			if this_row == current_row and current_color == this_color:
 				row_matched +=1
 		if col_matched >= 5 or row_matched >= 5:
 			make_bomb("color bomb", current_color)
@@ -347,38 +349,42 @@ func call_bomb(bomb_type, piece):
 func get_bombed_pieces():
 	for column in width:
 		for row in height:
-			if all_pieces[column][row] != null and all_pieces[column][row].matched:
-				if all_pieces[column][row].is_column_bomb:
-					match_pieces_in_column(column)
-				elif all_pieces[column][row].is_row_bomb:
-					match_pieces_in_row(row)
-				elif all_pieces[column][row].is_adjacent_bomb:
-					match_adjacent_pieces(column, row)
+			if all_pieces[column][row] == null or !all_pieces[column][row].matched:
+				continue
+			if all_pieces[column][row].is_column_bomb:
+				match_pieces_in_column(column)
+			elif all_pieces[column][row].is_row_bomb:
+				match_pieces_in_row(row)
+			elif all_pieces[column][row].is_adjacent_bomb:
+				match_adjacent_pieces(column, row)
 
 
 func swap_pieces(column, row, direction):
 	var first_piece = all_pieces[column][row]
 	var other_piece = all_pieces[column + direction.x][row + direction.y]
-	if first_piece != null and other_piece != null:
-		if !is_move_restricted_at(Vector2(column, row)) and !is_move_restricted_at(Vector2(column, row) + direction):
-			store_info(first_piece, other_piece, Vector2(column, row), direction)
-			state = WAIT
-			all_pieces[column][row] = other_piece
-			all_pieces[column + direction.x][row + direction.y] = first_piece
-			first_piece.move(grid_to_pixel(column + direction.x, row + direction.y))
-			other_piece.move(grid_to_pixel(column, row))
-			if first_piece.is_color_bomb:
-				match_color(other_piece.color)
-				matched_and_dim(first_piece)
-				add_to_array(Vector2(column, row)) 
-				color_bomb_used = true
-			if other_piece.is_color_bomb:
-				match_color(first_piece.color)
-				matched_and_dim(other_piece)
-				add_to_array(Vector2(column + direction.x, row + direction.y))
-				color_bomb_used = true
-			if !move_checked:
-				find_matches()
+	if first_piece == null or other_piece == null:
+		return
+	if is_move_restricted_at(Vector2(column, row)) or is_move_restricted_at(Vector2(column, row) + direction):
+		return
+
+	store_info(first_piece, other_piece, Vector2(column, row), direction)
+	state = WAIT
+	all_pieces[column][row] = other_piece
+	all_pieces[column + direction.x][row + direction.y] = first_piece
+	first_piece.move(grid_to_pixel(column + direction.x, row + direction.y))
+	other_piece.move(grid_to_pixel(column, row))
+	if first_piece.is_color_bomb:
+		match_color(other_piece.color)
+		matched_and_dim(first_piece)
+		add_to_array(Vector2(column, row)) 
+		color_bomb_used = true
+	if other_piece.is_color_bomb:
+		match_color(first_piece.color)
+		matched_and_dim(other_piece)
+		add_to_array(Vector2(column + direction.x, row + direction.y))
+		color_bomb_used = true
+	if !move_checked:
+		find_matches()
 
 
 func swap_back():
@@ -393,16 +399,18 @@ func destroy_matched():
 	var was_matched = false
 	for column in width:
 		for row in height:
-			if all_pieces[column][row] != null:
-				if all_pieces[column][row].matched:
-					emit_signal("check_goal", all_pieces[column][row].color)
-					damage_special(column, row)
-					was_matched = true
-					all_pieces[column][row].queue_free()
-					all_pieces[column][row] = null
-					make_effect(particle_effect, column, row)
-					make_effect(animated_effect, column, row)
-					emit_signal("update_score", piece_value * streak)
+			if all_pieces[column][row] == null:
+				continue
+			if !all_pieces[column][row].matched:
+				continue
+			emit_signal("check_goal", all_pieces[column][row].color)
+			damage_special(column, row)
+			was_matched = true
+			all_pieces[column][row].queue_free()
+			all_pieces[column][row] = null
+			make_effect(particle_effect, column, row)
+			make_effect(animated_effect, column, row)
+			emit_signal("update_score", piece_value * streak)
 	move_checked = true
 	if was_matched:
 		get_parent().get_node("collapse_timer").start()
@@ -438,15 +446,19 @@ func check_special(column, row):
 
 
 func collapse_columns():
+	if state == WON:
+		return
 	for column in width:
 		for row in height:
-			if all_pieces[column][row] == null and !is_fill_restricted_at(Vector2(column, row)):
-				for k in range(row + 1, height):
-					if all_pieces[column][k] != null:
-						all_pieces[column][k].move(grid_to_pixel(column, row))
-						all_pieces[column][row] = all_pieces[column][k]
-						all_pieces[column][k] = null
-						break
+			if all_pieces[column][row] != null or is_fill_restricted_at(Vector2(column, row)):
+				continue
+			for k in range(row + 1, height):
+				if all_pieces[column][k] == null:
+					continue
+				all_pieces[column][k].move(grid_to_pixel(column, row))
+				all_pieces[column][row] = all_pieces[column][k]
+				all_pieces[column][k] = null
+				break
 	destroy_sinkers()
 	get_parent().get_node("refill_timer").start()
 
@@ -457,19 +469,20 @@ func refill_columns():
 	streak += 1
 	for column in width:
 		for row in height:
-			if all_pieces[column][row] == null and !is_fill_restricted_at(Vector2(column, row)):
-				var list = range(piece_pool.size())
+			if all_pieces[column][row] != null or is_fill_restricted_at(Vector2(column, row)):
+				continue
+			var list = range(piece_pool.size())
+			
+			var rand = list.pop_at(floor(rand_range(0, list.size())))
+			var piece = piece_pool[rand].instance()
+			while is_match_at(column, row, piece.color) and list.size() > 1:
+				rand = list.pop_at(floor(rand_range(0, list.size())))
+				piece = piece_pool[rand].instance()
 				
-				var rand = list.pop_at(floor(rand_range(0, list.size())))
-				var piece = piece_pool[rand].instance()
-				while is_match_at(column, row, piece.color) and list.size() > 1:
-					rand = list.pop_at(floor(rand_range(0, list.size())))
-					piece = piece_pool[rand].instance()
-					
-				add_child(piece)
-				piece.position = grid_to_pixel(column, row - y_offset)
-				piece.move(grid_to_pixel(column, row))
-				all_pieces[column][row] = piece
+			add_child(piece)
+			piece.position = grid_to_pixel(column, row - y_offset)
+			piece.move(grid_to_pixel(column, row))
+			all_pieces[column][row] = piece
 	after_refill()
 
 
@@ -532,60 +545,63 @@ func generate_slime():
 		while list.size() > 0 and !slime_made:
 			var rand = list.pop_at(floor(rand_range(0, list.size())))
 			var neighbor = find_normal_tile(rand.x, rand.y)
-			if neighbor != null:
-				all_pieces[neighbor.x][neighbor.y].queue_free()
-				all_pieces[neighbor.x][neighbor.y] = null
-				slime_spaces.append(Vector2(neighbor.x, neighbor.y))
-				#emit_signal("make_slime", Vector2(neighbor.x, neighbor.y))
-				$slime_holder.make([Vector2(neighbor.x, neighbor.y)])
-				slime_made = true
+			if neighbor == null:
+				continue
+			all_pieces[neighbor.x][neighbor.y].queue_free()
+			all_pieces[neighbor.x][neighbor.y] = null
+			slime_spaces.append(Vector2(neighbor.x, neighbor.y))
+			$slime_holder.make([Vector2(neighbor.x, neighbor.y)])
+			slime_made = true
 	damaged_slime = false
 
 
 # Match pieces in columns and rows, adjacent to a piece and the whole board
 func match_pieces_in_column(column):
 	for i in height:
-		if all_pieces[column][i] != null and !is_sinker(column, i):
-			if  all_pieces[column][i].matched:
-				continue
-			if all_pieces[column][i].is_row_bomb:
-				all_pieces[column][i].matched = true
-				match_pieces_in_row(i)
-			if all_pieces[column][i].is_adjacent_bomb:
-				all_pieces[column][i].matched = true
-				match_adjacent_pieces(column, i)
+		if all_pieces[column][i] == null or is_sinker(column, i):
+			continue
+		if  all_pieces[column][i].matched:
+			continue
+		if all_pieces[column][i].is_row_bomb:
 			all_pieces[column][i].matched = true
+			match_pieces_in_row(i)
+		if all_pieces[column][i].is_adjacent_bomb:
+			all_pieces[column][i].matched = true
+			match_adjacent_pieces(column, i)
+		all_pieces[column][i].matched = true
 
 
 func match_pieces_in_row(row):
 	for i in width:
-		if all_pieces[i][row] != null and !is_sinker(i, row):
-			if all_pieces[i][row].matched:
-				continue
-			if all_pieces[i][row].is_column_bomb:
-				all_pieces[i][row].matched = true
-				match_pieces_in_column(i)
-			if all_pieces[i][row].is_adjacent_bomb:
-				all_pieces[i][row].matched = true
-				match_adjacent_pieces(i, row)
+		if all_pieces[i][row] == null or is_sinker(i, row):
+			continue
+		if all_pieces[i][row].matched:
+			continue
+		if all_pieces[i][row].is_column_bomb:
 			all_pieces[i][row].matched = true
+			match_pieces_in_column(i)
+		if all_pieces[i][row].is_adjacent_bomb:
+			all_pieces[i][row].matched = true
+			match_adjacent_pieces(i, row)
+		all_pieces[i][row].matched = true
 
 
 func match_adjacent_pieces(column, row):
 	for i in range(-1, 2):
 		for j in range(-1, 2):
-			if is_sinker(i, j):
+			if is_sinker(column + i, row + j):
 				continue
-			if is_in_grid(column + i, row + j) and all_pieces[column + i][row + j] != null:
-				if all_pieces[column + i][row + j].matched:
-					continue
-				if all_pieces[column + i][row + j].is_column_bomb:
-					all_pieces[column + i][row + j].matched = true
-					match_pieces_in_column(column + i)
-				if all_pieces[column + i][row + j].is_row_bomb:
-					all_pieces[column + i][row + j].matched = true
-					match_pieces_in_row(row + j)
+			if !is_in_grid(column + i, row + j) or all_pieces[column + i][row + j] == null:
+				continue
+			if all_pieces[column + i][row + j].matched:
+				continue
+			if all_pieces[column + i][row + j].is_column_bomb:
 				all_pieces[column + i][row + j].matched = true
+				match_pieces_in_column(column + i)
+			if all_pieces[column + i][row + j].is_row_bomb:
+				all_pieces[column + i][row + j].matched = true
+				match_pieces_in_row(row + j)
+			all_pieces[column + i][row + j].matched = true
 
 
 func match_color(color):
@@ -593,17 +609,19 @@ func match_color(color):
 		for row in height:
 			if is_sinker(column, row):
 				continue
-			if all_pieces[column][row] != null and all_pieces[column][row].color == color:
-				matched_and_dim(all_pieces[column][row])
-				add_to_array(Vector2(column, row))
+			if all_pieces[column][row] == null or all_pieces[column][row].color != color:
+				continue
+			matched_and_dim(all_pieces[column][row])
+			add_to_array(Vector2(column, row))
 
 
 func clear_board():
 	for column in width:
 		for row in height:
-			if all_pieces[column][row] != null and !is_sinker(column, row):
-				all_pieces[column][row].match_and_dim()
-				add_to_array(Vector2(column, row))
+			if all_pieces[column][row] == null or is_sinker(column, row):
+				continue
+			all_pieces[column][row].match_and_dim()
+			add_to_array(Vector2(column, row))
 
 
 
@@ -650,6 +668,7 @@ func _on_collapse_timer_timeout():
 func _on_refill_timer_timeout():
 	refill_columns()
 
+
 # Obstacle signals
 func _on_lock_holder_lock_destroyed(place):
 	for i in range(lock_spaces.size() -1,  -1, -1):
@@ -679,5 +698,5 @@ func _on_Timer_timeout():
 
 
 func _on_GoalHolder_game_won():
-	state = WAIT
+	state = WON
 
