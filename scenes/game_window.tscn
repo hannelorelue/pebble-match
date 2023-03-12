@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://art/Ruined City Background Preview.png" type="Texture" id=1]
 [ext_resource path="res://scenes/grid.gd" type="Script" id=2]
@@ -11,6 +11,10 @@
 [ext_resource path="res://scenes/sinker.tscn" type="PackedScene" id=9]
 [ext_resource path="res://scenes/GoalHolder.gd" type="Script" id=10]
 [ext_resource path="res://scenes/Goal.tscn" type="PackedScene" id=11]
+[ext_resource path="res://scenes/GoalsUi.tscn" type="PackedScene" id=12]
+[ext_resource path="res://art/Pieces/Pink Piece.png" type="Texture" id=13]
+[ext_resource path="res://art/Obstacles/Ice.png" type="Texture" id=14]
+[ext_resource path="res://scenes/WinScreen.tscn" type="PackedScene" id=15]
 
 [node name="game_window" type="Node2D"]
 
@@ -21,6 +25,7 @@ texture = ExtResource( 1 )
 stretch_mode = 1
 
 [node name="top_ui" parent="." instance=ExtResource( 7 )]
+goal_ui = ExtResource( 12 )
 
 [node name="grid" type="Node2D" parent="."]
 script = ExtResource( 2 )
@@ -32,15 +37,14 @@ y_offset = -2
 y_start = 800
 concrete_spaces = PoolVector2Array( 6, 6 )
 empty_spaces = PoolVector2Array( 4, 4, 4, 5 )
-ice_spaces = PoolVector2Array( 5, 5, 0, 4 )
+ice_spaces = PoolVector2Array( 5, 5, 0, 4, 0, 0, 0, 1, 1, 0, 1, 1 )
 lock_spaces = PoolVector2Array( 0, 0 )
 slime_spaces = PoolVector2Array( 2, 3, 3, 4 )
 piece_value = 10
 max_score = 400
-current_counter_value = 4
+current_counter_value = 40
 is_move = true
 sinker_piece = ExtResource( 9 )
-sinker_in_scene = true
 max_sinkers = 2
 
 [node name="ice_holder" type="Node2D" parent="grid"]
@@ -48,6 +52,7 @@ z_index = 1
 script = ExtResource( 5 )
 width = 8
 height = 8
+value = "ice"
 
 [node name="lock_holder" type="Node2D" parent="grid"]
 z_index = 1
@@ -86,18 +91,25 @@ one_shot = true
 script = ExtResource( 10 )
 
 [node name="Goal" parent="GoalHolder" instance=ExtResource( 11 )]
-max_needed = 5
-goal_string = "blue"
+goal_texture = ExtResource( 14 )
+max_needed = 2
+goal_string = "ice"
 
 [node name="Goal2" parent="GoalHolder" instance=ExtResource( 11 )]
+goal_texture = ExtResource( 13 )
 max_needed = 2
 goal_string = "pink"
 
+[node name="WinScreen" parent="." instance=ExtResource( 15 )]
+
+[connection signal="check_goal" from="grid" to="top_ui" method="_on_grid_check_goal"]
 [connection signal="check_goal" from="grid" to="GoalHolder" method="_on_grid_check_goal"]
+[connection signal="counter_changed" from="grid" to="top_ui" method="_on_grid_counter_changed"]
 [connection signal="game_over" from="grid" to="GameOverScreen" method="_on_grid_game_over"]
 [connection signal="set_max_score" from="grid" to="top_ui" method="_on_grid_set_max_score"]
-[connection signal="update_counter" from="grid" to="top_ui" method="_on_grid_update_counter"]
 [connection signal="update_score" from="grid" to="top_ui" method="_on_grid_update_score"]
+[connection signal="ice_destroyed" from="grid/ice_holder" to="top_ui" method="_on_ice_holder_ice_destroyed"]
+[connection signal="ice_destroyed" from="grid/ice_holder" to="GoalHolder" method="_on_ice_holder_ice_destroyed"]
 [connection signal="lock_destroyed" from="grid/lock_holder" to="grid" method="_on_lock_holder_lock_destroyed"]
 [connection signal="concrete_destroyed" from="grid/concrete_holder" to="grid" method="_on_concrete_holder_concrete_destroyed"]
 [connection signal="slime_destroyed" from="grid/slime_holder" to="grid" method="_on_slime_holder_slime_destroyed"]
@@ -105,3 +117,6 @@ goal_string = "pink"
 [connection signal="timeout" from="destroy_timer" to="grid" method="_on_destroy_timer_timeout"]
 [connection signal="timeout" from="collapse_timer" to="grid" method="_on_collapse_timer_timeout"]
 [connection signal="timeout" from="refill_timer" to="grid" method="_on_refill_timer_timeout"]
+[connection signal="create_goals_started" from="GoalHolder" to="top_ui" method="_on_GoalHolder_create_goals_started"]
+[connection signal="game_won" from="GoalHolder" to="grid" method="_on_GoalHolder_game_won"]
+[connection signal="game_won" from="GoalHolder" to="WinScreen" method="_on_GoalHolder_game_won"]

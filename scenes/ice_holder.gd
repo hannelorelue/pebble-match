@@ -1,15 +1,16 @@
 extends Node2D
 
-var ice_pieces = []
+signal ice_destroyed
 
 export (int) var width
 export (int) var height
+export (String) var value
 
 var ice = preload("res://scenes/ice.tscn")
+var ice_pieces = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	#ice_pieces = get_tree().current_scene.get_node("grid").make_2d_array()
 	pass # Replace with function body.
 
 func make_2d_array():
@@ -21,12 +22,15 @@ func make_2d_array():
 	return array
 
 func damage(bord_position):
-	if ice_pieces.size() > 0:
-		if ice_pieces[bord_position.x][bord_position.y] != null:
-			ice_pieces[bord_position.x][bord_position.y].take_damage(1)
-			if ice_pieces[bord_position.x][bord_position.y].health <= 0:
-				ice_pieces[bord_position.x][bord_position.y].queue_free()
-				ice_pieces[bord_position.x][bord_position.y] = null
+	if ice_pieces.size() <= 0:
+		return
+	if ice_pieces[bord_position.x][bord_position.y] == null:
+		return
+	ice_pieces[bord_position.x][bord_position.y].take_damage(1)
+	if ice_pieces[bord_position.x][bord_position.y].health <= 0:
+		ice_pieces[bord_position.x][bord_position.y].queue_free()
+		ice_pieces[bord_position.x][bord_position.y] = null
+		emit_signal("ice_destroyed", value)
 
 
 func make(ice_positions_array):

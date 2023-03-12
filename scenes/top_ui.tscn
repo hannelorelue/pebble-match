@@ -24,15 +24,19 @@ margin_left = 14.0
 margin_top = 15.0
 margin_right = -10.0
 margin_bottom = -57.0
+custom_constants/margin_top = 4
+custom_constants/margin_left = 7
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+margin_left = 7.0
+margin_top = 4.0
 margin_right = 552.0
 margin_bottom = 120.0
-custom_constants/separation = 44
+custom_constants/separation = 40
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
 margin_right = 150.0
-margin_bottom = 120.0
+margin_bottom = 116.0
 
 [node name="ScoreLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer"]
 margin_right = 150.0
@@ -48,15 +52,15 @@ valign = 3
 margin_top = 39.0
 margin_right = 150.0
 margin_bottom = 68.0
-size_flags_horizontal = 5
+size_flags_horizontal = 3
 value = 55.0
 texture_under = ExtResource( 6 )
 texture_progress = ExtResource( 5 )
 
 [node name="CounterLabel" type="Label" parent="MarginContainer/HBoxContainer"]
-margin_left = 194.0
-margin_right = 351.0
-margin_bottom = 120.0
+margin_left = 190.0
+margin_right = 347.0
+margin_bottom = 116.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_fonts/font = SubResource( 1 )
@@ -65,8 +69,9 @@ align = 1
 valign = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer"]
-margin_left = 395.0
-margin_right = 552.0
-margin_bottom = 120.0
+margin_left = 387.0
+margin_right = 545.0
+margin_bottom = 116.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+alignment = 1
