@@ -2,9 +2,10 @@ extends Node2D
 
 signal lock_destroyed
 
-var lock_pieces = []
-var lock = preload("res://scenes/lock.tscn")
+export (Resource) var scene
 
+var lock_pieces = []
+var value = "lock"
 var width = Global.width
 var height  = Global.height
 
@@ -29,7 +30,7 @@ func damage(bord_position):
 			if lock_pieces[bord_position.x][bord_position.y].health <= 0:
 				lock_pieces[bord_position.x][bord_position.y].queue_free()
 				lock_pieces[bord_position.x][bord_position.y] = null
-				emit_signal("lock_destroyed", bord_position)
+				emit_signal("lock_destroyed", bord_position, value)
 
 
 func make(lock_positions_array):
@@ -40,7 +41,7 @@ func make(lock_positions_array):
 		lock_pieces = make_2d_array()
 		
 	for i in lock_positions_array.size():
-		var current = lock.instance()
+		var current = scene.instance()
 		var pos = lock_positions_array[i]
 		add_child(current)
 		current.position = Vector2(pos.x  * 64 + 64, -pos.y * 64 + 800)

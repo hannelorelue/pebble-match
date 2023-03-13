@@ -4,7 +4,7 @@
 [ext_resource path="res://art/UI/Buttons/Settings Button.png" type="Texture" id=2]
 [ext_resource path="res://art/UI/Buttons/Play Button.png" type="Texture" id=3]
 [ext_resource path="res://art/UI/godot match 3 logo.png" type="Texture" id=4]
-[ext_resource path="res://CanvasLayer.gd" type="Script" id=5]
+[ext_resource path="res://scenes/CanvasLayer.gd" type="Script" id=5]
 
 [node name="CanvasLayer" instance=ExtResource( 1 )]
 script = ExtResource( 5 )

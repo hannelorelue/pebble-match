@@ -2,8 +2,11 @@ extends Node2D
 
 signal slime_destroyed
 
+export (Resource) var scene
+var value = "slime"
 var slime_pieces = []
-var slime = preload("res://scenes/slime.tscn")
+
+#var slime = preload("res://scenes/slime.tscn")
 
 var width = Global.width
 var height  = Global.height
@@ -29,7 +32,7 @@ func damage(bord_position):
 			if slime_pieces[bord_position.x][bord_position.y].health <= 0:
 				slime_pieces[bord_position.x][bord_position.y].queue_free()
 				slime_pieces[bord_position.x][bord_position.y] = null
-				emit_signal("slime_destroyed", bord_position)
+				emit_signal("slime_destroyed", bord_position, value)
 
 
 func make(slime_positions_array):
@@ -40,7 +43,7 @@ func make(slime_positions_array):
 		slime_pieces = make_2d_array()
 		
 	for i in slime_positions_array.size():
-		var current = slime.instance()
+		var current = scene.instance()
 		var pos = slime_positions_array[i]
 		add_child(current)
 		current.position = Vector2(pos.x  * 64 + 64, -pos.y * 64 + 800)

@@ -4,6 +4,7 @@ signal concrete_destroyed
 
 var concrete_pieces = []
 var concrete = preload("res://scenes/concrete.tscn")
+var value = "slime"
 
 var width = Global.width
 var height  = Global.height
@@ -29,7 +30,7 @@ func damage(bord_position):
 			if concrete_pieces[bord_position.x][bord_position.y].health <= 0:
 				concrete_pieces[bord_position.x][bord_position.y].queue_free()
 				concrete_pieces[bord_position.x][bord_position.y] = null
-				emit_signal("concrete_destroyed", bord_position)
+				emit_signal("concrete_destroyed", bord_position, value)
 
 
 func make(concrete_positions_array):
