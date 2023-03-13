@@ -7,4 +7,3 @@ func _on_ContinueButton_pressed():
 
 func _on_GoalHolder_game_won():
 	slide_in()
-

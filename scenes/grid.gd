@@ -18,9 +18,9 @@ enum {WAIT, MOVE, WON}
 
 # Export Variables
 # Grid Variables
-export (int) var height
-export (int) var offset
-export (int) var width
+export (int) var height = Global.height
+export (int) var width = Global.width
+export (int) var offset =  Global.offset
 export (int) var x_start
 export (int) var y_offset
 export (int) var y_start
@@ -100,7 +100,7 @@ func _ready():
 		spawn_sinker(max_sinkers)
 	$concrete_holder.make(concrete_spaces)
 	$lock_holder.make(lock_spaces)
-	$ice_holder.make(ice_spaces)
+	$IceHolder.make(ice_spaces)
 	$slime_holder.make(slime_spaces)
 	spawn_pieces()
 	emit_signal("counter_changed", current_counter_value)
@@ -425,7 +425,7 @@ func make_effect(effect, column, row):
 	add_child(curent)
 
 func damage_special(column, row):
-	$ice_holder.damage(Vector2(column, row))
+	$IceHolder.damage(Vector2(column, row))
 	$lock_holder.damage(Vector2(column, row))
 	check_special(column, row)
 

@@ -5,8 +5,8 @@ signal slime_destroyed
 var slime_pieces = []
 var slime = preload("res://scenes/slime.tscn")
 
-export (int) var width
-export (int) var height
+var width = Global.width
+var height  = Global.height
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

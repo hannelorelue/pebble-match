@@ -4,7 +4,7 @@
 [ext_resource path="res://scenes/grid.gd" type="Script" id=2]
 [ext_resource path="res://scenes/lock_holder.gd" type="Script" id=3]
 [ext_resource path="res://scenes/concrete_holder.gd" type="Script" id=4]
-[ext_resource path="res://scenes/ice_holder.gd" type="Script" id=5]
+[ext_resource path="res://scenes/IceHolder.gd" type="Script" id=5]
 [ext_resource path="res://scenes/slime_holder.gd" type="Script" id=6]
 [ext_resource path="res://scenes/top_ui.tscn" type="PackedScene" id=7]
 [ext_resource path="res://scenes/GameOverScreen.tscn" type="PackedScene" id=8]
@@ -16,7 +16,7 @@
 [ext_resource path="res://art/Obstacles/Ice.png" type="Texture" id=14]
 [ext_resource path="res://scenes/WinScreen.tscn" type="PackedScene" id=15]
 
-[node name="game_window" type="Node2D"]
+[node name="GameWindow" type="Node2D"]
 
 [node name="background" type="TextureRect" parent="."]
 margin_right = 581.0
@@ -24,14 +24,18 @@ margin_bottom = 1024.0
 texture = ExtResource( 1 )
 stretch_mode = 1
 
+[node name="bottomUi" type="TextureRect" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
 [node name="top_ui" parent="." instance=ExtResource( 7 )]
 goal_ui = ExtResource( 12 )
 
 [node name="grid" type="Node2D" parent="."]
 script = ExtResource( 2 )
 height = 8
-offset = 64
 width = 8
+offset = 64
 x_start = 64
 y_offset = -2
 y_start = 800
@@ -47,29 +51,21 @@ is_move = true
 sinker_piece = ExtResource( 9 )
 max_sinkers = 2
 
-[node name="ice_holder" type="Node2D" parent="grid"]
+[node name="IceHolder" type="Node2D" parent="grid"]
 z_index = 1
 script = ExtResource( 5 )
-width = 8
-height = 8
 value = "ice"
 
 [node name="lock_holder" type="Node2D" parent="grid"]
 z_index = 1
 script = ExtResource( 3 )
-width = 8
-height = 8
 
 [node name="concrete_holder" type="Node2D" parent="grid"]
 z_index = 1
 script = ExtResource( 4 )
-width = 8
-height = 8
 
 [node name="slime_holder" type="Node2D" parent="grid"]
 script = ExtResource( 6 )
-width = 8
-height = 8
 
 [node name="Timer" type="Timer" parent="grid"]
 
@@ -108,8 +104,8 @@ goal_string = "pink"
 [connection signal="game_over" from="grid" to="GameOverScreen" method="_on_grid_game_over"]
 [connection signal="set_max_score" from="grid" to="top_ui" method="_on_grid_set_max_score"]
 [connection signal="update_score" from="grid" to="top_ui" method="_on_grid_update_score"]
-[connection signal="ice_destroyed" from="grid/ice_holder" to="top_ui" method="_on_ice_holder_ice_destroyed"]
-[connection signal="ice_destroyed" from="grid/ice_holder" to="GoalHolder" method="_on_ice_holder_ice_destroyed"]
+[connection signal="ice_destroyed" from="grid/IceHolder" to="top_ui" method="_on_IceHolder_ice_destroyed"]
+[connection signal="ice_destroyed" from="grid/IceHolder" to="GoalHolder" method="_on_IceHolder_ice_destroyed"]
 [connection signal="lock_destroyed" from="grid/lock_holder" to="grid" method="_on_lock_holder_lock_destroyed"]
 [connection signal="concrete_destroyed" from="grid/concrete_holder" to="grid" method="_on_concrete_holder_concrete_destroyed"]
 [connection signal="slime_destroyed" from="grid/slime_holder" to="grid" method="_on_slime_holder_slime_destroyed"]

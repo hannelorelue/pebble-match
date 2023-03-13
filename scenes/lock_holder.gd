@@ -5,8 +5,8 @@ signal lock_destroyed
 var lock_pieces = []
 var lock = preload("res://scenes/lock.tscn")
 
-export (int) var width
-export (int) var height
+var width = Global.width
+var height  = Global.height
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

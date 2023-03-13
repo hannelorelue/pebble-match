@@ -2,9 +2,9 @@ extends Node2D
 
 signal ice_destroyed
 
-export (int) var width
-export (int) var height
 export (String) var value
+var width = Global.width
+var height  = Global.height
 
 var ice = preload("res://scenes/ice.tscn")
 var ice_pieces = []
@@ -43,7 +43,7 @@ func make(ice_positions_array):
 	for i in ice_positions_array.size():
 		var current = ice.instance()
 		var pos = ice_positions_array[i]
-		add_child(current)
 		current.position = Vector2(pos.x  * 64 + 64, -pos.y * 64 + 800)
 		ice_pieces[pos.x][pos.y] = current
+		add_child(current)
 

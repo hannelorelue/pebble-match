@@ -56,5 +56,6 @@ func _on_grid_check_goal(goal_type):
 	update_goals(goal_type)
 
 
-func _on_ice_holder_ice_destroyed(goal_type):
+func _on_IceHolder_ice_destroyed(goal_type):
 	update_goals(goal_type)
+
