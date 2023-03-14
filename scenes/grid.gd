@@ -58,7 +58,7 @@ var piece_pool = [
 	preload("orange.tscn"),
 	preload("green.tscn"),
 	preload("blue.tscn"),
-	#preload("black.tscn"),
+	preload("black.tscn"),
 ]
 var all_pieces = []
 var current_matches = []
@@ -80,7 +80,6 @@ var move_checked = false
 
 # Scoring Variables
 var streak = 1
-
 
 # State Machine
 var state
@@ -105,7 +104,7 @@ func _ready():
 		spawn_sinker(max_sinkers)
 	$concrete_holder.make(concrete_spaces)
 	$LockHolder.make(lock_spaces)
-	$IceHolder.make(ice_spaces)
+	$IcyHolder.make(ice_spaces)
 	$slime_holder.make(slime_spaces)
 	spawn_pieces()
 	emit_signal("counter_changed", current_counter_value)
@@ -155,6 +154,8 @@ func spawn_sinker(number):
 
 
 func spawn_preset_pieces():
+	if preset_pieces == null:
+		return
 	if preset_pieces.size() > 0:
 		for i in preset_pieces.size():
 			var current = preset_pieces[i]
@@ -216,23 +217,23 @@ func touch_difference(grid_1, grid_2):
 		pass
 
 
-
-
-func find_matches():
+func find_matches(query = false, array = all_pieces):
 	var found_match = false
 	for column in width:
 		for row in height:
-			if all_pieces[column][row] == null:
+			if array[column][row] == null:
 				continue
-			if all_pieces[column][row].matched == true:
+			if array[column][row].matched == true:
 				found_match = true
-			var current_color = all_pieces[column][row].color
+			var current_color = array[column][row].color
 			if column > 0 and column < width - 1:
-				if all_pieces[column - 1][row] != null and all_pieces[column + 1][row] != null:
-					if all_pieces[column - 1][row].color == current_color and all_pieces[column + 1][row].color == current_color:
-						matched_and_dim(all_pieces[column][row])
-						matched_and_dim(all_pieces[column - 1][row])
-						matched_and_dim(all_pieces[column + 1][row])
+				if array[column - 1][row] != null and array[column + 1][row] != null:
+					if array[column - 1][row].color == current_color and array[column + 1][row].color == current_color:
+						if query:
+							return true
+						matched_and_dim(array[column][row])
+						matched_and_dim(array[column - 1][row])
+						matched_and_dim(array[column + 1][row])
 						
 						add_to_array(Vector2(column, row))
 						add_to_array(Vector2(column - 1, row))
@@ -240,16 +241,20 @@ func find_matches():
 						found_match = true
 			
 			if row > 0 and row < height - 1:
-				if all_pieces[column][row - 1] != null and all_pieces[column][row + 1] != null:
-					if all_pieces[column][row - 1].color == current_color and all_pieces[column][row + 1].color == current_color:
-						matched_and_dim(all_pieces[column][row])
-						matched_and_dim(all_pieces[column][row - 1])
-						matched_and_dim(all_pieces[column][row + 1])
+				if array[column][row - 1] != null and array[column][row + 1] != null:
+					if array[column][row - 1].color == current_color and array[column][row + 1].color == current_color:
+						if query:
+							return true
+						matched_and_dim(array[column][row])
+						matched_and_dim(array[column][row - 1])
+						matched_and_dim(array[column][row + 1])
 						
 						add_to_array(Vector2(column, row))
 						add_to_array(Vector2(column, row -  1))
 						add_to_array(Vector2(column, row + 1))
 						found_match = true
+	if query:
+		return false
 	if found_match: 
 		get_bombed_pieces()
 		get_parent().get_node("destroy_timer").start()
@@ -400,7 +405,7 @@ func make_effect(effect, column, row):
 
 
 func damage_special(column, row):
-	$IceHolder.damage(Vector2(column, row))
+	$IcyHolder.damage(Vector2(column, row))
 	$LockHolder.damage(Vector2(column, row))
 	check_special(column, row)
 
@@ -477,6 +482,8 @@ func after_refill():
 		generate_slime()
 	damaged_slime = false
 	color_bomb_used = false
+	if is_deadlock():
+		print("deadlock")
 	if is_move:
 		current_counter_value -=1
 		emit_signal("counter_changed")
@@ -636,6 +643,32 @@ func add_to_array(value, traget_array = current_matches):
 		traget_array.append(value)
 
 
+func copy_array(array):
+	var copy = make_2d_array()
+	for column in width:
+		for row in height:
+			copy[column][row] = array[column][row]
+	return copy
+
+func switch_pieces(place, direction, array):
+	if !is_in_grid(place.x, place.y) or !is_in_grid(place.x + direction.x, place.y + direction.y):
+		return
+	if is_fill_restricted_at(place) or is_fill_restricted_at(place + direction):
+		return
+	var temp = array[place.x + direction.x][place.y + direction.y]
+	array[place.x + direction.x][place.y + direction.y] = array[place.x][place.y]
+	array[place.x][place.y] = temp
+
+
+func switch_and_check(place, direction, array):
+	switch_pieces(place, direction, array)
+	if find_matches(true, array):
+		switch_pieces(place, direction, array)
+		return true
+	switch_pieces(place, direction, array)
+	return false
+
+
 func store_info(first_piece, other_piece, place, direction):
 	piece_one =  first_piece
 	piece_two = other_piece
@@ -643,7 +676,16 @@ func store_info(first_piece, other_piece, place, direction):
 	last_direction = direction
 
 
-# prevents grid places to be filled in place of special tiles
+func is_deadlock():
+	var copy = copy_array(all_pieces)
+	for column in width:
+		for row in height:
+			if switch_and_check(Vector2(column, row), Vector2(1,0), copy):
+				return false
+			if switch_and_check(Vector2(column, row), Vector2(0,1), copy):
+				return false
+	return true
+
 func is_fill_restricted_at(place):
 	if empty_spaces.has(place):
 		return true
@@ -759,3 +801,9 @@ func _on_IceHolder_ice_destroyed(place, value):
 		if ice_spaces[i] == place:
 			ice_spaces.remove(i)
 
+
+
+func _on_IcyHolder_destroyed(place, value):
+	for i in range(ice_spaces.size() -1,  -1, -1):
+		if ice_spaces[i] == place:
+			ice_spaces.remove(i)
