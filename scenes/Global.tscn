@@ -4,6 +4,6 @@
 
 [node name="Global" type="Node2D"]
 script = ExtResource( 1 )
-height = 8
-width = 8
+height = 4
+width = 4
 offset = 64

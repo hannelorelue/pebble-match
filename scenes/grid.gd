@@ -53,7 +53,7 @@ var width = Global.width
 var offset =  Global.offset
 
 var piece_pool = [
-	#preload("red.tscn"),
+	preload("red.tscn"),
 	preload("pink.tscn"),
 	preload("orange.tscn"),
 	preload("green.tscn"),
@@ -135,6 +135,8 @@ func spawn_pieces():
 			add_child(piece)
 			piece.position = grid_to_pixel(column, row)
 			all_pieces[column][row] = piece
+	if is_deadlock():
+		shuffle_board()
 
 
 func spawn_sinker(number):
@@ -227,32 +229,34 @@ func find_matches(query = false, array = all_pieces):
 				found_match = true
 			var current_color = array[column][row].color
 			if column > 0 and column < width - 1:
-				if array[column - 1][row] != null and array[column + 1][row] != null:
-					if array[column - 1][row].color == current_color and array[column + 1][row].color == current_color:
-						if query:
-							return true
-						matched_and_dim(array[column][row])
-						matched_and_dim(array[column - 1][row])
-						matched_and_dim(array[column + 1][row])
-						
-						add_to_array(Vector2(column, row))
-						add_to_array(Vector2(column - 1, row))
-						add_to_array(Vector2(column + 1, row))
-						found_match = true
+				if array[column - 1][row] == null or array[column + 1][row] == null:
+					continue
+				if array[column - 1][row].color == current_color and array[column + 1][row].color == current_color:
+					if query:
+						return true
+					matched_and_dim(array[column][row])
+					matched_and_dim(array[column - 1][row])
+					matched_and_dim(array[column + 1][row])
+					
+					add_to_array(Vector2(column, row))
+					add_to_array(Vector2(column - 1, row))
+					add_to_array(Vector2(column + 1, row))
+					found_match = true
 			
 			if row > 0 and row < height - 1:
-				if array[column][row - 1] != null and array[column][row + 1] != null:
-					if array[column][row - 1].color == current_color and array[column][row + 1].color == current_color:
-						if query:
-							return true
-						matched_and_dim(array[column][row])
-						matched_and_dim(array[column][row - 1])
-						matched_and_dim(array[column][row + 1])
-						
-						add_to_array(Vector2(column, row))
-						add_to_array(Vector2(column, row -  1))
-						add_to_array(Vector2(column, row + 1))
-						found_match = true
+				if array[column][row - 1] == null or array[column][row + 1] == null:
+					continue
+				if array[column][row - 1].color == current_color and array[column][row + 1].color == current_color:
+					if query:
+						return true
+					matched_and_dim(array[column][row])
+					matched_and_dim(array[column][row - 1])
+					matched_and_dim(array[column][row + 1])
+					
+					add_to_array(Vector2(column, row))
+					add_to_array(Vector2(column, row -  1))
+					add_to_array(Vector2(column, row + 1))
+					found_match = true
 	if query:
 		return false
 	if found_match: 
@@ -483,7 +487,7 @@ func after_refill():
 	damaged_slime = false
 	color_bomb_used = false
 	if is_deadlock():
-		print("deadlock")
+		shuffle_board()
 	if is_move:
 		current_counter_value -=1
 		emit_signal("counter_changed")
@@ -628,6 +632,30 @@ func clear_board():
 #			add_to_array(Vector2(column, row))
 
 
+func shuffle_board():
+	var list = []
+	for column in width:
+		for row in height:
+			if all_pieces[column][row] == null:
+				continue
+			list.append(all_pieces[column][row])
+			all_pieces[column][row] = null
+
+	for column in width:
+		for row in height:
+			if is_fill_restricted_at(Vector2(column, row)):
+				continue
+			var index = floor(rand_range(0, list.size()))
+			var rand = list[index]
+			while is_match_at(column, row, rand.color):
+				index = floor(rand_range(0, list.size()))
+				rand = list[index]
+			rand.move(grid_to_pixel(column, row))
+			all_pieces[column][row] = rand
+			list.remove(index)
+	if is_deadlock():
+		shuffle_board()
+
 # helper functions
 func make_2d_array():
 	var array = []
@@ -685,6 +713,7 @@ func is_deadlock():
 			if switch_and_check(Vector2(column, row), Vector2(0,1), copy):
 				return false
 	return true
+
 
 func is_fill_restricted_at(place):
 	if empty_spaces.has(place):

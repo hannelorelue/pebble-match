@@ -41,6 +41,10 @@ ui_touch={
 
 pointing/emulate_touch_from_mouse=true
 
+[network]
+
+limits/debugger_stdout/max_chars_per_second=10000
+
 [physics]
 
 common/enable_pause_aware_picking=true
