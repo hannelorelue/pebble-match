@@ -19,8 +19,7 @@ enum {WAIT, MOVE, WON}
 # Export Variables
 # Grid Variables
 
-export (int) var x_start
-export (int) var y_start
+
 export (int) var y_offset
 
 # Obstacle Variables
@@ -51,14 +50,16 @@ export (PoolVector3Array) var preset_pieces
 var height = Global.height
 var width = Global.width
 var offset =  Global.offset
+var x_start =  Global.x_start
+var y_start =  Global.y_start
 
 var piece_pool = [
-	preload("red.tscn"),
+	#preload("red.tscn"),
 	preload("pink.tscn"),
 	preload("orange.tscn"),
 	preload("green.tscn"),
 	preload("blue.tscn"),
-	preload("black.tscn"),
+	#preload("black.tscn"),
 ]
 var all_pieces = []
 var current_matches = []
@@ -102,16 +103,16 @@ func _ready():
 	spawn_preset_pieces()
 	if sinker_in_scene:
 		spawn_sinker(max_sinkers)
-	$concrete_holder.make(concrete_spaces)
+	$ConcreteHolder.make(concrete_spaces)
 	$LockHolder.make(lock_spaces)
 	$IcyHolder.make(ice_spaces)
-	$slime_holder.make(slime_spaces)
+	$SlimeHolder.make(slime_spaces)
 	spawn_pieces()
 	emit_signal("counter_changed", current_counter_value)
 	emit_signal("set_max_score", max_score)
 	if !is_move:
 		$Timer.start()
-
+	$HintTimer.start()
 
 func _process(_delta):
 	if state == MOVE:
@@ -267,6 +268,32 @@ func find_matches(query = false, array = all_pieces):
 	return found_match
 
 
+func find_all_matches():
+	var hint_holder = []
+	var copy = copy_array(all_pieces)
+	for column in width:
+		for row in height:
+			if copy[column][row] == null:
+				continue
+			if switch_and_check(Vector2(column, row), Vector2(0, -1), copy):
+				hint_holder.append(Vector3(column, row , 0))
+			if switch_and_check(Vector2(column, row), Vector2(-1, 0), copy):
+				hint_holder.append(Vector3(column , row, 1))
+	return hint_holder
+
+
+func generate_hint():
+	var array = find_all_matches()
+	if array == null:
+		return
+	var rand = array[floor(rand_range(0, array.size()))]
+	if rand.z == 0:
+		all_pieces[rand.x][rand.y].wiggle(Vector2(0, 1))
+	if rand.z == 1:
+		all_pieces[rand.x][rand.y].wiggle(Vector2(1, 0))
+
+
+
 func find_bombs():
 	if color_bomb_used:
 		return
@@ -416,17 +443,17 @@ func damage_special(column, row):
 
 func check_special(column, row):
 	if column < width - 1:
-		$slime_holder.damage(Vector2(column + 1, row))
-		$concrete_holder.damage(Vector2(column + 1, row))
+		$SlimeHolder.damage(Vector2(column + 1, row))
+		$ConcreteHolder.damage(Vector2(column + 1, row))
 	if column > 0 and column < width:
-		$slime_holder.damage(Vector2(column - 1, row))
-		$concrete_holder.damage(Vector2(column - 1, row))
+		$SlimeHolder.damage(Vector2(column - 1, row))
+		$ConcreteHolder.damage(Vector2(column - 1, row))
 	if row < height - 1:
-		$slime_holder.damage(Vector2(column, row + 1))
-		$concrete_holder.damage(Vector2(column, row + 1))
+		$SlimeHolder.damage(Vector2(column, row + 1))
+		$ConcreteHolder.damage(Vector2(column, row + 1))
 	if row > 0 and row < height:
-		$slime_holder.damage(Vector2(column, row - 1))
-		$concrete_holder.damage(Vector2(column, row - 1))
+		$SlimeHolder.damage(Vector2(column, row - 1))
+		$ConcreteHolder.damage(Vector2(column, row - 1))
 
 
 func collapse_columns():
@@ -493,6 +520,7 @@ func after_refill():
 		emit_signal("counter_changed")
 		if current_counter_value == 0:
 			game_over()
+	$HintTimer.start()
 
 
 func destroy_sinkers():
@@ -703,33 +731,6 @@ func store_info(first_piece, other_piece, place, direction):
 	last_place = place
 	last_direction = direction
 
-
-func is_deadlock():
-	var copy = copy_array(all_pieces)
-	for column in width:
-		for row in height:
-			if switch_and_check(Vector2(column, row), Vector2(1,0), copy):
-				return false
-			if switch_and_check(Vector2(column, row), Vector2(0,1), copy):
-				return false
-	return true
-
-
-func is_fill_restricted_at(place):
-	if empty_spaces.has(place):
-		return true
-	if concrete_spaces.has(place):
-		return true
-	if slime_spaces.has(place):
-		return true
-	return false
-
-
-func is_move_restricted_at(place):
-	if  lock_spaces.has(place):
-		return true
-	return false
-	
 	
 # Coordinate transformations
 func grid_to_pixel(column, row):
@@ -770,6 +771,32 @@ func is_sinker(column, row):
 	return false
 
 
+func is_deadlock():
+	var copy = copy_array(all_pieces)
+	for column in width:
+		for row in height:
+			if switch_and_check(Vector2(column, row), Vector2(1,0), copy):
+				return false
+			if switch_and_check(Vector2(column, row), Vector2(0,1), copy):
+				return false
+	return true
+
+
+func is_fill_restricted_at(place):
+	if empty_spaces.has(place):
+		return true
+	if concrete_spaces.has(place):
+		return true
+	if slime_spaces.has(place):
+		return true
+	return false
+
+
+func is_move_restricted_at(place):
+	if  lock_spaces.has(place):
+		return true
+	return false
+
 func matched_and_dim(item):
 	item.matched =  true
 	item.dim()
@@ -793,26 +820,6 @@ func _on_refill_timer_timeout():
 	refill_columns()
 
 
-# Obstacle signals
-func _on_lock_holder_lock_destroyed(place, value):
-	for i in range(lock_spaces.size() -1,  -1, -1):
-		if lock_spaces[i] == place:
-			lock_spaces.remove(i)
-
-
-func _on_concrete_holder_concrete_destroyed(place, value):
-	for i in range(concrete_spaces.size() -1,  -1, -1):
-		if concrete_spaces[i] == place:
-			concrete_spaces.remove(i)
-
-
-func _on_slime_holder_slime_destroyed(place, value):
-	damaged_slime = true
-	for i in range(slime_spaces.size() -1,  -1, -1):
-		if slime_spaces[i] == place:
-			slime_spaces.remove(i)
-
-
 func _on_Timer_timeout():
 	current_counter_value -= 1
 	emit_signal("counter_changed")
@@ -825,14 +832,31 @@ func _on_GoalHolder_game_won():
 	state = WON
 
 
-func _on_IceHolder_ice_destroyed(place, value):
-	for i in range(ice_spaces.size() -1,  -1, -1):
-		if ice_spaces[i] == place:
-			ice_spaces.remove(i)
-
-
-
+# Obstacle signals
 func _on_IcyHolder_destroyed(place, value):
 	for i in range(ice_spaces.size() -1,  -1, -1):
 		if ice_spaces[i] == place:
 			ice_spaces.remove(i)
+
+
+func _on_SlimeHolder_destroyed(place, value):
+	damaged_slime = true
+	for i in range(slime_spaces.size() -1,  -1, -1):
+		if slime_spaces[i] == place:
+			slime_spaces.remove(i)
+
+
+func _on_ConcreteHolder_destroyed(place, value):
+	for i in range(concrete_spaces.size() -1,  -1, -1):
+		if concrete_spaces[i] == place:
+			concrete_spaces.remove(i)
+
+
+func _on_LockHolder_destroyed(place, value):
+	for i in range(lock_spaces.size() -1,  -1, -1):
+		if lock_spaces[i] == place:
+			lock_spaces.remove(i)
+
+
+func _on_HintTimer_timeout():
+	generate_hint()

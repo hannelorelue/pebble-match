@@ -14,17 +14,27 @@ var is_color_bomb = false
 
 
 var move_tween
+var wiggle_tween
 var matched = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	move_tween = $move_tween
-	pass # Replace with function body.
+
 
 func move(target):
 	move_tween.interpolate_property(self, "position", position, target, 0.1, Tween.TRANS_SINE, Tween.EASE_OUT )
 	move_tween.start()
 
+func wiggle(direction):
+	if direction == Vector2(1, 0):
+		$AnimationPlayer.play("wiggle_left")
+	if direction == Vector2(-1, 0):
+		$AnimationPlayer.play("wiggle_right")
+	if direction ==  Vector2(0, 1):
+		$AnimationPlayer.play("wiggle_down")
+	if direction == Vector2(0, -1):
+		$AnimationPlayer.play("wiggle_up")
 
 func dim():
 	$Sprite.modulate.a = 0.5

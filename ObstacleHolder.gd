@@ -8,7 +8,9 @@ export (String) var value = "obstacle"
 var obstacle_pieces = []
 var width = Global.width
 var height  = Global.height
-
+var offset =  Global.offset
+var x_start =  Global.x_start
+var y_start =  Global.y_start
 
 func make_2d_array():
 	var array = []
@@ -42,5 +44,5 @@ func make(obstacle_positions_array):
 		var current = scene.instance()
 		var pos = obstacle_positions_array[i]
 		add_child(current)
-		current.position = Vector2(pos.x  * 64 + 64, -pos.y * 64 + 800)
+		current.position = Vector2(pos.x * offset + x_start, -pos.y * offset + y_start)
 		obstacle_pieces[pos.x][pos.y] = current

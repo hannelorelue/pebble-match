@@ -1,7 +1,72 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://scenes/piece.gd" type="Script" id=1]
 [ext_resource path="res://art/Pieces/Rainbow.png" type="Texture" id=2]
+[ext_resource path="res://art/black.png" type="Texture" id=3]
+[ext_resource path="res://wiggle_right.tres" type="Animation" id=4]
+
+[sub_resource type="Animation" id=1]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 20, 0 ) ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "wiggle_down"
+length = 1.6
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4, 0.8, 1.2, 1.6 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 0, 10 ), Vector2( 0, 0 ), Vector2( 0, 10 ), Vector2( 0, 0 ) ]
+}
+
+[sub_resource type="Animation" id=2]
+resource_name = "wiggle_left"
+length = 1.6
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4, 0.8, 1.2, 1.6 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( -10, 0 ), Vector2( 0, 0 ), Vector2( -10, 0 ), Vector2( 0, 0 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "wiggle_up"
+length = 1.6
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4, 0.8, 1.2, 1.6 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 0, -10 ), Vector2( 0, 0 ), Vector2( 0, -10 ), Vector2( 0, 0 ) ]
+}
 
 [node name="piece" type="Node2D"]
 script = ExtResource( 1 )
@@ -9,5 +74,13 @@ prism_texture = ExtResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]
 scale = Vector2( 2, 2 )
+texture = ExtResource( 3 )
 
 [node name="move_tween" type="Tween" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 1 )
+anims/wiggle_down = SubResource( 3 )
+anims/wiggle_left = SubResource( 2 )
+anims/wiggle_right = ExtResource( 4 )
+anims/wiggle_up = SubResource( 4 )
