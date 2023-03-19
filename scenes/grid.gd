@@ -185,6 +185,7 @@ func touch_input():
 
 
 func touch_difference(grid_1, grid_2):
+	$HintTimer.start()
 	var difference = grid_1-grid_2
 	var temp_timer = get_tree().create_timer(0.5)
 	if abs(difference.x) < abs(difference.y):
@@ -823,7 +824,7 @@ func _on_refill_timer_timeout():
 func _on_Timer_timeout():
 	current_counter_value -= 1
 	emit_signal("counter_changed")
-	if current_counter_value  == 0:
+	if current_counter_value == 0:
 		game_over()
 		$Timer.stop()
 

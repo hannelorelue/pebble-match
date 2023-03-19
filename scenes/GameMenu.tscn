@@ -13,5 +13,8 @@ script = ExtResource( 3 )
 
 [node name="Settings" parent="." instance=ExtResource( 2 )]
 
+[connection signal="read_sound" from="." to="Settings" method="_on_GameMenu_read_sound"]
+[connection signal="play_pressed" from="MainMenu" to="." method="_on_MainMenu_play_pressed"]
 [connection signal="settings_pressed" from="MainMenu" to="." method="_on_MainMenu_settings_pressed"]
 [connection signal="back_button" from="Settings" to="." method="_on_Settings_back_button"]
+[connection signal="sound_change" from="Settings" to="." method="_on_Settings_sound_change"]

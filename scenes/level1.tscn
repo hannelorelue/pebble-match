@@ -1,66 +1,66 @@
 [gd_scene load_steps=19 format=2]
 
-[ext_resource path="res://art/Ruined City Background Preview.png" type="Texture" id=1]
-[ext_resource path="res://scenes/grid.gd" type="Script" id=2]
+[ext_resource path="res://scenes/PausePanel.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/WinScreen.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scenes/concrete.tscn" type="PackedScene" id=3]
-[ext_resource path="res://scenes/top_ui.tscn" type="PackedScene" id=7]
-[ext_resource path="res://scenes/GameOverScreen.tscn" type="PackedScene" id=8]
-[ext_resource path="res://scenes/sinker.tscn" type="PackedScene" id=9]
-[ext_resource path="res://scenes/GoalHolder.gd" type="Script" id=10]
-[ext_resource path="res://scenes/Goal.tscn" type="PackedScene" id=11]
-[ext_resource path="res://scenes/GoalsUi.tscn" type="PackedScene" id=12]
-[ext_resource path="res://art/Pieces/Pink Piece.png" type="Texture" id=13]
-[ext_resource path="res://art/Obstacles/Ice.png" type="Texture" id=14]
-[ext_resource path="res://scenes/WinScreen.tscn" type="PackedScene" id=15]
-[ext_resource path="res://scenes/bottomUi.tscn" type="PackedScene" id=16]
-[ext_resource path="res://scenes/PausePanel.tscn" type="PackedScene" id=17]
-[ext_resource path="res://scenes/slime.tscn" type="PackedScene" id=18]
-[ext_resource path="res://scenes/lock.tscn" type="PackedScene" id=19]
-[ext_resource path="res://scenes/ice.tscn" type="PackedScene" id=20]
-[ext_resource path="res://scenes/ObstacleHolder.tscn" type="PackedScene" id=21]
+[ext_resource path="res://scenes/GoalHolder.gd" type="Script" id=4]
+[ext_resource path="res://art/Ruined City Background Preview.png" type="Texture" id=5]
+[ext_resource path="res://art/Obstacles/Ice.png" type="Texture" id=6]
+[ext_resource path="res://scenes/sinker.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/GoalsUi.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/slime.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/lock.tscn" type="PackedScene" id=10]
+[ext_resource path="res://scenes/ice.tscn" type="PackedScene" id=11]
+[ext_resource path="res://scenes/top_ui.tscn" type="PackedScene" id=12]
+[ext_resource path="res://scenes/ObstacleHolder.tscn" type="PackedScene" id=13]
+[ext_resource path="res://scenes/GameOverScreen.tscn" type="PackedScene" id=14]
+[ext_resource path="res://scenes/bottomUi.tscn" type="PackedScene" id=15]
+[ext_resource path="res://scenes/Goal.tscn" type="PackedScene" id=16]
+[ext_resource path="res://scenes/grid.gd" type="Script" id=17]
+[ext_resource path="res://art/Pieces/Pink Piece.png" type="Texture" id=18]
 
 [node name="GameWindow" type="Node2D"]
 
 [node name="background" type="TextureRect" parent="."]
 margin_right = 581.0
 margin_bottom = 1024.0
-texture = ExtResource( 1 )
+texture = ExtResource( 5 )
 stretch_mode = 1
 
-[node name="bottomUi" parent="." instance=ExtResource( 16 )]
+[node name="bottomUi" parent="." instance=ExtResource( 15 )]
 margin_top = 920.0
 margin_right = 576.0
 margin_bottom = 1012.0
 
-[node name="top_ui" parent="." instance=ExtResource( 7 )]
-goal_ui = ExtResource( 12 )
+[node name="top_ui" parent="." instance=ExtResource( 12 )]
+goal_ui = ExtResource( 8 )
 
 [node name="grid" type="Node2D" parent="."]
-script = ExtResource( 2 )
+script = ExtResource( 17 )
 y_offset = -2
 ice_spaces = PoolVector2Array( 3, 3, 3, 4, 4, 3, 4, 4 )
 piece_value = 10
 max_score = 400
 current_counter_value = 40
 is_move = true
-sinker_piece = ExtResource( 9 )
+sinker_piece = ExtResource( 7 )
 max_sinkers = 2
 
-[node name="IcyHolder" parent="grid" instance=ExtResource( 21 )]
-scene = ExtResource( 20 )
+[node name="IcyHolder" parent="grid" instance=ExtResource( 13 )]
+scene = ExtResource( 11 )
 value = "ice"
 
-[node name="SlimeHolder" parent="grid" instance=ExtResource( 21 )]
-scene = ExtResource( 18 )
+[node name="Timer" type="Timer" parent="grid"]
+
+[node name="SlimeHolder" parent="grid" instance=ExtResource( 13 )]
+scene = ExtResource( 9 )
 value = "slime"
 
-[node name="ConcreteHolder" parent="grid" instance=ExtResource( 21 )]
+[node name="ConcreteHolder" parent="grid" instance=ExtResource( 13 )]
 scene = ExtResource( 3 )
 
-[node name="LockHolder" parent="grid" instance=ExtResource( 21 )]
-scene = ExtResource( 19 )
-
-[node name="Timer" type="Timer" parent="grid"]
+[node name="LockHolder" parent="grid" instance=ExtResource( 13 )]
+scene = ExtResource( 10 )
 
 [node name="HintTimer" type="Timer" parent="grid"]
 wait_time = 5.0
@@ -78,24 +78,24 @@ one_shot = true
 wait_time = 0.2
 one_shot = true
 
-[node name="GameOverScreen" parent="." instance=ExtResource( 8 )]
+[node name="GameOverScreen" parent="." instance=ExtResource( 14 )]
 
 [node name="GoalHolder" type="Node" parent="."]
-script = ExtResource( 10 )
+script = ExtResource( 4 )
 
-[node name="Goal" parent="GoalHolder" instance=ExtResource( 11 )]
-goal_texture = ExtResource( 14 )
+[node name="Goal" parent="GoalHolder" instance=ExtResource( 16 )]
+goal_texture = ExtResource( 6 )
 max_needed = 2
 goal_string = "ice"
 
-[node name="Goal2" parent="GoalHolder" instance=ExtResource( 11 )]
-goal_texture = ExtResource( 13 )
+[node name="Goal2" parent="GoalHolder" instance=ExtResource( 16 )]
+goal_texture = ExtResource( 18 )
 max_needed = 20
 goal_string = "pink"
 
-[node name="WinScreen" parent="." instance=ExtResource( 15 )]
+[node name="WinScreen" parent="." instance=ExtResource( 2 )]
 
-[node name="PausePanel" parent="." instance=ExtResource( 17 )]
+[node name="PausePanel" parent="." instance=ExtResource( 1 )]
 
 [connection signal="game_paused" from="bottomUi" to="PausePanel" method="_on_bottomUi_game_paused"]
 [connection signal="check_goal" from="grid" to="top_ui" method="_on_grid_check_goal"]
@@ -107,6 +107,7 @@ goal_string = "pink"
 [connection signal="destroyed" from="grid/IcyHolder" to="top_ui" method="_on_IcyHolder_destroyed"]
 [connection signal="destroyed" from="grid/IcyHolder" to="grid" method="_on_IcyHolder_destroyed"]
 [connection signal="destroyed" from="grid/IcyHolder" to="GoalHolder" method="_on_IcyHolder_destroyed"]
+[connection signal="timeout" from="grid/Timer" to="grid" method="_on_Timer_timeout"]
 [connection signal="destroyed" from="grid/SlimeHolder" to="top_ui" method="_on_SlimeHolder_destroyed"]
 [connection signal="destroyed" from="grid/SlimeHolder" to="grid" method="_on_SlimeHolder_destroyed"]
 [connection signal="destroyed" from="grid/SlimeHolder" to="GoalHolder" method="_on_SlimeHolder_destroyed"]
@@ -116,7 +117,6 @@ goal_string = "pink"
 [connection signal="destroyed" from="grid/LockHolder" to="top_ui" method="_on_LockHolder_destroyed"]
 [connection signal="destroyed" from="grid/LockHolder" to="grid" method="_on_LockHolder_destroyed"]
 [connection signal="destroyed" from="grid/LockHolder" to="GoalHolder" method="_on_LockHolder_destroyed"]
-[connection signal="timeout" from="grid/Timer" to="grid" method="_on_Timer_timeout"]
 [connection signal="timeout" from="grid/HintTimer" to="grid" method="_on_HintTimer_timeout"]
 [connection signal="timeout" from="destroy_timer" to="grid" method="_on_destroy_timer_timeout"]
 [connection signal="timeout" from="collapse_timer" to="grid" method="_on_collapse_timer_timeout"]
