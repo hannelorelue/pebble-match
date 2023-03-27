@@ -11,15 +11,16 @@ signal counter_changed
 signal check_goal
 # Game Over
 signal game_over
+# Sound
+signal play_sound
 
 # Enum
 enum {WAIT, MOVE, WON}
 
 
 # Export Variables
+export (int) var level
 # Grid Variables
-
-
 export (int) var y_offset
 
 # Obstacle Variables
@@ -54,12 +55,12 @@ var x_start =  Global.x_start
 var y_start =  Global.y_start
 
 var piece_pool = [
-	#preload("red.tscn"),
-	preload("pink.tscn"),
-	preload("orange.tscn"),
-	preload("green.tscn"),
-	preload("blue.tscn"),
-	#preload("black.tscn"),
+	#preload("res://scenes/red.tscn"),
+	preload("res://scenes/pink.tscn"),
+	preload("res://scenes/orange.tscn"),
+	preload("res://scenes/green.tscn"),
+	preload("res://scenes/blue.tscn"),
+	#preload("res://scenes/black.tscn"),
 ]
 var all_pieces = []
 var current_matches = []
@@ -81,6 +82,7 @@ var move_checked = false
 
 # Scoring Variables
 var streak = 1
+var score = 0
 
 # State Machine
 var state
@@ -294,7 +296,6 @@ func generate_hint():
 		all_pieces[rand.x][rand.y].wiggle(Vector2(1, 0))
 
 
-
 func find_bombs():
 	if color_bomb_used:
 		return
@@ -421,7 +422,9 @@ func destroy_matched():
 			all_pieces[column][row] = null
 			make_effect(particle_effect, column, row)
 			make_effect(animated_effect, column, row)
-			emit_signal("update_score", piece_value * streak)
+			score = piece_value * streak
+			emit_signal("play_sound")
+			emit_signal("update_score", score)
 	move_checked = true
 	if was_matched:
 		get_parent().get_node("collapse_timer").start()
@@ -565,7 +568,7 @@ func generate_slime():
 			all_pieces[neighbor.x][neighbor.y].queue_free()
 			all_pieces[neighbor.x][neighbor.y] = null
 			slime_spaces.append(Vector2(neighbor.x, neighbor.y))
-			$slime_holder.make([Vector2(neighbor.x, neighbor.y)])
+			$SlimeHolder.make([Vector2(neighbor.x, neighbor.y)])
 			slime_made = true
 	damaged_slime = false
 
@@ -806,6 +809,7 @@ func matched_and_dim(item):
 func game_over():
 	emit_signal("game_over")
 	state = WAIT
+	GameDataManager.save_data()
 
 
 # Signals
@@ -824,13 +828,21 @@ func _on_refill_timer_timeout():
 func _on_Timer_timeout():
 	current_counter_value -= 1
 	emit_signal("counter_changed")
-	if current_counter_value == 0:
+	if current_counter_value != 0:
+		return
+	$Timer.stop()
+	if state != WON:
 		game_over()
-		$Timer.stop()
+		
 
 
 func _on_GoalHolder_game_won():
 	state = WON
+	if GameDataManager.level_info[level]["high_score"] < score:
+		GameDataManager.level_info[level]["high_score"] = score
+	if GameDataManager.level_info[level + 1] != null:
+		GameDataManager.level_info[level + 1]["unlocked"] = true
+	GameDataManager.save_data()
 
 
 # Obstacle signals

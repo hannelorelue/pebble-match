@@ -5,7 +5,7 @@
 [ext_resource path="res://art/UI/Buttons/Quit Button.png" type="Texture" id=3]
 
 [sub_resource type="GDScript" id=2]
-script/source = "extends \"res://scenes/menu.gd\"
+script/source = "extends \"res://scripts/menu.gd\"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

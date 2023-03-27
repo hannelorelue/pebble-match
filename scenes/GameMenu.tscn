@@ -2,7 +2,7 @@
 
 [ext_resource path="res://scenes/mainMenu.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scenes/SettingsMenu.tscn" type="PackedScene" id=2]
-[ext_resource path="res://scenes/GameMenu.gd" type="Script" id=3]
+[ext_resource path="res://scripts/GameMenu.gd" type="Script" id=3]
 
 [node name="GameMenu" type="Control"]
 margin_right = 40.0

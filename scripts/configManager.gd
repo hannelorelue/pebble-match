@@ -1,6 +1,6 @@
 extends Node
 
-onready var path = "/Users/hanni/Programming/godot/candy-crush/config.cfg"
+onready var path = "user://config.cfg"
 var sound_on 
 var music_on 
 

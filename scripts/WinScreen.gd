@@ -1,4 +1,4 @@
-extends "res://scenes/menu.gd"
+extends "res://scripts/menu.gd"
 
 
 func _on_ContinueButton_pressed():

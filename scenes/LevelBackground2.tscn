@@ -8,18 +8,24 @@ texture = ExtResource( 1 )
 
 [node name="LevelButton" parent="." index="0"]
 position = Vector2( 98, 181 )
+level = 10
 
 [node name="LevelButton2" parent="." index="1"]
 position = Vector2( 514, 219 )
+level = 11
 
 [node name="LevelButton3" parent="." index="2"]
 position = Vector2( 231, 429 )
+level = 12
 
 [node name="LevelButton4" parent="." index="3"]
 position = Vector2( 52, 655 )
+level = 13
 
 [node name="LevelButton5" parent="." index="4"]
 position = Vector2( 328, 630 )
+level = 14
 
 [node name="LevelButton6" parent="." index="5"]
 position = Vector2( 506, 923 )
+level = 15

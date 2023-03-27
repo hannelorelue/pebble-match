@@ -11,7 +11,6 @@ texture = ExtResource( 2 )
 [node name="LevelButton" parent="." instance=ExtResource( 1 )]
 position = Vector2( 141, 323 )
 level = 1
-level_to_load = "res://scenes/level1.tscn"
 is_enabled = true
 
 [node name="LevelButton2" parent="." instance=ExtResource( 1 )]

@@ -1,7 +1,7 @@
 extends Node2D
 
 export (int) var level
-export (String) var level_to_load
+var level_to_load 
 export (bool) var is_enabled
 export (bool) var is_score_beaten
 
@@ -16,6 +16,16 @@ onready var star = $Sprite
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	if GameDataManager.level_info.has(level):
+		is_enabled = GameDataManager.level_info[level]["unlocked"]
+		level_to_load = GameDataManager.level_info[level]["scene"]
+	else:
+#		GameDataManager.level_info[level] = {
+#		"unlocked" : false,
+#		"high_score" : 0,
+#		"stars_unlocked" : 0,
+#		}
+		is_enabled = false
 	setup()
 	pass # Replace with function body.
 

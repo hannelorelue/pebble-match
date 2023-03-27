@@ -1,4 +1,4 @@
-extends "res://scenes/menu.gd"
+extends "res://scripts/menu.gd"
 
 signal sound_change
 signal back_button
@@ -18,9 +18,12 @@ func _on_Button1_pressed():
 	ConfigManager.sound_on = !ConfigManager.sound_on
 	change_sound_texture()
 	ConfigManager.save_config()
+	AudioManager.set_volume()
+	AudioManager.play_fixed_sound(0)
 
 
 func _on_Button2_pressed():
+	AudioManager.play_fixed_sound(0)
 	emit_signal("back_button")
 
 
