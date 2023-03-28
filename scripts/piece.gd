@@ -27,17 +27,18 @@ func move(target):
 	move_tween.start()
 
 func wiggle(direction):
-	if direction == Vector2(1, 0):
-		$AnimationPlayer.play("wiggle_left")
-	if direction == Vector2(-1, 0):
-		$AnimationPlayer.play("wiggle_right")
-	if direction ==  Vector2(0, 1):
-		$AnimationPlayer.play("wiggle_down")
-	if direction == Vector2(0, -1):
-		$AnimationPlayer.play("wiggle_up")
+	match direction:
+		Vector2(1, 0):
+			$AnimationPlayer.play("wiggle_left")
+		Vector2(-1, 0):
+			$AnimationPlayer.play("wiggle_right")
+		Vector2(0, 1):
+			$AnimationPlayer.play("wiggle_down")
+		Vector2(0, -1):
+			$AnimationPlayer.play("wiggle_up")
 
 func dim():
-	$Sprite.modulate.a = 0.5
+	$Sprite.modulate.a = 0.75
 
 
 func make_column_bomb():

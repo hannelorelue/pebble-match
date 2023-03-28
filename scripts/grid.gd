@@ -205,39 +205,22 @@ func touch_input():
 			touch_difference(first_touch, mouse)
 
 
-func touch_difference(grid_1, grid_2):
+func touch_difference(grid_1: Vector2, grid_2: Vector2):
 	$HintTimer.start()
 	var difference = grid_1-grid_2
 	var temp_timer = get_tree().create_timer(0.5)
 	var direction = Vector2(0, 0)
-	if abs(difference.x) == abs(difference.y):
+	if abs(difference.aspect()) == 1:
 		return
-	if abs(difference.x) < abs(difference.y):
+	if abs(difference.aspect()) < 1:
 		if difference.y > 0:
 			direction = Vector2.UP
-#			swap_pieces(grid_1.x, grid_1.y, Vector2(0, -1))
-#			if !find_matches():
-#				yield(temp_timer, "timeout")
-#				swap_pieces(grid_1.x, grid_1.y, Vector2(0, -1))
-#				state = MOVE
-
 		elif difference.y < 0:
 			direction = Vector2.DOWN
-#			swap_pieces(grid_1.x, grid_1.y, Vector2(0, 1))
-#			if !find_matches():
-#				yield(temp_timer, "timeout")
-#				swap_pieces(grid_1.x, grid_1.y, Vector2(0, 1))
-#				state = MOVE
 
-	elif abs(difference.x) > abs(difference.y):
+	else:
 		if difference.x > 0:
-			direction = Vector2.LEFT
-#			swap_pieces(grid_1.x, grid_1.y, Vector2(-1,0))
-#			if !find_matches():
-#				yield(temp_timer, "timeout")
-#				swap_pieces(grid_1.x, grid_1.y, Vector2(-1,0))
-#				state = MOVE
-			
+			direction = Vector2.LEFT			
 		elif difference.x < 0:
 			direction = Vector2.RIGHT
 			
