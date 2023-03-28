@@ -1,6 +1,6 @@
 extends Node
 
-onready var path =  "user://savegame.save"
+onready var path =  "/Users/hanni/Programming/godot/candy-crush/savegame.save"
 #var level_info = {}
 var level_info = {
 	1:{
@@ -52,7 +52,7 @@ var level_info = {
 		"high_score" : 0,
 		"stars_unlocked" : 0,
 		"concrete_spaces" :[Vector2(2,3)],
-		"empty_spaces" : [Vector2(1,3)],
+		"empty_spaces" : [],
 		"ice_spaces" :[Vector2(2,5)],
 		"lock_spaces" : [Vector2(4,3)],
 		"slime_spaces" : [Vector2(2,3)],
@@ -66,7 +66,7 @@ var level_info = {
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	load_data()
+	level_info = load_data()
 
 
 func save_data():

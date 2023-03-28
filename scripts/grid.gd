@@ -97,30 +97,17 @@ var animated_effect = preload("res://scenes/animatedExplosion.tscn")
 # Sinker
 var current_sinkers = []
 
-# Called when the node enters the scene tree for the first time.
+
 func _ready():
 	pass
-#	state = MOVE
-#	randomize()
-#	all_pieces = make_2d_array()
-#	spawn_preset_pieces()
-#	if sinker_in_scene:
-#		spawn_sinker(max_sinkers)
-#	$ConcreteHolder.make(concrete_spaces)
-#	$LockHolder.make(lock_spaces)
-#	$IcyHolder.make(ice_spaces)
-#	$SlimeHolder.make(slime_spaces)
-#	spawn_pieces()
-#	emit_signal("counter_changed", counter_value)
-#	emit_signal("set_max_score", max_score)
-#	if !is_move:
-#		$Timer.start()
-#	$HintTimer.start()
+
 
 func _process(_delta):
 	if state == MOVE:
 		touch_input()
 
+
+# Function used to initilize the grid
 func init(Level: int, Concrete_Spaces: PoolVector2Array, 
 Empty_Spaces: PoolVector2Array, Ice_Spaces: PoolVector2Array, Lock_Spaces: PoolVector2Array, Slime_Spaces: PoolVector2Array,
 Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int):
@@ -152,22 +139,8 @@ Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int):
 		$Timer.start()
 	$HintTimer.start()
 
-#func set_level_info(Level: int, Concrete_Spaces: PoolVector2Array, 
-#Empty_Spaces: PoolVector2Array, Ice_Spaces: PoolVector2Array, Lock_Spaces: PoolVector2Array, Slime_Spaces: PoolVector2Array,
-#Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int):
-#	level = Level
-#	concrete_spaces = Concrete_Spaces
-#	empty_spaces = Empty_Spaces
-#	ice_spaces = Ice_Spaces
-#	lock_spaces = Lock_Spaces
-#	slime_spaces = Slime_Spaces
-#	piece_value = Piece_Value
-#	max_score = Max_Score
-#	counter_value = Counter_Value
-#	is_move = Is_Move
-#	print(empty_spaces)
 
-# spawm inital grid
+# spawns inital grid
 func spawn_pieces():
 	for column in width:
 		for row in height:
@@ -204,6 +177,7 @@ func spawn_sinker(number):
 		current_sinkers.append(current)
 
 
+# spawns pieces for debugging
 func spawn_preset_pieces():
 	if preset_pieces == null:
 		return
@@ -214,7 +188,6 @@ func spawn_preset_pieces():
 			add_child(piece)
 			piece.position = grid_to_pixel(current.x, current.y)
 			all_pieces[current.x][current.y] = piece
-
 
 
 func touch_input():
@@ -236,37 +209,44 @@ func touch_difference(grid_1, grid_2):
 	$HintTimer.start()
 	var difference = grid_1-grid_2
 	var temp_timer = get_tree().create_timer(0.5)
+	var direction = Vector2(0, 0)
+	if abs(difference.x) == abs(difference.y):
+		return
 	if abs(difference.x) < abs(difference.y):
 		if difference.y > 0:
-			swap_pieces(grid_1.x, grid_1.y, Vector2(0, -1))
-			if !find_matches():
-				yield(temp_timer, "timeout")
-				swap_pieces(grid_1.x, grid_1.y, Vector2(0, -1))
-				state = MOVE
+			direction = Vector2.UP
+#			swap_pieces(grid_1.x, grid_1.y, Vector2(0, -1))
+#			if !find_matches():
+#				yield(temp_timer, "timeout")
+#				swap_pieces(grid_1.x, grid_1.y, Vector2(0, -1))
+#				state = MOVE
 
 		elif difference.y < 0:
-			swap_pieces(grid_1.x, grid_1.y, Vector2(0, 1))
-			if !find_matches():
-				yield(temp_timer, "timeout")
-				swap_pieces(grid_1.x, grid_1.y, Vector2(0, 1))
-				state = MOVE
+			direction = Vector2.DOWN
+#			swap_pieces(grid_1.x, grid_1.y, Vector2(0, 1))
+#			if !find_matches():
+#				yield(temp_timer, "timeout")
+#				swap_pieces(grid_1.x, grid_1.y, Vector2(0, 1))
+#				state = MOVE
 
 	elif abs(difference.x) > abs(difference.y):
 		if difference.x > 0:
-			swap_pieces(grid_1.x, grid_1.y, Vector2(-1,0))
-			if !find_matches():
-				yield(temp_timer, "timeout")
-				swap_pieces(grid_1.x, grid_1.y, Vector2(-1,0))
-				state = MOVE
+			direction = Vector2.LEFT
+#			swap_pieces(grid_1.x, grid_1.y, Vector2(-1,0))
+#			if !find_matches():
+#				yield(temp_timer, "timeout")
+#				swap_pieces(grid_1.x, grid_1.y, Vector2(-1,0))
+#				state = MOVE
 			
 		elif difference.x < 0:
-			swap_pieces(grid_1.x, grid_1.y, Vector2(1,0))
-			if !find_matches():
-				yield(temp_timer, "timeout")
-				swap_pieces(grid_1.x, grid_1.y, Vector2(1,0))
-				state = MOVE
-	else:
-		pass
+			direction = Vector2.RIGHT
+			
+	swap_pieces(grid_1.x, grid_1.y, direction)
+	if !find_matches():
+		yield(temp_timer, "timeout")
+		swap_pieces(grid_1.x, grid_1.y, direction)
+		state = MOVE
+
 
 
 func find_matches(query = false, array = all_pieces):
@@ -886,32 +866,32 @@ func _on_GoalHolder_game_won():
 	state = WON
 	if GameDataManager.level_info[level]["high_score"] < score:
 		GameDataManager.level_info[level]["high_score"] = score
-	if GameDataManager.level_info[level + 1] != null:
+	if GameDataManager.level_info.has(level + 1):
 		GameDataManager.level_info[level + 1]["unlocked"] = true
 	GameDataManager.save_data()
 
 
 # Obstacle signals
-func _on_IcyHolder_destroyed(place, value):
+func _on_IcyHolder_destroyed(place, _value):
 	for i in range(ice_spaces.size() -1,  -1, -1):
 		if ice_spaces[i] == place:
 			ice_spaces.remove(i)
 
 
-func _on_SlimeHolder_destroyed(place, value):
+func _on_SlimeHolder_destroyed(place, _value):
 	damaged_slime = true
 	for i in range(slime_spaces.size() -1,  -1, -1):
 		if slime_spaces[i] == place:
 			slime_spaces.remove(i)
 
 
-func _on_ConcreteHolder_destroyed(place, value):
+func _on_ConcreteHolder_destroyed(place, _value):
 	for i in range(concrete_spaces.size() -1,  -1, -1):
 		if concrete_spaces[i] == place:
 			concrete_spaces.remove(i)
 
 
-func _on_LockHolder_destroyed(place, value):
+func _on_LockHolder_destroyed(place, _value):
 	for i in range(lock_spaces.size() -1,  -1, -1):
 		if lock_spaces[i] == place:
 			lock_spaces.remove(i)

@@ -19,4 +19,5 @@ func _on_Settings_back_button():
 
 
 func _on_MainMenu_play_pressed():
-	get_tree().change_scene("res://scenes/LevelSelection.tscn")
+	Global.goto_scene("res://scenes/LevelSelection.tscn")
+

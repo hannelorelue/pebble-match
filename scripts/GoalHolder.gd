@@ -35,18 +35,18 @@ func _on_grid_check_goal(goal_type):
 	check_goals(goal_type)
 
 
-func _on_IcyHolder_destroyed(place, goal_type):
+func _on_IcyHolder_destroyed(_place, goal_type):
 	check_goals(goal_type)
 
 
-func _on_SlimeHolder_destroyed(place, goal_type):
+func _on_SlimeHolder_destroyed(_place, goal_type):
 	check_goals(goal_type)
 
 
-func _on_ConcreteHolder_destroyed(place, goal_type):
+func _on_ConcreteHolder_destroyed(_place, goal_type):
 	check_goals(goal_type)
 
 
-func _on_LockHolder_destroyed(place, goal_type):
+func _on_LockHolder_destroyed(_place, goal_type):
 	check_goals(goal_type)
 

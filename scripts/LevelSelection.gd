@@ -7,4 +7,5 @@ func _ready():
 	
 	
 func _on_BackButton_pressed():
-	get_tree().change_scene("res://scenes/GameMenu.tscn")
+	Global.goto_scene("res://scenes/GameMenu.tscn")
+	#get_tree().change_scene("res://scenes/GameMenu.tscn")

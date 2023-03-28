@@ -1,7 +1,6 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://scenes/LevelBackground.tscn" type="PackedScene" id=1]
-[ext_resource path="res://scenes/LevelBackground2.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scripts/LevelSelection.gd" type="Script" id=3]
 [ext_resource path="res://art/UI/Buttons/Back Button.png" type="Texture" id=4]
 
@@ -17,16 +16,11 @@ scroll_horizontal_enabled = false
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
 margin_right = 576.0
-margin_bottom = 4100.0
+margin_bottom = 2048.0
 
 [node name="LevelBackground" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
 margin_right = 576.0
 margin_bottom = 2048.0
-
-[node name="LevelBackground2" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 2 )]
-margin_top = 2052.0
-margin_right = 576.0
-margin_bottom = 4100.0
 
 [node name="BackButton" type="TextureButton" parent="."]
 margin_right = 73.0
