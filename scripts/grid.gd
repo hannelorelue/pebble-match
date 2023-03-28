@@ -35,7 +35,7 @@ export (int) var piece_value
 export (int) var max_score
 
 # Counter
-export (int) var current_counter_value
+export (int) var counter_value
 export (bool) var is_move
 
 # Sinker
@@ -99,6 +99,42 @@ var current_sinkers = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	pass
+#	state = MOVE
+#	randomize()
+#	all_pieces = make_2d_array()
+#	spawn_preset_pieces()
+#	if sinker_in_scene:
+#		spawn_sinker(max_sinkers)
+#	$ConcreteHolder.make(concrete_spaces)
+#	$LockHolder.make(lock_spaces)
+#	$IcyHolder.make(ice_spaces)
+#	$SlimeHolder.make(slime_spaces)
+#	spawn_pieces()
+#	emit_signal("counter_changed", counter_value)
+#	emit_signal("set_max_score", max_score)
+#	if !is_move:
+#		$Timer.start()
+#	$HintTimer.start()
+
+func _process(_delta):
+	if state == MOVE:
+		touch_input()
+
+func init(Level: int, Concrete_Spaces: PoolVector2Array, 
+Empty_Spaces: PoolVector2Array, Ice_Spaces: PoolVector2Array, Lock_Spaces: PoolVector2Array, Slime_Spaces: PoolVector2Array,
+Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int):
+	level = Level
+	concrete_spaces = Concrete_Spaces
+	empty_spaces = Empty_Spaces
+	ice_spaces = Ice_Spaces
+	lock_spaces = Lock_Spaces
+	slime_spaces = Slime_Spaces
+	piece_value = Piece_Value
+	max_score = Max_Score
+	counter_value = Counter_Value
+	is_move = Is_Move
+	
 	state = MOVE
 	randomize()
 	all_pieces = make_2d_array()
@@ -110,16 +146,26 @@ func _ready():
 	$IcyHolder.make(ice_spaces)
 	$SlimeHolder.make(slime_spaces)
 	spawn_pieces()
-	emit_signal("counter_changed", current_counter_value)
+	emit_signal("counter_changed", counter_value)
 	emit_signal("set_max_score", max_score)
 	if !is_move:
 		$Timer.start()
 	$HintTimer.start()
 
-func _process(_delta):
-	if state == MOVE:
-		touch_input()
-
+#func set_level_info(Level: int, Concrete_Spaces: PoolVector2Array, 
+#Empty_Spaces: PoolVector2Array, Ice_Spaces: PoolVector2Array, Lock_Spaces: PoolVector2Array, Slime_Spaces: PoolVector2Array,
+#Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int):
+#	level = Level
+#	concrete_spaces = Concrete_Spaces
+#	empty_spaces = Empty_Spaces
+#	ice_spaces = Ice_Spaces
+#	lock_spaces = Lock_Spaces
+#	slime_spaces = Slime_Spaces
+#	piece_value = Piece_Value
+#	max_score = Max_Score
+#	counter_value = Counter_Value
+#	is_move = Is_Move
+#	print(empty_spaces)
 
 # spawm inital grid
 func spawn_pieces():
@@ -265,7 +311,7 @@ func find_matches(query = false, array = all_pieces):
 		return false
 	if found_match: 
 		get_bombed_pieces()
-		get_parent().get_node("destroy_timer").start()
+		$DestroyTimer.start()
 	else:
 		state = MOVE
 	return found_match
@@ -427,7 +473,7 @@ func destroy_matched():
 			emit_signal("update_score", score)
 	move_checked = true
 	if was_matched:
-		get_parent().get_node("collapse_timer").start()
+		$CollapseTimer.start()
 	else: 
 		swap_back()
 	current_matches.clear()
@@ -475,7 +521,7 @@ func collapse_columns():
 				all_pieces[column][k] = null
 				break
 	destroy_sinkers()
-	get_parent().get_node("refill_timer").start()
+	$RefillTimer.start()
 
 
 func refill_columns():
@@ -508,7 +554,7 @@ func after_refill():
 				continue
 			if is_match_at(column, row, all_pieces[column][row].color) or all_pieces[column][row].matched:
 				find_matches()
-				get_parent().get_node("destroy_timer").start()
+				$DestroyTimer.start()
 				return
 	state = MOVE
 	streak = 1
@@ -520,9 +566,9 @@ func after_refill():
 	if is_deadlock():
 		shuffle_board()
 	if is_move:
-		current_counter_value -=1
+		counter_value -=1
 		emit_signal("counter_changed")
-		if current_counter_value == 0:
+		if counter_value == 0:
 			game_over()
 	$HintTimer.start()
 
@@ -826,9 +872,9 @@ func _on_refill_timer_timeout():
 
 
 func _on_Timer_timeout():
-	current_counter_value -= 1
+	counter_value -= 1
 	emit_signal("counter_changed")
-	if current_counter_value != 0:
+	if counter_value != 0:
 		return
 	$Timer.stop()
 	if state != WON:

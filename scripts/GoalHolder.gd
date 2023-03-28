@@ -47,5 +47,6 @@ func _on_ConcreteHolder_destroyed(place, goal_type):
 	check_goals(goal_type)
 
 
-func _on_LockHolder_destroyed():
-	pass # Replace with function body.
+func _on_LockHolder_destroyed(place, goal_type):
+	check_goals(goal_type)
+
