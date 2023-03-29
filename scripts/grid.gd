@@ -217,7 +217,6 @@ func touch_difference(grid_1: Vector2, grid_2: Vector2):
 			direction = Vector2.UP
 		elif difference.y < 0:
 			direction = Vector2.DOWN
-
 	else:
 		if difference.x > 0:
 			direction = Vector2.LEFT			
@@ -231,7 +230,6 @@ func touch_difference(grid_1: Vector2, grid_2: Vector2):
 		state = MOVE
 
 
-
 func find_matches(query = false, array = all_pieces):
 	var found_match = false
 	for column in width:
@@ -242,34 +240,32 @@ func find_matches(query = false, array = all_pieces):
 				found_match = true
 			var current_color = array[column][row].color
 			if column > 0 and column < width - 1:
-				if array[column - 1][row] == null or array[column + 1][row] == null:
-					continue
-				if array[column - 1][row].color == current_color and array[column + 1][row].color == current_color:
-					if query:
-						return true
-					matched_and_dim(array[column][row])
-					matched_and_dim(array[column - 1][row])
-					matched_and_dim(array[column + 1][row])
-					
-					add_to_array(Vector2(column, row))
-					add_to_array(Vector2(column - 1, row))
-					add_to_array(Vector2(column + 1, row))
-					found_match = true
+				if array[column - 1][row] != null and array[column + 1][row] != null:
+					if array[column - 1][row].color == current_color and array[column + 1][row].color == current_color:
+						if query:
+							return true
+						matched_and_dim(array[column][row])
+						matched_and_dim(array[column - 1][row])
+						matched_and_dim(array[column + 1][row])
+						
+						add_to_array(Vector2(column, row))
+						add_to_array(Vector2(column - 1, row))
+						add_to_array(Vector2(column + 1, row))
+						found_match = true
 			
 			if row > 0 and row < height - 1:
-				if array[column][row - 1] == null or array[column][row + 1] == null:
-					continue
-				if array[column][row - 1].color == current_color and array[column][row + 1].color == current_color:
-					if query:
-						return true
-					matched_and_dim(array[column][row])
-					matched_and_dim(array[column][row - 1])
-					matched_and_dim(array[column][row + 1])
-					
-					add_to_array(Vector2(column, row))
-					add_to_array(Vector2(column, row -  1))
-					add_to_array(Vector2(column, row + 1))
-					found_match = true
+				if array[column][row - 1] != null and array[column][row + 1] != null:
+					if array[column][row - 1].color == current_color and array[column][row + 1].color == current_color:
+						if query:
+							return true
+						matched_and_dim(array[column][row])
+						matched_and_dim(array[column][row - 1])
+						matched_and_dim(array[column][row + 1])
+						
+						add_to_array(Vector2(column, row))
+						add_to_array(Vector2(column, row -  1))
+						add_to_array(Vector2(column, row + 1))
+						found_match = true
 	if query:
 		return false
 	if found_match: 
@@ -303,6 +299,26 @@ func generate_hint():
 		all_pieces[rand.x][rand.y].wiggle(Vector2(0, 1))
 	if rand.z == 1:
 		all_pieces[rand.x][rand.y].wiggle(Vector2(1, 0))
+		
+
+
+func switch_pieces(place, direction, array):
+	if !is_in_grid(place.x, place.y) or !is_in_grid(place.x + direction.x, place.y + direction.y):
+		return
+	if is_fill_restricted_at(place) or is_fill_restricted_at(place + direction):
+		return
+	var temp = array[place.x + direction.x][place.y + direction.y]
+	array[place.x + direction.x][place.y + direction.y] = array[place.x][place.y]
+	array[place.x][place.y] = temp
+
+
+func switch_and_check(place, direction, array):
+	switch_pieces(place, direction, array)
+	if find_matches(true, array):
+		switch_pieces(place, direction, array)
+		return true
+	switch_pieces(place, direction, array)
+	return false
 
 
 func find_bombs():
@@ -496,7 +512,6 @@ func refill_columns():
 			if all_pieces[column][row] != null or is_fill_restricted_at(Vector2(column, row)):
 				continue
 			var list = range(piece_pool.size())
-			
 			var rand = list.pop_at(floor(rand_range(0, list.size())))
 			var piece = piece_pool[rand].instance()
 			while is_match_at(column, row, piece.color) and list.size() > 1:
@@ -553,7 +568,7 @@ func find_normal_tile(column, row):
 	list.append(Vector2(column, row  + 1))
 	list.append(Vector2(column, row  - 1))
 	
-	for i in range( list.size() -1,  -1, -1):
+	for i in range(list.size() -1,  -1, -1):
 		if !is_in_grid(list[i].x, list[i].y) or all_pieces[list[i].x][list[i].y] == null or is_sinker(list[i].x, list[i].y):
 			list.remove(i)
 	
@@ -631,13 +646,13 @@ func match_adjacent_pieces(column, row):
 				continue
 			if all_pieces[column + i][row + j].matched:
 				continue
-			if current .is_column_bomb:
+			if current.is_column_bomb:
 				all_pieces[column + i][row + j].matched = true
 				match_pieces_in_column(column + i)
-			if current .is_row_bomb:
+			if current.is_row_bomb:
 				all_pieces[column + i][row + j].matched = true
 				match_pieces_in_row(row + j)
-			if current .is_color_bomb:
+			if current.is_color_bomb:
 				all_pieces[column + i][row + j].matched = true
 				match_pieces_in_row(row + j)
 			all_pieces[column + i][row + j].matched = true
@@ -670,7 +685,6 @@ func clear_board():
 			if all_pieces[column][row] == null or is_sinker(column, row):
 				continue
 			matched_and_dim(all_pieces[column][row])
-#			add_to_array(Vector2(column, row))
 
 
 func shuffle_board():
@@ -681,7 +695,6 @@ func shuffle_board():
 				continue
 			list.append(all_pieces[column][row])
 			all_pieces[column][row] = null
-
 	for column in width:
 		for row in height:
 			if is_fill_restricted_at(Vector2(column, row)):
@@ -719,23 +732,6 @@ func copy_array(array):
 			copy[column][row] = array[column][row]
 	return copy
 
-func switch_pieces(place, direction, array):
-	if !is_in_grid(place.x, place.y) or !is_in_grid(place.x + direction.x, place.y + direction.y):
-		return
-	if is_fill_restricted_at(place) or is_fill_restricted_at(place + direction):
-		return
-	var temp = array[place.x + direction.x][place.y + direction.y]
-	array[place.x + direction.x][place.y + direction.y] = array[place.x][place.y]
-	array[place.x][place.y] = temp
-
-
-func switch_and_check(place, direction, array):
-	switch_pieces(place, direction, array)
-	if find_matches(true, array):
-		switch_pieces(place, direction, array)
-		return true
-	switch_pieces(place, direction, array)
-	return false
 
 
 func store_info(first_piece, other_piece, place, direction):
@@ -766,6 +762,7 @@ func is_in_grid(column, row):
 		return false
 	return true
 
+
 func is_match_at(column, row, color):
 	if column > 1:
 		if all_pieces[column - 1][row] != null and all_pieces[column - 2][row] != null:
@@ -776,6 +773,7 @@ func is_match_at(column, row, color):
 			if all_pieces[column][row - 1].color == color and all_pieces[column][row - 2].color == color:
 				return true
 	return false
+
 
 func is_sinker(column, row):
 	for i in current_sinkers.size():
@@ -806,7 +804,7 @@ func is_fill_restricted_at(place):
 
 
 func is_move_restricted_at(place):
-	if  lock_spaces.has(place):
+	if lock_spaces.has(place):
 		return true
 	return false
 
