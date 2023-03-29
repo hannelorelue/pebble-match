@@ -38,9 +38,9 @@ var level_info = {
 			Vector2(6,7),
 		],
 		"concrete_spaces" :[Vector2(2,3)],
-		"ice_spaces" :[Vector2(2,5), Vector2(2,4)],
+		"ice_spaces" :[Vector2(2,4)],
 		"lock_spaces" : [Vector2(4,3)],
-		"slime_spaces" : [Vector2(2,3)],
+		"slime_spaces" : [Vector2(3,3)],
 		"piece_value" : 20,
 		"max_score" : 500,
 		"counter_value" : 13,
@@ -50,14 +50,14 @@ var level_info = {
 	},
 	
 	2:{
-		"unlocked" : false,
+		"unlocked" : true,
 		"high_score" : 0,
 		"stars_unlocked" : 0,
 		"concrete_spaces" :[Vector2(2,3)],
 		"empty_spaces" : [],
-		"ice_spaces" :[Vector2(2,5)],
+		"ice_spaces" :[],
 		"lock_spaces" : [Vector2(4,3)],
-		"slime_spaces" : [Vector2(2,3)],
+		"slime_spaces" : [],
 		"piece_value" : 20,
 		"max_score" : 500,
 		"counter_value" : 13,
@@ -70,7 +70,7 @@ var level_info = {
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	#save_data()
+	save_data()
 	level_info = load_data()
 
 

@@ -64,6 +64,8 @@ var piece_pool = [
 ]
 var all_pieces = []
 var current_matches = []
+var hint_matches = []
+var hint_holder = []
 
 # Input 
 var first_touch = Vector2(0,0)
@@ -205,7 +207,6 @@ func spawn_pieces():
 
 
 func spawn_sinker(number):
-	print(number)
 	if !is_sinker_in_scene:
 		return
 	var allowed_places = []
@@ -258,7 +259,6 @@ func find_matches(query = false, array = all_pieces, found_matches_array = curre
 						add_to_array(Vector2(column - 1, row), found_matches_array)
 						add_to_array(Vector2(column + 1, row), found_matches_array)
 						found_match = true
-			
 			if row > 0 and row < height - 1:
 				if array[column][row - 1] != null and array[column][row + 1] != null:
 					if array[column][row - 1].color == current_color and array[column][row + 1].color == current_color:
@@ -267,14 +267,15 @@ func find_matches(query = false, array = all_pieces, found_matches_array = curre
 						matched_and_dim(array[column][row])
 						matched_and_dim(array[column][row - 1])
 						matched_and_dim(array[column][row + 1])
-						
+
 						add_to_array(Vector2(column, row), found_matches_array)
 						add_to_array(Vector2(column, row -  1), found_matches_array)
 						add_to_array(Vector2(column, row + 1), found_matches_array)
 						found_match = true
 	if query:
 		return false
-	if found_match: 
+		
+	if found_match and array == all_pieces: 
 		get_bombed_pieces()
 		$DestroyTimer.start()
 	else:
@@ -282,30 +283,88 @@ func find_matches(query = false, array = all_pieces, found_matches_array = curre
 	return found_match
 
 
-func find_all_matches():
-	var hint_holder = []
-	var copy = copy_array(all_pieces)
-	for column in width:
-		for row in height:
-			if copy[column][row] == null:
-				continue
-			if switch_and_check(Vector2(column, row), Vector2(0, -1), copy):
-				hint_holder.append(Vector3(column, row , 0))
-			if switch_and_check(Vector2(column, row), Vector2(-1, 0), copy):
-				hint_holder.append(Vector3(column , row, 1))
-	return hint_holder
-
-
 func generate_hint():
-	var array = find_all_matches()
+	find_all_matches()
+	var array = hint_holder
 	if array == null:
 		return
-	var rand = array[floor(rand_range(0, array.size()))]
-	if rand.z == 0:
-		all_pieces[rand.x][rand.y].wiggle(Vector2(0, 1))
-	if rand.z == 1:
-		all_pieces[rand.x][rand.y].wiggle(Vector2(1, 0))
-		
+	print(array)
+	var list = []
+	for i in array.size():
+		list.append(array[i][0])
+	var max_value_idx = list.find(list.max())
+	print(max_value_idx)
+	var hint = array[max_value_idx]
+	var pos = hint[1]
+	if all_pieces[pos.x][pos.y].color == hint[3]:
+		all_pieces[pos.x][pos.y].wiggle(-hint[2])
+	else:
+		pos = pos + hint[2]
+		all_pieces[pos.x][pos.y].wiggle(hint[2])
+	hint_holder = []
+#
+#
+#	var rand = array[floor(rand_range(0, array.size()))]
+#	if rand.z == 0:
+#		all_pieces[rand.x][rand.y].wiggle(Vector2(0, 1))
+#	if rand.z == 1:
+#		all_pieces[rand.x][rand.y].wiggle(Vector2(1, 0))
+
+
+func find_all_matches():
+	#var copy = copy_array(all_pieces)
+	var copy = all_pieces.duplicate(true)
+	for column in width:
+		for row in height:
+			hint_matches = []
+			if copy[column][row] == null:
+				continue
+
+			var check = check_for_matches(Vector2(column, row), Vector2.UP, copy)
+			if check.size() != 0:
+#				print("column: " + String(column) + ", row: " + String(row))
+#				print("up ")
+				print(check)
+				hint_holder.append([check[0], Vector2(column, row), Vector2.UP, check[1][0]])
+				
+			hint_matches = []
+
+			check = check_for_matches(Vector2(column, row), Vector2.LEFT, copy)
+			if check.size() != 0:
+				print(check)
+				hint_holder.append([check[0], Vector2(column, row), Vector2.LEFT, check[1][0]])
+
+
+func check_for_matches(place, direction, array):
+	var list = []
+	var out = []
+	for column in width:
+		for row in height:
+			if array[column][row] == null:
+				continue
+			array[column][row].matched = false
+	
+	if switch_pieces(place, direction, array):
+		if !find_matches(false, array, hint_matches):
+			switch_pieces(place, direction, array)
+			return out
+		out.append(hint_matches.size())
+		for i in hint_matches.size():
+			var m = hint_matches[i]
+			array[m.x][m.y].matched = false
+			list.append(array[m.x][m.y].color)
+		var color_count = list.count(list[0])
+		out.append([list[0], color_count])
+		if color_count == hint_matches.size():
+			switch_pieces(place, direction, array)
+			return out
+		var count = list.size() - color_count
+		for i in range(list.size() -1,  -1, -1):
+			if list[0] == list[i]:
+				list.remove(i)
+		out.append([list[0], count])
+		switch_pieces(place, direction, array)
+	return out
 
 
 func switch_and_check(place, direction, array):
@@ -319,12 +378,16 @@ func switch_and_check(place, direction, array):
 
 func switch_pieces(place, direction, array):
 	if !is_in_grid(place.x, place.y) or !is_in_grid(place.x + direction.x, place.y + direction.y):
-		return
+		return false
 	if is_fill_restricted_at(place) or is_fill_restricted_at(place + direction):
-		return
+		return false
+	if is_move_restricted_at(place) or is_move_restricted_at(place + direction):
+		return false
 	var temp = array[place.x + direction.x][place.y + direction.y]
 	array[place.x + direction.x][place.y + direction.y] = array[place.x][place.y]
 	array[place.x][place.y] = temp
+	return true
+
 
 func find_bombs():
 	if color_bomb_used:
@@ -333,16 +396,9 @@ func find_bombs():
 		var current_column = current_matches[i].x
 		var current_row = current_matches[i].y
 		var current_color = all_pieces[current_column][current_row].color
-		var col_matched = 0
-		var row_matched = 0
-		for j in current_matches.size():
-			var this_column = current_matches[j].x
-			var this_row = current_matches[j].y
-			var this_color = all_pieces[this_column][this_row].color
-			if this_column == current_column and current_color == this_color:
-				col_matched +=1
-			if this_row == current_row and current_color == this_color:
-				row_matched +=1
+		var matches = find_col_row_matches(i) 
+		var col_matched = matches[0]
+		var row_matched = matches[1]
 		if col_matched >= 5 or row_matched >= 5:
 			make_bomb("color bomb", current_color)
 		elif col_matched == 3 and row_matched == 3:
@@ -351,6 +407,23 @@ func find_bombs():
 			make_bomb("row bomb", current_color)
 		elif row_matched == 4:
 			make_bomb("column bomb", current_color)
+
+
+func find_col_row_matches(i, array = current_matches):
+	var current_column = array[i].x
+	var current_row = array[i].y
+	var current_color = all_pieces[current_column][current_row].color
+	var col_matched = 0
+	var row_matched = 0
+	for j in array.size():
+		var this_column = array[j].x
+		var this_row = array[j].y
+		var this_color = all_pieces[this_column][this_row].color
+		if this_column == current_column and current_color == this_color:
+			col_matched +=1
+		if this_row == current_row and current_color == this_color:
+			row_matched +=1
+	return [col_matched, row_matched]
 
 
 func make_bomb(bomb_type, color):
@@ -370,14 +443,15 @@ func make_bomb(bomb_type, color):
 
 
 func call_bomb(bomb_type, piece):
-	if bomb_type == "color bomb":
-		piece.make_color_bomb()
-	elif bomb_type == "adjacent bomb":
-		piece.make_adjacent_bomb()
-	elif bomb_type == "column bomb":
-		piece.make_column_bomb()
-	elif bomb_type == "row bomb":
-		piece.make_row_bomb()
+	match bomb_type:
+		"color bomb":
+			piece.make_color_bomb()
+		"adjacent bomb":
+			piece.make_adjacent_bomb()
+		"column bomb":
+			piece.make_column_bomb()
+		"row bomb":
+			piece.make_row_bomb()
 
 
 func get_bombed_pieces():
@@ -744,10 +818,11 @@ func add_to_array(value, traget_array):
 
 
 func copy_array(array):
-	var copy = make_2d_array()
-	for column in width:
-		for row in height:
-			copy[column][row] = array[column][row]
+	var copy = array.duplicate(true)
+#	 make_2d_array()
+#	for column in width:
+#		for row in height:
+#			copy[column][row] = array[column][row]
 	return copy
 
 
@@ -827,8 +902,8 @@ func is_move_restricted_at(place):
 	return false
 
 func matched_and_dim(item):
-	item.matched =  true
-	item.dim()
+	item.matched = true
+	#item.dim()
 
 
 func game_over():
