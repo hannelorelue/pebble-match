@@ -140,6 +140,45 @@ Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int):
 	$HintTimer.start()
 
 
+func touch_input():
+	if Input.is_action_just_pressed("ui_touch"):
+		var mouse = get_global_mouse_position()
+		mouse = pixel_to_grid(mouse.x, mouse.y)
+		if is_in_grid(mouse.x, mouse.y):
+			first_touch = mouse
+			controlling = true
+	if Input.is_action_just_released("ui_touch"):
+		var mouse = get_global_mouse_position()
+		mouse = pixel_to_grid(mouse.x, mouse.y)
+		if is_in_grid(mouse.x, mouse.y) and controlling:
+			controlling = false
+			touch_difference(first_touch, mouse)
+
+
+func touch_difference(grid_1: Vector2, grid_2: Vector2):
+	$HintTimer.start()
+	var difference = grid_1-grid_2
+	var temp_timer = get_tree().create_timer(0.5)
+	var direction = Vector2(0, 0)
+	if abs(difference.aspect()) == 1:
+		return
+	if abs(difference.aspect()) < 1:
+		if difference.y > 0:
+			direction = Vector2.UP
+		elif difference.y < 0:
+			direction = Vector2.DOWN
+	else:
+		if difference.x > 0:
+			direction = Vector2.LEFT			
+		elif difference.x < 0:
+			direction = Vector2.RIGHT
+			
+	swap_pieces(grid_1.x, grid_1.y, direction)
+	if !find_matches():
+		yield(temp_timer, "timeout")
+		swap_pieces(grid_1.x, grid_1.y, direction)
+		state = MOVE
+
 # spawns inital grid
 func spawn_pieces():
 	for column in width:
@@ -188,46 +227,6 @@ func spawn_preset_pieces():
 			add_child(piece)
 			piece.position = grid_to_pixel(current.x, current.y)
 			all_pieces[current.x][current.y] = piece
-
-
-func touch_input():
-	if Input.is_action_just_pressed("ui_touch"):
-		var mouse = get_global_mouse_position()
-		mouse = pixel_to_grid(mouse.x, mouse.y)
-		if is_in_grid(mouse.x, mouse.y):
-			first_touch = mouse
-			controlling = true
-	if Input.is_action_just_released("ui_touch"):
-		var mouse = get_global_mouse_position()
-		mouse = pixel_to_grid(mouse.x, mouse.y)
-		if is_in_grid(mouse.x, mouse.y) and controlling:
-			controlling = false
-			touch_difference(first_touch, mouse)
-
-
-func touch_difference(grid_1: Vector2, grid_2: Vector2):
-	$HintTimer.start()
-	var difference = grid_1-grid_2
-	var temp_timer = get_tree().create_timer(0.5)
-	var direction = Vector2(0, 0)
-	if abs(difference.aspect()) == 1:
-		return
-	if abs(difference.aspect()) < 1:
-		if difference.y > 0:
-			direction = Vector2.UP
-		elif difference.y < 0:
-			direction = Vector2.DOWN
-	else:
-		if difference.x > 0:
-			direction = Vector2.LEFT			
-		elif difference.x < 0:
-			direction = Vector2.RIGHT
-			
-	swap_pieces(grid_1.x, grid_1.y, direction)
-	if !find_matches():
-		yield(temp_timer, "timeout")
-		swap_pieces(grid_1.x, grid_1.y, direction)
-		state = MOVE
 
 
 func find_matches(query = false, array = all_pieces):

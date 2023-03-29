@@ -12,6 +12,8 @@ var is_column_bomb = false
 var is_adjacent_bomb = false
 var is_color_bomb = false
 
+var row: int setget set_row, get_row
+var column: int setget set_column, get_column
 
 var move_tween
 var wiggle_tween
@@ -36,6 +38,23 @@ func wiggle(direction):
 			$AnimationPlayer.play("wiggle_down")
 		Vector2(0, -1):
 			$AnimationPlayer.play("wiggle_up")
+
+
+func set_row(new_value):
+	row = new_value
+
+
+func get_row():
+	return row
+
+
+func set_column(new_value):
+	column= new_value
+
+
+func get_column():
+	return column
+
 
 func dim():
 	$Sprite.modulate.a = 0.75
