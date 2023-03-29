@@ -93,7 +93,7 @@ goal_string = "ice"
 
 [node name="Goal2" parent="GoalHolder" instance=ExtResource( 11 )]
 goal_texture = ExtResource( 13 )
-max_needed = 6
+max_needed = 17
 goal_string = "pink"
 
 [node name="WinScreen" parent="." instance=ExtResource( 15 )]

@@ -45,6 +45,8 @@ var level_info = {
 		"max_score" : 500,
 		"counter_value" : 13,
 		"is_move" : true,
+		"is_sinker_in_scene": false, 
+		"max_sinkers": 0,
 	},
 	
 	2:{
@@ -60,12 +62,15 @@ var level_info = {
 		"max_score" : 500,
 		"counter_value" : 13,
 		"is_move" : true,
+		"is_sinker_in_scene": true, 
+		"max_sinkers": 2,
 	},
 }
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	#save_data()
 	level_info = load_data()
 
 

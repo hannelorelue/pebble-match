@@ -11,7 +11,7 @@ config_version=4
 [application]
 
 config/name="Candy_Crush"
-run/main_scene="res://scenes/game_window.tscn"
+run/main_scene="res://scenes/GameMenu.tscn"
 config/icon="res://icon.png"
 
 [autoload]
