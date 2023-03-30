@@ -55,7 +55,7 @@ var level_info = {
 		"stars_unlocked" : 0,
 		"concrete_spaces" :[Vector2(2,3)],
 		"empty_spaces" : [],
-		"ice_spaces" :[],
+		"ice_spaces" :[Vector2(2,2), Vector2(2,1)],
 		"lock_spaces" : [Vector2(4,3)],
 		"slime_spaces" : [],
 		"piece_value" : 20,

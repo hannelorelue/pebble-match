@@ -108,6 +108,7 @@ script = ExtResource( 4 )
 [connection signal="check_goal" from="grid" to="GoalHolder" method="_on_grid_check_goal"]
 [connection signal="counter_changed" from="grid" to="top_ui" method="_on_grid_counter_changed"]
 [connection signal="game_over" from="grid" to="GameOverScreen" method="_on_grid_game_over"]
+[connection signal="game_won" from="grid" to="WinScreen" method="_on_grid_game_won"]
 [connection signal="play_sound" from="grid" to="SoundPlayer" method="_on_grid_play_sound"]
 [connection signal="set_max_score" from="grid" to="top_ui" method="_on_grid_set_max_score"]
 [connection signal="update_score" from="grid" to="top_ui" method="_on_grid_update_score"]
@@ -130,4 +131,3 @@ script = ExtResource( 4 )
 [connection signal="timeout" from="grid/HintTimer" to="grid" method="_on_HintTimer_timeout"]
 [connection signal="create_goals_started" from="GoalHolder" to="top_ui" method="_on_GoalHolder_create_goals_started"]
 [connection signal="game_won" from="GoalHolder" to="grid" method="_on_GoalHolder_game_won"]
-[connection signal="game_won" from="GoalHolder" to="WinScreen" method="_on_GoalHolder_game_won"]

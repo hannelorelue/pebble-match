@@ -1,6 +1,5 @@
 extends Node2D
 
-
 # Signals
 # Score
 signal update_score
@@ -11,6 +10,7 @@ signal counter_changed
 signal check_goal
 # Game Over
 signal game_over
+signal game_won
 # Sound
 signal play_sound
 
@@ -84,7 +84,7 @@ var move_checked = false
 
 # Scoring Variables
 var streak = 1
-var score = 0
+var score = 0 setget ,get_score
 
 # State Machine
 var state
@@ -302,17 +302,9 @@ func generate_hint():
 		pos = pos + hint[2]
 		all_pieces[pos.x][pos.y].wiggle(hint[2])
 	hint_holder = []
-#
-#
-#	var rand = array[floor(rand_range(0, array.size()))]
-#	if rand.z == 0:
-#		all_pieces[rand.x][rand.y].wiggle(Vector2(0, 1))
-#	if rand.z == 1:
-#		all_pieces[rand.x][rand.y].wiggle(Vector2(1, 0))
 
 
 func find_all_matches():
-	#var copy = copy_array(all_pieces)
 	var copy = all_pieces.duplicate(true)
 	for column in width:
 		for row in height:
@@ -322,16 +314,11 @@ func find_all_matches():
 
 			var check = check_for_matches(Vector2(column, row), Vector2.UP, copy)
 			if check.size() != 0:
-#				print("column: " + String(column) + ", row: " + String(row))
-#				print("up ")
-				print(check)
 				hint_holder.append([check[0], Vector2(column, row), Vector2.UP, check[1][0]])
-				
 			hint_matches = []
 
 			check = check_for_matches(Vector2(column, row), Vector2.LEFT, copy)
 			if check.size() != 0:
-				print(check)
 				hint_holder.append([check[0], Vector2(column, row), Vector2.LEFT, check[1][0]])
 
 
@@ -531,7 +518,7 @@ func destroy_matched():
 			all_pieces[column][row] = null
 			make_effect(particle_effect, column, row)
 			make_effect(animated_effect, column, row)
-			score = piece_value * streak
+			score += piece_value * streak
 			emit_signal("play_sound")
 			emit_signal("update_score", score)
 	move_checked = true
@@ -906,6 +893,10 @@ func matched_and_dim(item):
 	#item.dim()
 
 
+func get_score():
+	return score
+
+
 func game_over():
 	emit_signal("game_over")
 	state = WAIT
@@ -943,6 +934,7 @@ func _on_GoalHolder_game_won():
 	if GameDataManager.level_info.has(level + 1):
 		GameDataManager.level_info[level + 1]["unlocked"] = true
 	GameDataManager.save_data()
+	emit_signal("game_won", score)
 
 
 # Obstacle signals

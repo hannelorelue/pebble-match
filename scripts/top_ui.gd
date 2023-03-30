@@ -20,7 +20,7 @@ func setup_score_bar(max_score):
 
 
 func update_score_bar():
-	score_bar.value =  current_score
+	score_bar.value = current_score
 
 
 func make_goal(new_max, new_texture, new_value):
@@ -34,7 +34,7 @@ func update_goals(goal_type):
 
 
 func _on_grid_update_score(amount):
-	current_score += amount
+	current_score = amount
 	update_score_bar()
 	score_label.text = String(current_score)
 

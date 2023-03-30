@@ -3,7 +3,7 @@
 [ext_resource path="res://fonts/Kenney Blocks.ttf" type="DynamicFontData" id=1]
 
 [resource]
-size = 23
+size = 13
 use_mipmaps = true
 use_filter = true
 font_data = ExtResource( 1 )
