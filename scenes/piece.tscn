@@ -2,7 +2,7 @@
 
 [ext_resource path="res://scripts/piece.gd" type="Script" id=1]
 [ext_resource path="res://art/Pieces/Rainbow.png" type="Texture" id=2]
-[ext_resource path="res://art/black.png" type="Texture" id=3]
+[ext_resource path="res://art/Pieces/Sphalerite.png" type="Texture" id=3]
 [ext_resource path="res://wiggle_right.tres" type="Animation" id=4]
 
 [sub_resource type="Animation" id=1]
