@@ -1,12 +1,25 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://scripts/piece.gd" type="Script" id=1]
 [ext_resource path="res://art/Pieces/Rainbow.png" type="Texture" id=2]
 [ext_resource path="res://art/Pieces/Sphalerite.png" type="Texture" id=3]
 [ext_resource path="res://wiggle_right.tres" type="Animation" id=4]
+[ext_resource path="res://art/Pieces/diamond-Sheet.png" type="Texture" id=5]
 
 [sub_resource type="Animation" id=1]
 length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
 
 [sub_resource type="Animation" id=3]
 resource_name = "wiggle_down"
@@ -56,6 +69,38 @@ tracks/0/keys = {
 "values": [ Vector2( 0, 0 ), Vector2( 0, -10 ), Vector2( 0, 0 ), Vector2( 0, -10 ), Vector2( 0, 0 ) ]
 }
 
+[sub_resource type="AtlasTexture" id=5]
+atlas = ExtResource( 5 )
+region = Rect2( 0, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=6]
+atlas = ExtResource( 5 )
+region = Rect2( 32, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=7]
+atlas = ExtResource( 5 )
+region = Rect2( 64, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=8]
+atlas = ExtResource( 5 )
+region = Rect2( 96, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=9]
+atlas = ExtResource( 5 )
+region = Rect2( 128, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=10]
+atlas = ExtResource( 5 )
+region = Rect2( 160, 0, 32, 32 )
+
+[sub_resource type="SpriteFrames" id=11]
+animations = [ {
+"frames": [ SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ) ],
+"loop": true,
+"name": "default",
+"speed": 1.5
+} ]
+
 [node name="piece" type="Node2D"]
 script = ExtResource( 1 )
 prism_texture = ExtResource( 2 )
@@ -72,3 +117,8 @@ anims/wiggle_down = SubResource( 3 )
 anims/wiggle_left = SubResource( 2 )
 anims/wiggle_right = ExtResource( 4 )
 anims/wiggle_up = SubResource( 4 )
+
+[node name="DiamondSprite" type="AnimatedSprite" parent="."]
+visible = false
+scale = Vector2( 2, 2 )
+frames = SubResource( 11 )

@@ -3,6 +3,7 @@ extends Node2D
 export (String) var color
 
 onready var sprite = $Sprite
+onready var diamond_sprite = $DiamondSprite
 
 export (Texture) var row_texture
 export (Texture) var column_texture
@@ -30,11 +31,14 @@ func _ready():
 func init():
 	pass
 
+
 func move(target):
 	move_tween.interpolate_property(self, "position", position, target, 0.1, Tween.TRANS_SINE, Tween.EASE_OUT )
 	move_tween.start()
 
 func wiggle(direction):
+	var parent = self.get_parent()
+	parent.move_child(self, parent.get_child_count())
 	match direction:
 		Vector2(1, 0):
 			$AnimationPlayer.play("wiggle_left")
@@ -86,6 +90,9 @@ func make_adjacent_bomb():
 
 func make_color_bomb():
 	is_color_bomb = true
-	sprite.texture = prism_texture
-	sprite.modulate = Color(1,1,1,1)
+	sprite.visible = false
+	diamond_sprite.visible = true
+	diamond_sprite.playing = true
+	#sprite.texture = prism_texture
+	#sprite.modulate = Color(1,1,1,1)
 	color = "Color"

@@ -1,10 +1,10 @@
 extends Node2D
 
-export (int) var height
-export (int) var width
-export (int) var offset
-export (int) var x_start
-export (int) var y_start
+export (int) var height = 8
+export (int) var width = 8
+export (int) var offset = 64
+export (int) var x_start = 64
+export (int) var y_start = 800
 
 var current_scene = null
 

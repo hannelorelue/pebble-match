@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/pink.png-37520018879d9714995dab497b94d88a.stex"
+path="res://.import/ores.png-d5c1de26410036bf919e3537bb54173b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/pink.png"
-dest_files=[ "res://.import/pink.png-37520018879d9714995dab497b94d88a.stex" ]
+source_file="res://art/Pieces/ores.png"
+dest_files=[ "res://.import/ores.png-d5c1de26410036bf919e3537bb54173b.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

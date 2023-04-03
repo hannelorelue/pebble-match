@@ -76,7 +76,7 @@ var controlling = false
 var damaged_slime = false
 
 # Swap back variables
-var 	piece_one = null
+var piece_one = null
 var piece_two = null
 var last_place = Vector2(0, 0)
 var last_direction = Vector2(0, 0)
@@ -288,12 +288,10 @@ func generate_hint():
 	var array = hint_holder
 	if array == null:
 		return
-	print(array)
 	var list = []
 	for i in array.size():
 		list.append(array[i][0])
 	var max_value_idx = list.find(list.max())
-	print(max_value_idx)
 	var hint = array[max_value_idx]
 	var pos = hint[1]
 	if all_pieces[pos.x][pos.y].color == hint[3]:
@@ -389,11 +387,13 @@ func find_bombs():
 		if col_matched >= 5 or row_matched >= 5:
 			make_bomb("color bomb", current_color)
 		elif col_matched == 3 and row_matched == 3:
-			make_bomb("adjacent bomb", current_color)
+			make_bomb("color bomb", current_color)
 		elif col_matched == 4:
-			make_bomb("row bomb", current_color)
+			clear_column(current_column)
+			#make_bomb("row bomb", current_color)
 		elif row_matched == 4:
-			make_bomb("column bomb", current_color)
+			clear_row(current_row )
+			#make_bomb("column bomb", current_color)
 
 
 func find_col_row_matches(i, array = current_matches):
@@ -446,10 +446,12 @@ func get_bombed_pieces():
 		for row in height:
 			if all_pieces[column][row] == null or !all_pieces[column][row].matched:
 				continue
+			if all_pieces[column][row].is_color_bomb:
+				continue
 			if all_pieces[column][row].is_column_bomb:
-				match_pieces_in_column(column)
+				clear_column(column)
 			elif all_pieces[column][row].is_row_bomb:
-				match_pieces_in_row(row)
+				clear_row(row)
 			elif all_pieces[column][row].is_adjacent_bomb:
 				match_adjacent_pieces(column, row)
 
@@ -479,7 +481,7 @@ func swap_pieces(column, row, direction):
 		if is_sinker(column, row):
 			swap_back()
 			return
-		match_color(other_piece.color)
+		clear_color(other_piece.color)
 		matched_and_dim(first_piece)
 		add_to_array(Vector2(column, row), current_matches) 
 		color_bomb_used = true
@@ -487,7 +489,7 @@ func swap_pieces(column, row, direction):
 		if is_sinker(column + direction.x, row + direction.y):
 			swap_back()
 			return
-		match_color(first_piece.color)
+		clear_color(first_piece.color)
 		matched_and_dim(other_piece)
 		add_to_array(Vector2(column + direction.x, row + direction.y), current_matches)
 		color_bomb_used = true
@@ -675,7 +677,7 @@ func generate_slime():
 
 
 # Match pieces in columns and rows, adjacent to a piece and the whole board
-func match_pieces_in_column(column):
+func clear_column(column):
 	for i in height:
 		var current = all_pieces[column][i] 
 		if current == null or is_sinker(column, i):
@@ -684,17 +686,17 @@ func match_pieces_in_column(column):
 			continue
 		if current.is_row_bomb:
 			all_pieces[column][i].matched = true
-			match_pieces_in_row(i)
+			clear_row(i)
 		if current.is_adjacent_bomb:
 			all_pieces[column][i].matched = true
 			match_adjacent_pieces(column, i)
 		if current.is_color_bomb:
-			all_pieces[column][i].matched = true
-			match_color(all_pieces[column][i].color)
+			all_pieces[column][i].matched = false
+			#clear_color(all_pieces[column][i].color)
 		all_pieces[column][i].matched = true
 
 
-func match_pieces_in_row(row):
+func clear_row(row):
 	for i in width:
 		var current = all_pieces[i][row] 
 		if current == null or is_sinker(i, row):
@@ -703,13 +705,13 @@ func match_pieces_in_row(row):
 			continue
 		if current.is_column_bomb:
 			all_pieces[i][row].matched = true
-			match_pieces_in_column(i)
+			clear_column(i)
 		if current.is_adjacent_bomb:
 			all_pieces[i][row].matched = true
 			match_adjacent_pieces(i, row)
 		if current.is_color_bomb:
-			all_pieces[i][row].matched = true
-			match_color(all_pieces[i][row].color)
+			all_pieces[i][row].matched = false
+			#clear_color(all_pieces[i][row].color)
 		all_pieces[i][row].matched = true
 
 
@@ -725,17 +727,17 @@ func match_adjacent_pieces(column, row):
 				continue
 			if current.is_column_bomb:
 				all_pieces[column + i][row + j].matched = true
-				match_pieces_in_column(column + i)
+				clear_column(column + i)
 			if current.is_row_bomb:
 				all_pieces[column + i][row + j].matched = true
-				match_pieces_in_row(row + j)
+				clear_row(row + j)
 			if current.is_color_bomb:
 				all_pieces[column + i][row + j].matched = true
-				match_pieces_in_row(row + j)
+				clear_row(row + j)
 			all_pieces[column + i][row + j].matched = true
 
 
-func match_color(color):
+func clear_color(color):
 	for column in width:
 		for row in height:
 			if is_sinker(column, row):
@@ -744,10 +746,10 @@ func match_color(color):
 				continue
 			if all_pieces[column][row].is_column_bomb:
 				all_pieces[column][row].matched = true
-				match_pieces_in_column(column)
+				clear_column(column)
 			if all_pieces[column][row].is_row_bomb:
 				all_pieces[column][row].matched = true
-				match_pieces_in_row(row)
+				clear_row(row)
 			if all_pieces[column][row].is_adjacent_bomb:
 				all_pieces[column][row].matched = true
 				match_adjacent_pieces(column, row)

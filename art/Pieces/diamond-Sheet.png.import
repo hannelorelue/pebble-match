@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/green-alt.png-83692a5fc3e7e7ed8fe9a170241179cb.stex"
+path="res://.import/diamond-Sheet.png-d96f4c593c2ba0b19aab56d798f0a9d9.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/green-alt.png"
-dest_files=[ "res://.import/green-alt.png-83692a5fc3e7e7ed8fe9a170241179cb.stex" ]
+source_file="res://art/Pieces/diamond-Sheet.png"
+dest_files=[ "res://.import/diamond-Sheet.png-d96f4c593c2ba0b19aab56d798f0a9d9.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2
