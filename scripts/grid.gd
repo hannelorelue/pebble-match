@@ -53,7 +53,9 @@ var width = Global.width
 var offset =  Global.offset
 var x_start =  Global.x_start
 var y_start =  Global.y_start
+var no_piece_types: int 
 
+var piece_prototype = preload("res://scenes/piece.tscn")
 var piece_pool = [
 	#preload("res://scenes/red.tscn"),
 	preload("res://scenes/pink.tscn"),
@@ -112,7 +114,7 @@ func _process(_delta):
 # Function used to initilize the grid
 func init(Level: int, Concrete_Spaces: PoolVector2Array, 
 Empty_Spaces: PoolVector2Array, Ice_Spaces: PoolVector2Array, Lock_Spaces: PoolVector2Array, Slime_Spaces: PoolVector2Array,
-Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int, Is_sinker_in_scene: bool, Max_sinkers: int):
+Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int, Is_sinker_in_scene: bool, Max_sinkers: int, No_piece_types: int):
 	level = Level
 	concrete_spaces = Concrete_Spaces
 	empty_spaces = Empty_Spaces
@@ -125,6 +127,7 @@ Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int, Is_sinker_i
 	is_move = Is_Move
 	is_sinker_in_scene = Is_sinker_in_scene
 	max_sinkers = Max_sinkers
+	no_piece_types = No_piece_types
 	
 	state = MOVE
 	randomize()
@@ -191,14 +194,16 @@ func spawn_pieces():
 				continue
 			if is_fill_restricted_at(Vector2(column, row)):
 				continue
-			var list = range(piece_pool.size())
+			var list = Global.PieceType.keys()
+			if no_piece_types != list.size():
+				list = list.slice(0, no_piece_types)
 			var rand = list.pop_at(floor(rand_range(0, list.size())))
-			var piece = piece_pool[rand].instance()
-			while is_match_at(column, row, piece.color) and list.size() > 1:
+			var piece = piece_prototype.instance()
+			while is_match_at(column, row, rand) and list.size() > 1:
 				rand = list.pop_at(floor(rand_range(0, list.size())))
-				piece = piece_pool[rand].instance()
 			add_child(piece)
 			piece.position = grid_to_pixel(column, row)
+			piece.init(rand)
 			piece.set_row(row)
 			piece.set_column(column)
 			all_pieces[column][row] = piece
@@ -215,8 +220,10 @@ func spawn_sinker(number):
 			allowed_places.append(i)
 	for j in number:
 		var rand = allowed_places.pop_at(floor(rand_range(0, allowed_places.size())))
-		var current = sinker_piece.instance()
+		var current = piece_prototype.instance()
 		add_child(current)
+		current.is_sinker = true
+		current.init("RED")
 		current.position = grid_to_pixel(rand, height -  1)
 		current.set_row(height -  1)
 		current.set_column(rand)
@@ -276,7 +283,7 @@ func find_matches(query = false, array = all_pieces, found_matches_array = curre
 		return false
 		
 	if found_match and array == all_pieces: 
-		get_bombed_pieces()
+		#get_bombed_pieces()
 		$DestroyTimer.start()
 	else:
 		state = MOVE
@@ -390,10 +397,8 @@ func find_bombs():
 			make_bomb("color bomb", current_color)
 		elif col_matched == 4:
 			clear_column(current_column)
-			#make_bomb("row bomb", current_color)
 		elif row_matched == 4:
 			clear_row(current_row )
-			#make_bomb("column bomb", current_color)
 
 
 func find_col_row_matches(i, array = current_matches):
@@ -586,16 +591,17 @@ func refill_columns():
 		for row in height:
 			if all_pieces[column][row] != null or is_fill_restricted_at(Vector2(column, row)):
 				continue
-			var list = range(piece_pool.size())
+			var list = Global.PieceType.keys()
+			if no_piece_types != list.size():
+				list = list.slice(0, no_piece_types)
 			var rand = list.pop_at(floor(rand_range(0, list.size())))
-			var piece = piece_pool[rand].instance()
-			while is_match_at(column, row, piece.color) and list.size() > 1:
+			var piece = piece_prototype.instance()
+			while is_match_at(column, row, rand) and list.size() > 1:
 				rand = list.pop_at(floor(rand_range(0, list.size())))
-				piece = piece_pool[rand].instance()
-				
 			add_child(piece)
 			piece.position = grid_to_pixel(column, row - y_offset)
 			piece.move(grid_to_pixel(column, row))
+			piece.init(rand)
 			piece.set_row(row)
 			piece.set_column(column)
 			all_pieces[column][row] = piece
@@ -684,12 +690,12 @@ func clear_column(column):
 			continue
 		if  current.matched:
 			continue
-		if current.is_row_bomb:
-			all_pieces[column][i].matched = true
-			clear_row(i)
-		if current.is_adjacent_bomb:
-			all_pieces[column][i].matched = true
-			match_adjacent_pieces(column, i)
+#		if current.is_row_bomb:
+#			all_pieces[column][i].matched = true
+#			clear_row(i)
+#		if current.is_adjacent_bomb:
+#			all_pieces[column][i].matched = true
+#			match_adjacent_pieces(column, i)
 		if current.is_color_bomb:
 			all_pieces[column][i].matched = false
 			#clear_color(all_pieces[column][i].color)
@@ -703,12 +709,12 @@ func clear_row(row):
 			continue
 		if current.matched:
 			continue
-		if current.is_column_bomb:
-			all_pieces[i][row].matched = true
-			clear_column(i)
-		if current.is_adjacent_bomb:
-			all_pieces[i][row].matched = true
-			match_adjacent_pieces(i, row)
+#		if current.is_column_bomb:
+#			all_pieces[i][row].matched = true
+#			clear_column(i)
+#		if current.is_adjacent_bomb:
+#			all_pieces[i][row].matched = true
+#			match_adjacent_pieces(i, row)
 		if current.is_color_bomb:
 			all_pieces[i][row].matched = false
 			#clear_color(all_pieces[i][row].color)
@@ -744,15 +750,15 @@ func clear_color(color):
 				continue
 			if all_pieces[column][row] == null or all_pieces[column][row].color != color:
 				continue
-			if all_pieces[column][row].is_column_bomb:
-				all_pieces[column][row].matched = true
-				clear_column(column)
-			if all_pieces[column][row].is_row_bomb:
-				all_pieces[column][row].matched = true
-				clear_row(row)
-			if all_pieces[column][row].is_adjacent_bomb:
-				all_pieces[column][row].matched = true
-				match_adjacent_pieces(column, row)
+#			if all_pieces[column][row].is_column_bomb:
+#				all_pieces[column][row].matched = true
+#				clear_column(column)
+#			if all_pieces[column][row].is_row_bomb:
+#				all_pieces[column][row].matched = true
+#				clear_row(row)
+#			if all_pieces[column][row].is_adjacent_bomb:
+#				all_pieces[column][row].matched = true
+#				match_adjacent_pieces(column, row)
 
 			matched_and_dim(all_pieces[column][row])
 			add_to_array(Vector2(column, row), current_matches)

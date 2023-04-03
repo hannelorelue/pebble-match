@@ -2,7 +2,7 @@
 
 [ext_resource path="res://scripts/piece.gd" type="Script" id=1]
 [ext_resource path="res://art/Pieces/Rainbow.png" type="Texture" id=2]
-[ext_resource path="res://art/Pieces/Sphalerite.png" type="Texture" id=3]
+[ext_resource path="res://art/Pieces/ores.png" type="Texture" id=3]
 [ext_resource path="res://wiggle_right.tres" type="Animation" id=4]
 [ext_resource path="res://art/Pieces/diamond-Sheet.png" type="Texture" id=5]
 
@@ -108,6 +108,8 @@ prism_texture = ExtResource( 2 )
 [node name="Sprite" type="Sprite" parent="."]
 scale = Vector2( 2, 2 )
 texture = ExtResource( 3 )
+region_enabled = true
+region_rect = Rect2( 96, 32, 32, 32 )
 
 [node name="move_tween" type="Tween" parent="."]
 

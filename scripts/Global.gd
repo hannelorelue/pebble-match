@@ -1,5 +1,15 @@
 extends Node2D
 
+const PieceType = {
+	COAL = "coal",
+	CINNABARIT = "cinnabarit",
+	COPPER = "copper",
+	ROCK = "rock",
+	IRON = "iron",
+	QUARTZ = "quartz",
+	SPHALERITE = "sphalerite",
+}
+
 export (int) var height = 8
 export (int) var width = 8
 export (int) var offset = 64
@@ -57,7 +67,7 @@ func _deferred_goto_level(level):
 	var level_info = GameDataManager.level_info[level]
 	current_scene.set_level_info(level, level_info["empty_spaces"], level_info["concrete_spaces"], 
 		level_info["ice_spaces"], level_info["lock_spaces"], level_info["slime_spaces"], 
-		 level_info["max_score"],  level_info["counter_value"],  level_info["is_move"],  level_info["piece_value"], level_info["is_sinker_in_scene"],level_info["max_sinkers"])
+		 level_info["max_score"],  level_info["counter_value"],  level_info["is_move"],  level_info["piece_value"], level_info["is_sinker_in_scene"],level_info["max_sinkers"], 4)
 	# Add it to the active scene, as child of root.
 	get_tree().get_root().add_child(current_scene)
 
