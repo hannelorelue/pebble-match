@@ -1,6 +1,7 @@
 extends Node2D
 
 onready var grid = $grid
+onready var top_ui = $top_ui
 
 var level := 1
 var no_piece_types: int = 4
@@ -23,12 +24,30 @@ var is_move := true
 var is_sinker_in_scene := true
 var max_sinkers := 0
 
+var goals = {
+	1 : {
+		"type" : "IRON",
+		"value" : 3,
+	},
+	2 :  {
+		"type" : "COAL",
+		"value" : 5,
+	},
+	3 : {
+		"type" : "",
+		"value" : 0,
+	},
+}
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	grid.init(level, concrete_spaces, 
 	empty_spaces, ice_spaces, lock_spaces, slime_spaces,
 	max_score, counter_value, is_move, piece_value, is_sinker_in_scene, max_sinkers, no_piece_types)
+	for key in goals:
+		top_ui.make_goal(goals[key]["type"], goals[key]["value"])
+	
 
 
 func set_level_info(Level: int, Empty_Spaces: PoolVector2Array, Concrete_Spaces: PoolVector2Array, 

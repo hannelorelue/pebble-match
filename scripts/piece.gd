@@ -5,12 +5,6 @@ export (String) var color
 onready var sprite = $Sprite
 onready var diamond_sprite = $DiamondSprite
 
-export (Texture) var row_texture
-export (Texture) var column_texture
-export (Texture) var adjacent_texture
-export (Texture) var prism_texture
-
-
 var row: int setget set_row, get_row
 var column: int setget set_column, get_column
 

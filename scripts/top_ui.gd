@@ -1,5 +1,7 @@
 extends TextureRect
 
+signal game_won
+
 export (PackedScene) var goal_ui
 onready var score_label = $MarginContainer/HBoxContainer/VBoxContainer/ScoreLabel
 onready var counter_label = $MarginContainer/HBoxContainer/CounterLabel
@@ -8,6 +10,7 @@ onready var goal_container = $MarginContainer/HBoxContainer/HBoxContainer
 
 var current_score = 0
 var current_count = 0
+var is_game_won = false
 
 
 # Called when the node enters the scene tree for the first time.
@@ -16,21 +19,43 @@ func _ready():
 
 
 func setup_score_bar(max_score):
-	score_bar.max_value =  max_score
+	score_bar.max_value = max_score
 
 
 func update_score_bar():
 	score_bar.value = current_score
 
 
-func make_goal(new_max, new_texture, new_value):
+func make_goal(type, new_max):
+	if new_max == 0:
+		return
 	var current = goal_ui.instance()
 	goal_container.add_child(current)
-	current.set_goal_values(new_max, new_texture, new_value)
+	current.set_goal(type, new_max)
+
 
 func update_goals(goal_type):
 	for i in goal_container.get_child_count():
-		goal_container.get_child(i).update_goal_values(goal_type)
+		goal_container.get_child(i).update_goal(goal_type)
+	check_win_conditions()
+
+
+func check_goals(goal_type):
+	for i in get_child_count():
+		get_child(i).check_goal(goal_type)
+	check_win_conditions()
+
+
+func check_win_conditions():
+	if are_all_goals_met():
+		emit_signal("game_won")
+
+
+func are_all_goals_met():
+	for i in goal_container.get_child_count():
+		if !goal_container.get_child(i).is_goal_met:
+			return false
+	return true
 
 
 func _on_grid_update_score(amount):
@@ -46,10 +71,6 @@ func _on_grid_counter_changed(amount = -1):
 
 func _on_grid_set_max_score(max_score):
 	setup_score_bar(max_score)
-
-
-func _on_GoalHolder_create_goals_started(new_max, new_texture, new_value):
-	make_goal(new_max, new_texture, new_value)
 
 
 func _on_grid_check_goal(goal_type):

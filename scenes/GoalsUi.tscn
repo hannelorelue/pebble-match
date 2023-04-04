@@ -1,9 +1,22 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=19 format=2]
 
-[ext_resource path="res://art/UI/goal background.png" type="Texture" id=1]
 [ext_resource path="res://fonts/Kenney Future Narrow.ttf" type="DynamicFontData" id=2]
-[ext_resource path="res://art/Pieces/Blue Piece.png" type="Texture" id=3]
+[ext_resource path="res://art/UI/goal background.png" type="Texture" id=3]
 [ext_resource path="res://scripts/GoalsUi.gd" type="Script" id=4]
+[ext_resource path="res://art/Obstacles/lock2.png" type="Texture" id=5]
+[ext_resource path="res://art/Obstacles/Icon29.png" type="Texture" id=6]
+[ext_resource path="res://art/Obstacles/Icon12.png" type="Texture" id=7]
+[ext_resource path="res://art/Obstacles/iron.png" type="Texture" id=8]
+[ext_resource path="res://art/Obstacles/Icon5.png" type="Texture" id=9]
+[ext_resource path="res://art/Obstacles/copper.png" type="Texture" id=10]
+[ext_resource path="res://art/Obstacles/Sphalerite.png" type="Texture" id=11]
+[ext_resource path="res://art/Obstacles/moss.png" type="Texture" id=12]
+[ext_resource path="res://art/Obstacles/coal.png" type="Texture" id=13]
+[ext_resource path="res://art/Obstacles/Cinnabarit.png" type="Texture" id=14]
+[ext_resource path="res://art/Obstacles/Icon20.png" type="Texture" id=15]
+[ext_resource path="res://art/Obstacles/rock.png" type="Texture" id=16]
+[ext_resource path="res://art/Obstacles/quartz.png" type="Texture" id=17]
+[ext_resource path="res://art/Obstacles/Ice.png" type="Texture" id=18]
 
 [sub_resource type="DynamicFont" id=1]
 size = 10
@@ -13,8 +26,22 @@ font_data = ExtResource( 2 )
 margin_left = -20.0
 margin_right = 20.0
 margin_bottom = 61.0
-texture = ExtResource( 1 )
+texture = ExtResource( 3 )
 script = ExtResource( 4 )
+cinnabarit = ExtResource( 14 )
+coal = ExtResource( 13 )
+quartz = ExtResource( 17 )
+sphalerite = ExtResource( 11 )
+copper = ExtResource( 10 )
+iron = ExtResource( 8 )
+rock = ExtResource( 16 )
+pink = ExtResource( 9 )
+green = ExtResource( 6 )
+red = ExtResource( 7 )
+blue = ExtResource( 15 )
+lock = ExtResource( 5 )
+moss = ExtResource( 12 )
+ice = ExtResource( 18 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 margin_top = 10.0
@@ -28,7 +55,6 @@ custom_constants/separation = 5
 margin_right = 40.0
 margin_bottom = 28.0
 rect_min_size = Vector2( 28, 28 )
-texture = ExtResource( 3 )
 expand = true
 stretch_mode = 6
 

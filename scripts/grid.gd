@@ -56,14 +56,6 @@ var y_start =  Global.y_start
 var no_piece_types: int 
 
 var piece_prototype = preload("res://scenes/piece.tscn")
-var piece_pool = [
-	#preload("res://scenes/red.tscn"),
-	preload("res://scenes/pink.tscn"),
-	preload("res://scenes/orange.tscn"),
-	preload("res://scenes/green.tscn"),
-	preload("res://scenes/blue.tscn"),
-	#preload("res://scenes/black.tscn"),
-]
 var all_pieces = []
 var current_matches = []
 var hint_matches = []
@@ -236,9 +228,13 @@ func spawn_preset_pieces():
 	if preset_pieces == null:
 		return
 	if preset_pieces.size() > 0:
+		var list = Global.PieceType.keys()
+		if no_piece_types != list.size():
+			list = list.slice(0, no_piece_types)
 		for i in preset_pieces.size():
 			var current = preset_pieces[i]
-			var piece =  piece_pool[current.z].instance()
+			var piece =  piece_prototype.instance()
+			piece.init(list[current.z])
 			add_child(piece)
 			piece.position = grid_to_pixel(current.x, current.y)
 			all_pieces[current.x][current.y] = piece
@@ -398,7 +394,7 @@ func find_bombs():
 		elif col_matched == 4:
 			clear_column(current_column)
 		elif row_matched == 4:
-			clear_row(current_row )
+			clear_row(current_row)
 
 
 func find_col_row_matches(i, array = current_matches):
@@ -446,19 +442,19 @@ func call_bomb(bomb_type, piece):
 			piece.make_row_bomb()
 
 
-func get_bombed_pieces():
-	for column in width:
-		for row in height:
-			if all_pieces[column][row] == null or !all_pieces[column][row].matched:
-				continue
-			if all_pieces[column][row].is_color_bomb:
-				continue
-			if all_pieces[column][row].is_column_bomb:
-				clear_column(column)
-			elif all_pieces[column][row].is_row_bomb:
-				clear_row(row)
-			elif all_pieces[column][row].is_adjacent_bomb:
-				match_adjacent_pieces(column, row)
+#func get_bombed_pieces():
+#	for column in width:
+#		for row in height:
+#			if all_pieces[column][row] == null or !all_pieces[column][row].matched:
+#				continue
+#			if all_pieces[column][row].is_color_bomb:
+#				continue
+#			if all_pieces[column][row].is_column_bomb:
+#				clear_column(column)
+#			elif all_pieces[column][row].is_row_bomb:
+#				clear_row(row)
+#			elif all_pieces[column][row].is_adjacent_bomb:
+#				match_adjacent_pieces(column, row)
 
 
 func swap_pieces(column, row, direction):
@@ -639,7 +635,6 @@ func destroy_sinkers():
 		if current_sinkers[i] != null:
 			var row = current_sinkers[i].get_row()
 			var column = current_sinkers[i].get_column()
-#			var pos = pixel_to_grid(current_sinkers[i].position.x, current_sinkers[i].position.y)
 			if row == 0:
 				current_sinkers.remove(i)
 				all_pieces[column][row].matched = true
@@ -690,15 +685,8 @@ func clear_column(column):
 			continue
 		if  current.matched:
 			continue
-#		if current.is_row_bomb:
-#			all_pieces[column][i].matched = true
-#			clear_row(i)
-#		if current.is_adjacent_bomb:
-#			all_pieces[column][i].matched = true
-#			match_adjacent_pieces(column, i)
 		if current.is_color_bomb:
 			all_pieces[column][i].matched = false
-			#clear_color(all_pieces[column][i].color)
 		all_pieces[column][i].matched = true
 
 
@@ -709,38 +697,9 @@ func clear_row(row):
 			continue
 		if current.matched:
 			continue
-#		if current.is_column_bomb:
-#			all_pieces[i][row].matched = true
-#			clear_column(i)
-#		if current.is_adjacent_bomb:
-#			all_pieces[i][row].matched = true
-#			match_adjacent_pieces(i, row)
 		if current.is_color_bomb:
 			all_pieces[i][row].matched = false
-			#clear_color(all_pieces[i][row].color)
 		all_pieces[i][row].matched = true
-
-
-func match_adjacent_pieces(column, row):
-	for i in range(-1, 2):
-		for j in range(-1, 2):
-			var current = all_pieces[column + i][row + j] 
-			if is_sinker(column + i, row + j):
-				continue
-			if !is_in_grid(column + i, row + j) or current  == null:
-				continue
-			if all_pieces[column + i][row + j].matched:
-				continue
-			if current.is_column_bomb:
-				all_pieces[column + i][row + j].matched = true
-				clear_column(column + i)
-			if current.is_row_bomb:
-				all_pieces[column + i][row + j].matched = true
-				clear_row(row + j)
-			if current.is_color_bomb:
-				all_pieces[column + i][row + j].matched = true
-				clear_row(row + j)
-			all_pieces[column + i][row + j].matched = true
 
 
 func clear_color(color):
@@ -750,16 +709,6 @@ func clear_color(color):
 				continue
 			if all_pieces[column][row] == null or all_pieces[column][row].color != color:
 				continue
-#			if all_pieces[column][row].is_column_bomb:
-#				all_pieces[column][row].matched = true
-#				clear_column(column)
-#			if all_pieces[column][row].is_row_bomb:
-#				all_pieces[column][row].matched = true
-#				clear_row(row)
-#			if all_pieces[column][row].is_adjacent_bomb:
-#				all_pieces[column][row].matched = true
-#				match_adjacent_pieces(column, row)
-
 			matched_and_dim(all_pieces[column][row])
 			add_to_array(Vector2(column, row), current_matches)
 
@@ -814,12 +763,7 @@ func add_to_array(value, traget_array):
 
 func copy_array(array):
 	var copy = array.duplicate(true)
-#	 make_2d_array()
-#	for column in width:
-#		for row in height:
-#			copy[column][row] = array[column][row]
 	return copy
-
 
 
 func store_info(first_piece, other_piece, place, direction):
@@ -973,3 +917,14 @@ func _on_LockHolder_destroyed(place, _value):
 
 func _on_HintTimer_timeout():
 	generate_hint()
+
+
+func _on_top_ui_game_won():
+	state = WON
+	if GameDataManager.level_info[level]["high_score"] < score:
+		GameDataManager.level_info[level]["high_score"] = score
+	if GameDataManager.level_info.has(level + 1):
+		GameDataManager.level_info[level + 1]["unlocked"] = true
+	GameDataManager.save_data()
+	emit_signal("game_won", score)
+	pass # Replace with function body.
