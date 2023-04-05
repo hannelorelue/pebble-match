@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/moss.png-305a8c52c6a31da168c292ae8a09f1bc.stex"
+path="res://.import/star-gray.png-84827bb7f3103f864405cbe25744c0f8.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/Obstacles/moss.png"
-dest_files=[ "res://.import/moss.png-305a8c52c6a31da168c292ae8a09f1bc.stex" ]
+source_file="res://art/star-gray.png"
+dest_files=[ "res://.import/star-gray.png-84827bb7f3103f864405cbe25744c0f8.stex" ]
 
 [params]
 

@@ -7,4 +7,5 @@
 health = 1
 
 [node name="Sprite" parent="." index="0"]
+scale = Vector2( 2, 2 )
 texture = ExtResource( 2 )

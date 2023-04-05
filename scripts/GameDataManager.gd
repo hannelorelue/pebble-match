@@ -47,6 +47,20 @@ var level_info = {
 		"is_move" : true,
 		"is_sinker_in_scene": false, 
 		"max_sinkers": 0,
+		"goals" : {
+			1 : {
+				"type" : "IRON",
+				"value" : 3,
+			},
+			2 :  {
+				"type" : "COAL",
+				"value" : 5,
+			},
+			3 : {
+				"type" : "",
+				"value" : 0,
+			},
+		},
 	},
 	
 	2:{

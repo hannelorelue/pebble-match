@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/moss.png-305a8c52c6a31da168c292ae8a09f1bc.stex"
+path="res://.import/mine2.png-678311b4ed6c917d874d85cea697dfef.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/Obstacles/moss.png"
-dest_files=[ "res://.import/moss.png-305a8c52c6a31da168c292ae8a09f1bc.stex" ]
+source_file="res://scenes/mine2.png"
+dest_files=[ "res://.import/mine2.png-678311b4ed6c917d874d85cea697dfef.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=false
+flags/filter=true
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

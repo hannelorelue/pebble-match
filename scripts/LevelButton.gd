@@ -12,7 +12,9 @@ export (Texture) var goal_not_met
 
 onready var level_label = $TextureButton/Label
 onready var button = $TextureButton
-onready var star = $Sprite
+onready var star_1 = $Sprite
+onready var star_2 = $Sprite2
+onready var star_3 = $Sprite3
 
 
 # Called when the node enters the scene tree for the first time.
@@ -35,12 +37,18 @@ func setup():
 	level_label.text = String(level)
 	if is_enabled:
 		button.texture_normal = open_texture
+		star_1.texture = goal_met
+		star_2.texture = goal_met
 	else:
 		button.texture_normal = blocked_texture
 	if is_score_beaten:
-		star.texture = goal_met
+		star_1.texture = goal_met
+		star_2.texture = goal_met
+		star_3.texture = goal_met
 	else:
-		star.texture = goal_not_met
+#		star_1.texture = goal_not_met
+#		star_2.texture = goal_not_met
+		star_3.texture = goal_not_met
 
 
 func _on_TextureButton_pressed():
