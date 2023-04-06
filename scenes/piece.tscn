@@ -2,7 +2,7 @@
 
 [ext_resource path="res://scripts/piece.gd" type="Script" id=1]
 [ext_resource path="res://art/Pieces/ores.png" type="Texture" id=3]
-[ext_resource path="res://wiggle_right.tres" type="Animation" id=4]
+[ext_resource path="res://animations/wiggle_right.tres" type="Animation" id=4]
 [ext_resource path="res://art/Pieces/diamond-Sheet.png" type="Texture" id=5]
 
 [sub_resource type="Animation" id=1]

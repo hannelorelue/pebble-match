@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Top UI v 2.png-9272556774c0c7765d3d8bea815d58d4.stex"
+path="res://.import/Top UI v 2.png-b248c7f67e91550953d4e9d9fb791c53.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Top UI v 2.png"
-dest_files=[ "res://.import/Top UI v 2.png-9272556774c0c7765d3d8bea815d58d4.stex" ]
+source_file="res://art/Top UI v 2.png"
+dest_files=[ "res://.import/Top UI v 2.png-b248c7f67e91550953d4e9d9fb791c53.stex" ]
 
 [params]
 
