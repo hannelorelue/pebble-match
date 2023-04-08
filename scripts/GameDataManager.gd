@@ -6,6 +6,7 @@ var level_info = {
 	1:{
 		"unlocked" : true,
 		"high_score" : 0,
+		"date" : "",
 		"stars_unlocked" : 0,
 		"empty_spaces" : [
 			Vector2(0,0),
@@ -43,10 +44,11 @@ var level_info = {
 		"slime_spaces" : [Vector2(3,3)],
 		"piece_value" : 20,
 		"max_score" : 500,
-		"counter_value" : 13,
+		"counter_value" : 2,
 		"is_move" : true,
 		"is_sinker_in_scene": false, 
 		"max_sinkers": 0,
+		"No_piece_types" : 4,
 		"goals" : {
 			1 : {
 				"type" : "IRON",
@@ -66,25 +68,173 @@ var level_info = {
 	2:{
 		"unlocked" : true,
 		"high_score" : 0,
+		"date" : "",
 		"stars_unlocked" : 0,
-		"concrete_spaces" :[Vector2(2,3)],
+		"concrete_spaces" :[],
 		"empty_spaces" : [],
-		"ice_spaces" :[Vector2(2,2), Vector2(2,1)],
+		"ice_spaces" :[Vector2(2,2), Vector2(2,1), Vector2(3,2), Vector2(3,1)],
 		"lock_spaces" : [Vector2(4,3)],
-		"slime_spaces" : [],
+		"slime_spaces" : [Vector2(0,5), Vector2(0,6),Vector2(7,5), Vector2(7,6)],
 		"piece_value" : 20,
 		"max_score" : 500,
 		"counter_value" : 13,
 		"is_move" : true,
 		"is_sinker_in_scene": true, 
 		"max_sinkers": 2,
+		"No_piece_types" : 6,
+		"goals" : {
+			1 : {
+				"type" : "ICE",
+				"value" : 4,
+			},
+			2 :  {
+				"type" : "COAL",
+				"value" : 5,
+			},
+			3 : {
+				"type" : "",
+				"value" : 0,
+			},
+		},
+	},
+	
+	3:{
+		"unlocked" : false,
+		"high_score" : 0,
+		"date" : "",
+		"stars_unlocked" : 0,
+		"concrete_spaces" :[],
+		"empty_spaces" : [],
+		"ice_spaces" :[Vector2(2,2), Vector2(2,1), Vector2(3,2), Vector2(3,1)],
+		"lock_spaces" : [Vector2(4,3)],
+		"slime_spaces" : [Vector2(0,5), Vector2(0,6),Vector2(7,5), Vector2(7,6)],
+		"piece_value" : 20,
+		"max_score" : 500,
+		"counter_value" : 13,
+		"is_move" : true,
+		"is_sinker_in_scene": true, 
+		"max_sinkers": 2,
+		"No_piece_types" : 4,
+		"goals" : {
+			1 : {
+				"type" : "ICE",
+				"value" : 4,
+			},
+			2 :  {
+				"type" : "COAL",
+				"value" : 5,
+			},
+			3 : {
+				"type" : "",
+				"value" : 0,
+			},
+		},
+	},
+	
+	4:{
+		"unlocked" : false,
+		"high_score" : 0,
+		"date" : "",
+		"stars_unlocked" : 0,
+		"concrete_spaces" :[],
+		"empty_spaces" : [],
+		"ice_spaces" :[Vector2(2,2), Vector2(2,1), Vector2(3,2), Vector2(3,1)],
+		"lock_spaces" : [Vector2(4,3)],
+		"slime_spaces" : [Vector2(0,5), Vector2(0,6),Vector2(7,5), Vector2(7,6)],
+		"piece_value" : 20,
+		"max_score" : 500,
+		"counter_value" : 13,
+		"is_move" : true,
+		"is_sinker_in_scene": true, 
+		"max_sinkers": 2,
+		"No_piece_types" : 4,
+		"goals" : {
+			1 : {
+				"type" : "ICE",
+				"value" : 4,
+			},
+			2 :  {
+				"type" : "COAL",
+				"value" : 5,
+			},
+			3 : {
+				"type" : "",
+				"value" : 0,
+			},
+		},
+	},
+	
+	5:{
+		"unlocked" : false,
+		"high_score" : 0,
+		"date" : "",
+		"stars_unlocked" : 0,
+		"concrete_spaces" :[],
+		"empty_spaces" : [],
+		"ice_spaces" :[Vector2(2,2), Vector2(2,1), Vector2(3,2), Vector2(3,1)],
+		"lock_spaces" : [Vector2(4,3)],
+		"slime_spaces" : [Vector2(0,5), Vector2(0,6),Vector2(7,5), Vector2(7,6)],
+		"piece_value" : 20,
+		"max_score" : 500,
+		"counter_value" : 13,
+		"is_move" : true,
+		"is_sinker_in_scene": true, 
+		"max_sinkers": 2,
+		"No_piece_types" : 4,
+		"goals" : {
+			1 : {
+				"type" : "ICE",
+				"value" : 4,
+			},
+			2 :  {
+				"type" : "COAL",
+				"value" : 5,
+			},
+			3 : {
+				"type" : "",
+				"value" : 0,
+			},
+		},
+	},
+	
+	6:{
+		"unlocked" : false,
+		"high_score" : 0,
+		"date" : "",
+		"stars_unlocked" : 0,
+		"concrete_spaces" :[],
+		"empty_spaces" : [],
+		"ice_spaces" :[Vector2(2,2), Vector2(2,1), Vector2(3,2), Vector2(3,1)],
+		"lock_spaces" : [Vector2(4,3)],
+		"slime_spaces" : [Vector2(0,5), Vector2(0,6),Vector2(7,5), Vector2(7,6)],
+		"piece_value" : 20,
+		"max_score" : 500,
+		"counter_value" : 13,
+		"is_move" : true,
+		"is_sinker_in_scene": true, 
+		"max_sinkers": 2,
+		"No_piece_types" : 4,
+		"goals" : {
+			1 : {
+				"type" : "ICE",
+				"value" : 4,
+			},
+			2 :  {
+				"type" : "COAL",
+				"value" : 5,
+			},
+			3 : {
+				"type" : "",
+				"value" : 0,
+			},
+		},
 	},
 }
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	save_data()
+	#save_data()
 	level_info = load_data()
 
 

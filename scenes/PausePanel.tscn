@@ -1,10 +1,25 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=13 format=2]
 
-[ext_resource path="res://art/UI/Panels/Pause Panel.png" type="Texture" id=1]
+[ext_resource path="res://art/panel-blue.png" type="Texture" id=1]
 [ext_resource path="res://art/UI/Buttons/Quit Button Pause.png" type="Texture" id=2]
 [ext_resource path="res://art/UI/Buttons/Continue Button Pause.png" type="Texture" id=3]
 [ext_resource path="res://scripts/PausePanel.gd" type="Script" id=4]
 [ext_resource path="res://scenes/scenesslide_in.tres" type="Animation" id=5]
+[ext_resource path="res://fonts/MxPlus_IBM_EGA_8x14.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://art/ui-button-red.png" type="Texture" id=7]
+[ext_resource path="res://fonts/pixel.tres" type="DynamicFontData" id=8]
+[ext_resource path="res://art/ui-button-green.png" type="Texture" id=9]
+
+[sub_resource type="DynamicFont" id=1]
+size = 90
+font_data = ExtResource( 8 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 40
+extra_spacing_bottom = 11
+font_data = ExtResource( 6 )
+
+[sub_resource type="StyleBoxEmpty" id=3]
 
 [node name="PausePanel" type="CanvasLayer"]
 pause_mode = 2
@@ -15,18 +30,21 @@ script = ExtResource( 4 )
 [node name="MarginContainer" type="MarginContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_constants/margin_right = 32
-custom_constants/margin_top = 256
-custom_constants/margin_left = 32
+custom_constants/margin_right = 30
+custom_constants/margin_top = 384
+custom_constants/margin_left = 30
+custom_constants/margin_bottom = 128
 
 [node name="TextureRect" type="TextureRect" parent="MarginContainer"]
-margin_left = 32.0
-margin_top = 256.0
-margin_right = 544.0
-margin_bottom = 1024.0
+margin_left = 30.0
+margin_top = 384.0
+margin_right = 546.0
+margin_bottom = 896.0
 texture = ExtResource( 1 )
+expand = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/TextureRect"]
+visible = false
 margin_left = 11.0
 margin_top = 241.0
 margin_right = 499.0
@@ -34,7 +52,7 @@ margin_bottom = 413.0
 custom_constants/separation = 10
 alignment = 1
 
-[node name="Quit" type="TextureButton" parent="MarginContainer/TextureRect/HBoxContainer"]
+[node name="Quit2" type="TextureButton" parent="MarginContainer/TextureRect/HBoxContainer"]
 margin_left = 47.0
 margin_right = 239.0
 margin_bottom = 172.0
@@ -43,7 +61,7 @@ texture_normal = ExtResource( 2 )
 expand = true
 stretch_mode = 5
 
-[node name="Continue" type="TextureButton" parent="MarginContainer/TextureRect/HBoxContainer"]
+[node name="Continue2" type="TextureButton" parent="MarginContainer/TextureRect/HBoxContainer"]
 margin_left = 249.0
 margin_right = 441.0
 margin_bottom = 172.0
@@ -52,8 +70,56 @@ texture_normal = ExtResource( 3 )
 expand = true
 stretch_mode = 5
 
+[node name="Label" type="Label" parent="MarginContainer/TextureRect"]
+anchor_right = 1.0
+margin_left = 1.0
+margin_top = 47.0
+margin_right = 1.0
+margin_bottom = 110.0
+custom_fonts/font = SubResource( 1 )
+text = "Game paused"
+align = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/TextureRect"]
+margin_left = 46.0
+margin_top = 211.0
+margin_right = 484.0
+margin_bottom = 405.0
+size_flags_horizontal = 3
+custom_constants/separation = 30
+
+[node name="Quit" type="Button" parent="MarginContainer/TextureRect/HBoxContainer2"]
+margin_right = 204.0
+margin_bottom = 194.0
+rect_min_size = Vector2( 100, 150 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_fonts/font = SubResource( 2 )
+custom_styles/hover = SubResource( 3 )
+text = "Quit"
+icon = ExtResource( 7 )
+icon_align = 1
+expand_icon = true
+
+[node name="Continue" type="Button" parent="MarginContainer/TextureRect/HBoxContainer2"]
+margin_left = 234.0
+margin_right = 438.0
+margin_bottom = 194.0
+rect_min_size = Vector2( 100, 150 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 2 )
+custom_styles/hover = SubResource( 3 )
+text = "Restart"
+icon = ExtResource( 9 )
+icon_align = 1
+expand_icon = true
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/slide_in = ExtResource( 5 )
 
-[connection signal="pressed" from="MarginContainer/TextureRect/HBoxContainer/Quit" to="." method="_on_Quit_pressed"]
-[connection signal="pressed" from="MarginContainer/TextureRect/HBoxContainer/Continue" to="." method="_on_Continue_pressed"]
+[connection signal="pressed" from="MarginContainer/TextureRect/HBoxContainer/Quit2" to="." method="_on_Quit_pressed"]
+[connection signal="pressed" from="MarginContainer/TextureRect/HBoxContainer/Continue2" to="." method="_on_Continue_pressed"]
+[connection signal="pressed" from="MarginContainer/TextureRect/HBoxContainer2/Quit" to="." method="_on_Quit_pressed"]
+[connection signal="pressed" from="MarginContainer/TextureRect/HBoxContainer2/Continue" to="." method="_on_Continue_pressed"]

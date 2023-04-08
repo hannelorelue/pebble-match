@@ -4,10 +4,10 @@ onready var music_player = $MusicPlayer
 onready var sound_player = $SoundPlayer
 
 var music_list = [
-	preload("res://art/Match 3 Sounds/Music/theme-1.ogg"), 
-	preload("res://art/Match 3 Sounds/Music/theme-2.ogg"), 
-	preload("res://art/Match 3 Sounds/Music/theme-3.ogg"), 
-	preload("res://art/Match 3 Sounds/Music/theme-4.ogg"),
+	preload("res://art/sounds/Connected.wav"), 
+	#preload("res://art/sounds/Out-of-Time.wav"), 
+	preload("res://art/sounds/Penguin-Town.wav"), 
+	preload("res://art/sounds/Penguins-vs-Rabbits.wav"),
 ]
 
 

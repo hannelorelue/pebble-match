@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://art/Particles and effects/Explosion V2/explode_4_1.png" type="Texture" id=1]
 [ext_resource path="res://art/Particles and effects/Explosion V2/explode_6_1.png" type="Texture" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://art/Particles and effects/Explosion V2/explode_3_1.png" type="Texture" id=6]
 [ext_resource path="res://art/Particles and effects/Explosion V2/explode_2_1.png" type="Texture" id=7]
 [ext_resource path="res://scripts/animtedExplosion.gd" type="Script" id=8]
+[ext_resource path="res://art/dust-cloud.png" type="Texture" id=9]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
@@ -17,13 +18,56 @@ animations = [ {
 "speed": 16.0
 } ]
 
+[sub_resource type="AtlasTexture" id=2]
+atlas = ExtResource( 9 )
+region = Rect2( 0, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=3]
+atlas = ExtResource( 9 )
+region = Rect2( 32, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=4]
+atlas = ExtResource( 9 )
+region = Rect2( 64, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=5]
+atlas = ExtResource( 9 )
+region = Rect2( 96, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=6]
+atlas = ExtResource( 9 )
+region = Rect2( 128, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=7]
+atlas = ExtResource( 9 )
+region = Rect2( 160, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=8]
+atlas = ExtResource( 9 )
+region = Rect2( 192, 0, 32, 32 )
+
+[sub_resource type="SpriteFrames" id=9]
+animations = [ {
+"frames": [ SubResource( 2 ), SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ) ],
+"loop": true,
+"name": "dust_cloud",
+"speed": 18.0
+} ]
+
 [node name="animatedExplosion" type="Node2D"]
 script = ExtResource( 8 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+visible = false
 scale = Vector2( 0.7, 0.7 )
 frames = SubResource( 1 )
 animation = "explosion"
 frame = 3
 
+[node name="AnimatedSprite2" type="AnimatedSprite" parent="."]
+scale = Vector2( 2, 2 )
+frames = SubResource( 9 )
+animation = "dust_cloud"
+
 [connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
+[connection signal="animation_finished" from="AnimatedSprite2" to="." method="_on_AnimatedSprite2_animation_finished"]

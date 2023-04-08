@@ -1,0 +1,158 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://pixel_theme.tres" type="Theme" id=1]
+[ext_resource path="res://fonts/pixel.tres" type="DynamicFontData" id=2]
+[ext_resource path="res://scripts/Credits.gd" type="Script" id=3]
+[ext_resource path="res://animations/slide_in.tres" type="Animation" id=4]
+
+[sub_resource type="DynamicFont" id=1]
+size = 50
+font_data = ExtResource( 2 )
+
+[sub_resource type="Animation" id=2]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("MarginContainer:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 576, 0 ) ]
+}
+
+[node name="Credits" type="CanvasLayer"]
+script = ExtResource( 3 )
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 576.0
+margin_right = 2304.0
+margin_bottom = 3072.0
+custom_constants/margin_right = 30
+custom_constants/margin_top = 30
+custom_constants/margin_left = 30
+custom_constants/margin_bottom = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+margin_left = 30.0
+margin_top = 30.0
+margin_right = 1698.0
+margin_bottom = 3072.0
+size_flags_horizontal = 3
+custom_constants/separation = 40
+
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer"]
+margin_right = 1668.0
+margin_bottom = 18.0
+text = "<<< Back"
+
+[node name="Header" type="Label" parent="MarginContainer/VBoxContainer"]
+margin_top = 58.0
+margin_right = 1668.0
+margin_bottom = 103.0
+theme = ExtResource( 1 )
+custom_fonts/font = SubResource( 1 )
+text = "Credits"
+align = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
+margin_top = 143.0
+margin_right = 1668.0
+margin_bottom = 281.0
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/CenterContainer"]
+margin_left = 671.0
+margin_right = 996.0
+margin_bottom = 138.0
+custom_constants/vseparation = 12
+custom_constants/hseparation = 15
+columns = 2
+
+[node name="GameMadeBy" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+margin_right = 170.0
+margin_bottom = 18.0
+text = "Game made by "
+
+[node name="honeycodes" type="LinkButton" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+margin_left = 185.0
+margin_right = 325.0
+margin_bottom = 18.0
+text = "honeycodes.dev"
+underline = 1
+
+[node name="CaveTileset" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+margin_top = 30.0
+margin_right = 170.0
+margin_bottom = 48.0
+text = "Cave Tileset: "
+
+[node name="szadiart" type="LinkButton" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+margin_left = 185.0
+margin_top = 30.0
+margin_right = 325.0
+margin_bottom = 48.0
+text = "szadiart"
+underline = 1
+
+[node name="Music" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+margin_top = 60.0
+margin_right = 170.0
+margin_bottom = 78.0
+text = "Music:"
+
+[node name="Abstraction" type="LinkButton" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+margin_left = 185.0
+margin_top = 60.0
+margin_right = 325.0
+margin_bottom = 78.0
+text = "Abstraction"
+underline = 1
+
+[node name="GameEngine" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+margin_top = 90.0
+margin_right = 170.0
+margin_bottom = 108.0
+text = "Game engine:"
+
+[node name="Godot" type="LinkButton" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+margin_left = 185.0
+margin_top = 90.0
+margin_right = 325.0
+margin_bottom = 108.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Godot"
+underline = 1
+
+[node name="DrawingSoftware" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+margin_top = 120.0
+margin_right = 170.0
+margin_bottom = 138.0
+text = "Drawing Software:"
+
+[node name="Aseprite" type="LinkButton" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+margin_left = 185.0
+margin_top = 120.0
+margin_right = 325.0
+margin_bottom = 138.0
+focus_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Aseprite"
+underline = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 2 )
+anims/slide_in = ExtResource( 4 )
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer/GridContainer/honeycodes" to="." method="_on_Button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer/GridContainer/szadiart" to="." method="_on_szadiart_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer/GridContainer/Abstraction" to="." method="_on_Abstraction_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer/GridContainer/Godot" to="." method="_on_LinkButton_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer/GridContainer/Aseprite" to="." method="_on_Aseprite_pressed"]

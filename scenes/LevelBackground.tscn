@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://scenes/LevelButton.tscn" type="PackedScene" id=1]
-[ext_resource path="res://scenes/mine.png" type="Texture" id=2]
+[ext_resource path="res://art/mine.png" type="Texture" id=2]
 
 [node name="LevelBackground" type="TextureRect"]
 anchor_right = 1.0
@@ -10,26 +10,26 @@ texture = ExtResource( 2 )
 stretch_mode = 5
 
 [node name="LevelButton" parent="." instance=ExtResource( 1 )]
-position = Vector2( 171, 272 )
+position = Vector2( 155, 266 )
 level = 1
 is_enabled = true
 
 [node name="LevelButton2" parent="." instance=ExtResource( 1 )]
-position = Vector2( 476, 312 )
+position = Vector2( 467, 329 )
 level = 2
 
 [node name="LevelButton3" parent="." instance=ExtResource( 1 )]
-position = Vector2( 469, 527 )
+position = Vector2( 474, 543 )
 level = 3
 
 [node name="LevelButton4" parent="." instance=ExtResource( 1 )]
-position = Vector2( 104, 699 )
+position = Vector2( 160, 614 )
 level = 4
 
 [node name="LevelButton5" parent="." instance=ExtResource( 1 )]
-position = Vector2( 210, 576 )
+position = Vector2( 99, 780 )
 level = 5
 
 [node name="LevelButton6" parent="." instance=ExtResource( 1 )]
-position = Vector2( 287, 849 )
+position = Vector2( 287, 901 )
 level = 6

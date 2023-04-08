@@ -1,0 +1,24 @@
+[gd_resource type="Theme" load_steps=6 format=2]
+
+[ext_resource path="res://fonts/MxPlus_IBM_EGA_8x14.ttf" type="DynamicFontData" id=1]
+
+[sub_resource type="DynamicFont" id=1]
+size = 20
+font_data = ExtResource( 1 )
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.309804, 0.309804, 0.309804, 0.67451 )
+
+[sub_resource type="StyleBoxEmpty" id=2]
+
+[sub_resource type="StyleBoxEmpty" id=4]
+
+[resource]
+default_font = SubResource( 1 )
+Button/fonts/font = SubResource( 1 )
+Button/styles/hover = SubResource( 3 )
+Button/styles/normal = SubResource( 2 )
+Button/styles/pressed = SubResource( 4 )
+CheckBox/constants/check_vadjust = 0
+CheckBox/constants/hseparation = 10
+Label/fonts/EGA = SubResource( 1 )

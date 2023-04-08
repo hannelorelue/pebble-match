@@ -1,6 +1,6 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=19 format=2]
 
-[ext_resource path="res://art/background-blue.png" type="Texture" id=1]
+[ext_resource path="res://art/background-earth.png" type="Texture" id=1]
 [ext_resource path="res://scripts/grid.gd" type="Script" id=2]
 [ext_resource path="res://scenes/concrete.tscn" type="PackedScene" id=3]
 [ext_resource path="res://scripts/SoundPlayer.gd" type="Script" id=4]
@@ -17,24 +17,39 @@
 [ext_resource path="res://scenes/ice.tscn" type="PackedScene" id=20]
 [ext_resource path="res://scenes/ObstacleHolder.tscn" type="PackedScene" id=21]
 
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+void fragment(){
+	COLOR = texture(SCREEN_TEXTURE, SCREEN_UV);
+	COLOR.rgb = vec3(COLOR.r + COLOR.g + COLOR.b) / 3.0;
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+
 [node name="GameWindow" type="Node2D"]
 script = ExtResource( 5 )
 
-[node name="background" type="TextureRect" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="background" type="TextureRect" parent="CanvasLayer"]
 margin_right = 581.0
 margin_bottom = 1024.0
 texture = ExtResource( 1 )
 stretch_mode = 1
 
-[node name="bottomUi" parent="." instance=ExtResource( 16 )]
-margin_top = 920.0
+[node name="bottomUi" parent="CanvasLayer" instance=ExtResource( 16 )]
+margin_top = -104.0
 margin_right = 576.0
-margin_bottom = 1012.0
+margin_bottom = -12.0
 
-[node name="top_ui" parent="." instance=ExtResource( 7 )]
+[node name="top_ui" parent="CanvasLayer" instance=ExtResource( 7 )]
+margin_right = 576.0
+margin_bottom = 192.0
 goal_ui = ExtResource( 12 )
 
-[node name="grid" type="Node2D" parent="."]
+[node name="grid" type="Node2D" parent="CanvasLayer"]
 script = ExtResource( 2 )
 y_offset = -2
 empty_spaces = PoolVector2Array( 0, 3 )
@@ -45,37 +60,44 @@ is_move = true
 sinker_piece = ExtResource( 9 )
 max_sinkers = 2
 
-[node name="IcyHolder" parent="grid" instance=ExtResource( 21 )]
+[node name="IcyHolder" parent="CanvasLayer/grid" instance=ExtResource( 21 )]
 scene = ExtResource( 20 )
-value = "ice"
+value = "ICE"
 
-[node name="SlimeHolder" parent="grid" instance=ExtResource( 21 )]
+[node name="SlimeHolder" parent="CanvasLayer/grid" instance=ExtResource( 21 )]
 scene = ExtResource( 18 )
-value = "slime"
+value = "SLIME"
 
-[node name="ConcreteHolder" parent="grid" instance=ExtResource( 21 )]
+[node name="ConcreteHolder" parent="CanvasLayer/grid" instance=ExtResource( 21 )]
 scene = ExtResource( 3 )
 
-[node name="LockHolder" parent="grid" instance=ExtResource( 21 )]
+[node name="LockHolder" parent="CanvasLayer/grid" instance=ExtResource( 21 )]
 scene = ExtResource( 19 )
+value = "LOCK"
 
-[node name="Timer" type="Timer" parent="grid"]
+[node name="Timer" type="Timer" parent="CanvasLayer/grid"]
 
-[node name="DestroyTimer" type="Timer" parent="grid"]
+[node name="DestroyTimer" type="Timer" parent="CanvasLayer/grid"]
 wait_time = 0.1
 one_shot = true
 
-[node name="RefillTimer" type="Timer" parent="grid"]
+[node name="RefillTimer" type="Timer" parent="CanvasLayer/grid"]
 wait_time = 0.2
 one_shot = true
 
-[node name="CollapseTimer" type="Timer" parent="grid"]
+[node name="CollapseTimer" type="Timer" parent="CanvasLayer/grid"]
 wait_time = 0.2
 one_shot = true
 
-[node name="HintTimer" type="Timer" parent="grid"]
+[node name="HintTimer" type="Timer" parent="CanvasLayer/grid"]
 wait_time = 5.0
 one_shot = true
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+visible = false
+material = SubResource( 2 )
+anchor_right = 1.0
+anchor_bottom = 1.0
 
 [node name="GameOverScreen" parent="." instance=ExtResource( 8 )]
 
@@ -86,25 +108,27 @@ one_shot = true
 [node name="SoundPlayer" type="Node" parent="."]
 script = ExtResource( 4 )
 
-[connection signal="game_paused" from="bottomUi" to="PausePanel" method="_on_bottomUi_game_paused"]
-[connection signal="game_won" from="top_ui" to="grid" method="_on_top_ui_game_won"]
-[connection signal="check_goal" from="grid" to="top_ui" method="_on_grid_check_goal"]
-[connection signal="counter_changed" from="grid" to="top_ui" method="_on_grid_counter_changed"]
-[connection signal="game_over" from="grid" to="GameOverScreen" method="_on_grid_game_over"]
-[connection signal="game_won" from="grid" to="WinScreen" method="_on_grid_game_won"]
-[connection signal="play_sound" from="grid" to="SoundPlayer" method="_on_grid_play_sound"]
-[connection signal="set_max_score" from="grid" to="top_ui" method="_on_grid_set_max_score"]
-[connection signal="update_score" from="grid" to="top_ui" method="_on_grid_update_score"]
-[connection signal="destroyed" from="grid/IcyHolder" to="top_ui" method="_on_IcyHolder_destroyed"]
-[connection signal="destroyed" from="grid/IcyHolder" to="grid" method="_on_IcyHolder_destroyed"]
-[connection signal="destroyed" from="grid/SlimeHolder" to="top_ui" method="_on_SlimeHolder_destroyed"]
-[connection signal="destroyed" from="grid/SlimeHolder" to="grid" method="_on_SlimeHolder_destroyed"]
-[connection signal="destroyed" from="grid/ConcreteHolder" to="top_ui" method="_on_ConcreteHolder_destroyed"]
-[connection signal="destroyed" from="grid/ConcreteHolder" to="grid" method="_on_ConcreteHolder_destroyed"]
-[connection signal="destroyed" from="grid/LockHolder" to="top_ui" method="_on_LockHolder_destroyed"]
-[connection signal="destroyed" from="grid/LockHolder" to="grid" method="_on_LockHolder_destroyed"]
-[connection signal="timeout" from="grid/Timer" to="grid" method="_on_Timer_timeout"]
-[connection signal="timeout" from="grid/DestroyTimer" to="grid" method="_on_destroy_timer_timeout"]
-[connection signal="timeout" from="grid/RefillTimer" to="grid" method="_on_refill_timer_timeout"]
-[connection signal="timeout" from="grid/CollapseTimer" to="grid" method="_on_collapse_timer_timeout"]
-[connection signal="timeout" from="grid/HintTimer" to="grid" method="_on_HintTimer_timeout"]
+[connection signal="game_paused" from="CanvasLayer/bottomUi" to="PausePanel" method="_on_bottomUi_game_paused"]
+[connection signal="game_won" from="CanvasLayer/top_ui" to="CanvasLayer/grid" method="_on_top_ui_game_won"]
+[connection signal="check_goal" from="CanvasLayer/grid" to="CanvasLayer/top_ui" method="_on_grid_check_goal"]
+[connection signal="counter_changed" from="CanvasLayer/grid" to="CanvasLayer/top_ui" method="_on_grid_counter_changed"]
+[connection signal="game_over" from="CanvasLayer/grid" to="." method="_on_grid_game_over"]
+[connection signal="game_over" from="CanvasLayer/grid" to="GameOverScreen" method="_on_grid_game_over"]
+[connection signal="game_won" from="CanvasLayer/grid" to="." method="_on_grid_game_won"]
+[connection signal="game_won" from="CanvasLayer/grid" to="WinScreen" method="_on_grid_game_won"]
+[connection signal="play_sound" from="CanvasLayer/grid" to="SoundPlayer" method="_on_grid_play_sound"]
+[connection signal="set_max_score" from="CanvasLayer/grid" to="CanvasLayer/top_ui" method="_on_grid_set_max_score"]
+[connection signal="update_score" from="CanvasLayer/grid" to="CanvasLayer/top_ui" method="_on_grid_update_score"]
+[connection signal="destroyed" from="CanvasLayer/grid/IcyHolder" to="CanvasLayer/top_ui" method="_on_IcyHolder_destroyed"]
+[connection signal="destroyed" from="CanvasLayer/grid/IcyHolder" to="CanvasLayer/grid" method="_on_IcyHolder_destroyed"]
+[connection signal="destroyed" from="CanvasLayer/grid/SlimeHolder" to="CanvasLayer/top_ui" method="_on_SlimeHolder_destroyed"]
+[connection signal="destroyed" from="CanvasLayer/grid/SlimeHolder" to="CanvasLayer/grid" method="_on_SlimeHolder_destroyed"]
+[connection signal="destroyed" from="CanvasLayer/grid/ConcreteHolder" to="CanvasLayer/top_ui" method="_on_ConcreteHolder_destroyed"]
+[connection signal="destroyed" from="CanvasLayer/grid/ConcreteHolder" to="CanvasLayer/grid" method="_on_ConcreteHolder_destroyed"]
+[connection signal="destroyed" from="CanvasLayer/grid/LockHolder" to="CanvasLayer/top_ui" method="_on_LockHolder_destroyed"]
+[connection signal="destroyed" from="CanvasLayer/grid/LockHolder" to="CanvasLayer/grid" method="_on_LockHolder_destroyed"]
+[connection signal="timeout" from="CanvasLayer/grid/Timer" to="CanvasLayer/grid" method="_on_Timer_timeout"]
+[connection signal="timeout" from="CanvasLayer/grid/DestroyTimer" to="CanvasLayer/grid" method="_on_destroy_timer_timeout"]
+[connection signal="timeout" from="CanvasLayer/grid/RefillTimer" to="CanvasLayer/grid" method="_on_refill_timer_timeout"]
+[connection signal="timeout" from="CanvasLayer/grid/CollapseTimer" to="CanvasLayer/grid" method="_on_collapse_timer_timeout"]
+[connection signal="timeout" from="CanvasLayer/grid/HintTimer" to="CanvasLayer/grid" method="_on_HintTimer_timeout"]

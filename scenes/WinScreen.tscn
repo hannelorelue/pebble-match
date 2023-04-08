@@ -1,14 +1,29 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://art/UI/Buttons/Continue Button Game Win.png" type="Texture" id=1]
-[ext_resource path="res://art/UI/Panels/Win Panel.png" type="Texture" id=2]
+[ext_resource path="res://fonts/MxPlus_IBM_EGA_8x14.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://art/panel-green.png" type="Texture" id=2]
 [ext_resource path="res://scenes/scenesslide_in.tres" type="Animation" id=3]
 [ext_resource path="res://scripts/WinScreen.gd" type="Script" id=4]
-[ext_resource path="res://fonts/Kenney Blocks.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://art/ui-button-red.png" type="Texture" id=5]
 
 [sub_resource type="DynamicFont" id=1]
-size = 80
-font_data = ExtResource( 5 )
+size = 70
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 60
+outline_size = 4
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 30
+extra_spacing_top = -14
+font_data = ExtResource( 1 )
+
+[sub_resource type="StyleBoxEmpty" id=4]
+
+[sub_resource type="StyleBoxEmpty" id=5]
 
 [node name="WinScreen" type="CanvasLayer"]
 offset = Vector2( 576, 0 )
@@ -26,37 +41,65 @@ custom_constants/margin_bottom = 40
 [node name="TextureRect" type="TextureRect" parent="MarginContainer"]
 margin_left = 40.0
 margin_top = 256.0
-margin_right = 552.0
-margin_bottom = 1024.0
+margin_right = 536.0
+margin_bottom = 984.0
 texture = ExtResource( 2 )
+expand = true
+stretch_mode = 5
+
+[node name="Label2" type="Label" parent="MarginContainer/TextureRect"]
+margin_top = 78.0
+margin_right = 495.0
+margin_bottom = 128.0
+custom_fonts/font = SubResource( 1 )
+text = "You Won!"
+align = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/TextureRect"]
-margin_left = 135.0
-margin_top = 288.0
-margin_right = 391.0
-margin_bottom = 552.0
+margin_left = 84.0
+margin_top = 215.0
+margin_right = 403.0
+margin_bottom = 449.0
 alignment = 1
 
 [node name="Label" type="Label" parent="MarginContainer/TextureRect/VBoxContainer"]
-margin_right = 256.0
-margin_bottom = 130.0
+margin_right = 319.0
+margin_bottom = 70.0
 size_flags_vertical = 3
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "1089"
 align = 1
+valign = 1
 
-[node name="ContinueButton" type="TextureButton" parent="MarginContainer/TextureRect/VBoxContainer"]
-margin_top = 134.0
+[node name="ContinueButton1" type="TextureButton" parent="MarginContainer/TextureRect/VBoxContainer"]
+visible = false
+margin_top = 85.0
 margin_right = 256.0
-margin_bottom = 264.0
+margin_bottom = 205.0
 rect_min_size = Vector2( 256, 120 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
-texture_normal = ExtResource( 1 )
+texture_normal = ExtResource( 5 )
 expand = true
 stretch_mode = 5
+
+[node name="ContinueButton" type="Button" parent="MarginContainer/TextureRect/VBoxContainer"]
+margin_top = 74.0
+margin_right = 319.0
+margin_bottom = 234.0
+rect_min_size = Vector2( 0, 160 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_fonts/font = SubResource( 3 )
+custom_styles/hover = SubResource( 4 )
+custom_styles/pressed = SubResource( 5 )
+text = "Continue"
+icon = ExtResource( 5 )
+icon_align = 1
+expand_icon = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/slide_in = ExtResource( 3 )
 
+[connection signal="pressed" from="MarginContainer/TextureRect/VBoxContainer/ContinueButton1" to="." method="_on_ContinueButton_pressed"]
 [connection signal="pressed" from="MarginContainer/TextureRect/VBoxContainer/ContinueButton" to="." method="_on_ContinueButton_pressed"]

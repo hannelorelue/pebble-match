@@ -10,4 +10,4 @@ func _ready():
 
 func take_damage(damage):
 	health  -= damage
-	modulate.a = health * 0.3
+	#modulate.a = health * 0.3

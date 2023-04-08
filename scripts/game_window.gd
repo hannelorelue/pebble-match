@@ -1,7 +1,7 @@
 extends Node2D
 
-onready var grid = $grid
-onready var top_ui = $top_ui
+onready var grid = $CanvasLayer/grid
+onready var top_ui = $CanvasLayer/top_ui
 
 var level := 1
 var no_piece_types: int = 4
@@ -50,9 +50,10 @@ func _ready():
 	
 
 
-func set_level_info(Level: int, Empty_Spaces: PoolVector2Array, Concrete_Spaces: PoolVector2Array, 
-Ice_Spaces: PoolVector2Array, Lock_Spaces: PoolVector2Array, Slime_Spaces: PoolVector2Array,
-Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int, Is_sinker_in_scene: bool, Max_sinkers: int, No_piece_types):
+func set_level_info(Level: int, Empty_Spaces: PoolVector2Array, 
+Concrete_Spaces: PoolVector2Array, Ice_Spaces: PoolVector2Array, Lock_Spaces: PoolVector2Array, 
+Slime_Spaces: PoolVector2Array, Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int, 
+Is_sinker_in_scene: bool, Max_sinkers: int, No_piece_types, Goal_dict):
 	level = Level
 	concrete_spaces = Concrete_Spaces
 	empty_spaces = Empty_Spaces
@@ -66,3 +67,17 @@ Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int, Is_sinker_i
 	is_sinker_in_scene = Is_sinker_in_scene
 	max_sinkers = Max_sinkers
 	no_piece_types = No_piece_types
+	goals = Goal_dict
+
+func get_level():
+	return level
+
+
+func _on_grid_game_over():
+	$CanvasLayer/ColorRect.visible = true
+	pass # Replace with function body.
+
+
+func _on_grid_game_won(_score):
+	$CanvasLayer/ColorRect.visible = true
+	pass # Replace with function body.

@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://scenes/LevelBackground.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scripts/LevelSelection.gd" type="Script" id=3]
-[ext_resource path="res://art/UI/Buttons/Back Button.png" type="Texture" id=4]
 
 [node name="CanvasLayer" type="CanvasLayer"]
 script = ExtResource( 3 )
@@ -30,11 +29,13 @@ margin_bottom = 1024.0
 rect_min_size = Vector2( 576, 1024 )
 expand = true
 
-[node name="BackButton" type="TextureButton" parent="."]
-margin_right = 73.0
-margin_bottom = 59.0
-texture_normal = ExtResource( 4 )
-expand = true
-stretch_mode = 5
+[node name="BackButton" type="Button" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -72.0
+margin_top = 5.0
+margin_right = 72.0
+margin_bottom = 23.0
+text = "<<< Back"
 
-[connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_Button_pressed"]

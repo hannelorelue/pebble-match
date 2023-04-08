@@ -19,7 +19,6 @@ onready var star_3 = $Sprite3
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-
 	if GameDataManager.level_info.has(level):
 		is_enabled = GameDataManager.level_info[level]["unlocked"]
 		#print(GameDataManager.level_info[level]["empty_spaces"])

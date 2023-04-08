@@ -12,6 +12,7 @@ config_version=4
 
 config/name="Candy_Crush"
 run/main_scene="res://scenes/GameMenu.tscn"
+boot_splash/image="res://art/Loading-background.png"
 config/icon="res://icon.png"
 
 [autoload]
@@ -31,6 +32,7 @@ window/stretch/aspect="keep_width"
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
+theme/custom="res://pixel_theme.tres"
 
 [input]
 

@@ -31,7 +31,6 @@ func goto_scene(path):
 
 	# The solution is to defer the load to a later time, when
 	# we can be sure that no code from the current scene is running:
-
 	call_deferred("_deferred_goto_scene", path)
 
 func goto_level(level):
@@ -39,8 +38,8 @@ func goto_level(level):
 
 func _deferred_goto_scene(path):
 	# It is now safe to remove the current scene
-	current_scene.free()
-
+	if is_instance_valid(current_scene):
+		current_scene.free()
 	# Load the new scene.
 	var s = ResourceLoader.load(path)
 
@@ -57,7 +56,8 @@ func _deferred_goto_scene(path):
 func _deferred_goto_level(level):
 	var path = "res://scenes/game_window.tscn"
 	# It is now safe to remove the current scene
-	current_scene.free()
+	if is_instance_valid(current_scene):
+		current_scene.free()
 
 	# Load the new scene.
 	var s = ResourceLoader.load(path)
@@ -67,7 +67,8 @@ func _deferred_goto_level(level):
 	var level_info = GameDataManager.level_info[level]
 	current_scene.set_level_info(level, level_info["empty_spaces"], level_info["concrete_spaces"], 
 		level_info["ice_spaces"], level_info["lock_spaces"], level_info["slime_spaces"], 
-		 level_info["max_score"],  level_info["counter_value"],  level_info["is_move"],  level_info["piece_value"], level_info["is_sinker_in_scene"],level_info["max_sinkers"], 4)
+		level_info["max_score"],  level_info["counter_value"], level_info["is_move"],  level_info["piece_value"], 
+		level_info["is_sinker_in_scene"], level_info["max_sinkers"], level_info["No_piece_types"], level_info["goals"] )
 	# Add it to the active scene, as child of root.
 	get_tree().get_root().add_child(current_scene)
 
