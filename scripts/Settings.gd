@@ -1,31 +1,32 @@
-extends "res://scripts/menu.gd"
+extends CanvasLayer
 
-signal sound_change
-signal back_button
+signal back_Button_pressed
 
-export (Texture) var sound_on_texture
-export (Texture) var sound_off_texture
+func _ready():
+	$MarginContainer/VBoxContainer/MusicCheckBox.pressed = ConfigManager.music_on
+	$MarginContainer/VBoxContainer/SoundCheckBox.pressed = ConfigManager.sound_on
+
+func slide_in():
+	$AnimationPlayer.play("slide_in")
+
+func slide_out():
+	$AnimationPlayer.play_backwards("slide_in")
 
 
-func change_sound_texture():
-	if ConfigManager.sound_on == true:
-		$MarginContainer/VBoxContainer/VBoxContainer/Button1.texture_normal = sound_on_texture
-	else:
-		$MarginContainer/VBoxContainer/VBoxContainer/Button1.texture_normal = sound_off_texture
 
-
-func _on_Button1_pressed():
-	ConfigManager.sound_on = !ConfigManager.sound_on
-	change_sound_texture()
+func _on_MusicCheckBox_toggled(button_pressed):
+	ConfigManager.music_on = button_pressed
 	ConfigManager.save_config()
 	AudioManager.set_volume()
-	AudioManager.play_fixed_sound(0)
+	AudioManager.play_random_music()
 
 
-func _on_Button2_pressed():
-	AudioManager.play_fixed_sound(0)
-	emit_signal("back_button")
+func _on_SoundCheckBox_toggled(button_pressed):
+	ConfigManager.sound_on = button_pressed
+	ConfigManager.save_config()
+	AudioManager.set_volume()
+	AudioManager.play_fixed_sound(4)
 
 
-func _on_GameMenu_read_sound():
-	change_sound_texture()
+func _on_BackButton_pressed():
+	emit_signal("back_Button_pressed")

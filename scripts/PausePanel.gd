@@ -7,9 +7,8 @@ func _on_Continue_pressed():
 
 
 func _on_Quit_pressed():
+	get_tree().paused = false
 	Global.goto_scene("res://scenes/GameMenu.tscn")
-#	get_tree().quit()
-#	slide_out()
 
 
 func _on_bottomUi_game_paused():

@@ -35,8 +35,9 @@ export (int) var piece_value
 export (int) var max_score
 
 # Counter
-export (int) var counter_value
-export (bool) var is_move
+var max_counter_value
+var counter_value
+var is_move
 
 # Sinker
 export (PackedScene) var sinker_piece
@@ -79,6 +80,9 @@ var move_checked = false
 # Scoring Variables
 var streak = 1
 var score = 0 setget ,get_score
+var ice_bonus = 100
+var slime_bonus = 25
+var lock_bonus = 200
 
 # State Machine
 var state
@@ -116,6 +120,7 @@ Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int, Is_sinker_i
 	piece_value = Piece_Value
 	max_score = Max_Score
 	counter_value = Counter_Value
+	max_counter_value = Counter_Value
 	is_move = Is_Move
 	is_sinker_in_scene = Is_sinker_in_scene
 	max_sinkers = Max_sinkers
@@ -215,7 +220,7 @@ func spawn_sinker(number):
 		var current = piece_prototype.instance()
 		add_child(current)
 		current.is_sinker = true
-		current.init("RED")
+		current.init("PINK")
 		current.position = transform_grid_to_pixel(rand, height -  1)
 		current.set_row(height -  1)
 		current.set_column(rand)
@@ -555,7 +560,7 @@ func collapse_columns():
 				var current = all_pieces[column][k]
 				if current == null:
 					continue
-				if is_move_restricted_at(Vector2(column, k)):
+				if is_move_restricted_at(Vector2(column, k)) and !is_sinker(column, k):
 					continue
 				all_pieces[column][k].move(transform_grid_to_pixel(column, row))
 				all_pieces[column][k].set_row(row)
@@ -717,11 +722,15 @@ func shuffle_board():
 		for row in height:
 			if all_pieces[column][row] == null:
 				continue
+			if is_sinker(column, row):
+				continue
 			list.append(all_pieces[column][row])
 			all_pieces[column][row] = null
 	for column in width:
 		for row in height:
 			if is_fill_restricted_at(Vector2(column, row)):
+				continue
+			if is_sinker(column, row):
 				continue
 			var index = floor(rand_range(0, list.size()))
 			var rand = list[index]
@@ -870,6 +879,7 @@ func _on_Timer_timeout():
 
 # Obstacle signals
 func _on_IcyHolder_destroyed(place, _value):
+	score += ice_bonus
 	for i in range(ice_spaces.size() -1,  -1, -1):
 		if ice_spaces[i] == place:
 			ice_spaces.remove(i)
@@ -877,6 +887,7 @@ func _on_IcyHolder_destroyed(place, _value):
 
 func _on_SlimeHolder_destroyed(place, _value):
 	damaged_slime = true
+	score += slime_bonus
 	for i in range(slime_spaces.size() -1,  -1, -1):
 		if slime_spaces[i] == place:
 			slime_spaces.remove(i)
@@ -889,6 +900,7 @@ func _on_ConcreteHolder_destroyed(place, _value):
 
 
 func _on_LockHolder_destroyed(place, _value):
+	score += lock_bonus
 	for i in range(lock_spaces.size() -1,  -1, -1):
 		if lock_spaces[i] == place:
 			lock_spaces.remove(i)
@@ -900,11 +912,21 @@ func _on_HintTimer_timeout():
 
 func _on_top_ui_game_won():
 	state = WON
-	if GameDataManager.level_info[level]["high_score"] < score:
-		GameDataManager.level_info[level]["high_score"] = score
+	$Timer.stop()
+	var bonus = score * (1 + counter_value/max_counter_value)
+	var high_score = score + bonus
+	if GameDataManager.level_info[level]["high_score"] < high_score:
+		GameDataManager.level_info[level]["high_score"] = high_score
 		GameDataManager.level_info[level]["date"] = Time.get_datetime_string_from_datetime_dict(Time.get_datetime_dict_from_system(), true)
 	if GameDataManager.level_info.has(level + 1):
 		GameDataManager.level_info[level + 1]["unlocked"] = true
+	var ratio = high_score/max_score
+	if ratio < 1.2:
+		GameDataManager.level_info[level]["stars_unlocked"] = 1
+	elif ratio >= 2:
+		GameDataManager.level_info[level]["stars_unlocked"] = 3
+	else:
+		GameDataManager.level_info[level]["stars_unlocked"] = 2
+		
 	GameDataManager.save_data()
-	emit_signal("game_won", score)
-	pass # Replace with function body.
+	emit_signal("game_won", high_score)

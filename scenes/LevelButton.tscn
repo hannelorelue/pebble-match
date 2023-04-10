@@ -1,51 +1,51 @@
 [gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://fonts/MxPlus_IBM_EGA_8x14.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://art/button-green-blackoutline.png" type="Texture" id=3]
+[ext_resource path="res://art/button-red-90.png" type="Texture" id=2]
+[ext_resource path="res://art/button-green-90.png" type="Texture" id=3]
 [ext_resource path="res://scripts/LevelButton.gd" type="Script" id=4]
 [ext_resource path="res://art/star-gray.png" type="Texture" id=5]
 [ext_resource path="res://art/star-yellow.png" type="Texture" id=6]
-[ext_resource path="res://art/button-red-blackoutline.png" type="Texture" id=7]
 
 [sub_resource type="DynamicFont" id=1]
-size = 70
+size = 60
 font_data = ExtResource( 1 )
 
 [node name="LevelButton" type="Node2D"]
 scale = Vector2( 0.75, 0.75 )
 script = ExtResource( 4 )
-blocked_texture = ExtResource( 7 )
+blocked_texture = ExtResource( 2 )
 open_texture = ExtResource( 3 )
 goal_met = ExtResource( 6 )
 goal_not_met = ExtResource( 5 )
 
 [node name="TextureButton" type="TextureButton" parent="."]
-margin_left = -48.0
-margin_top = -49.0
-margin_right = 49.0
-margin_bottom = 48.0
-texture_normal = ExtResource( 7 )
+margin_left = -45.3333
+margin_top = -45.3333
+margin_right = 44.6667
+margin_bottom = 44.6667
+texture_normal = ExtResource( 2 )
 expand = true
 
 [node name="Label" type="Label" parent="TextureButton"]
-margin_left = 14.0
-margin_top = 10.0
-margin_right = 84.0
-margin_bottom = 73.0
+margin_left = 10.6667
+margin_top = 14.6667
+margin_right = 80.6667
+margin_bottom = 77.6667
 custom_fonts/font = SubResource( 1 )
 text = "1"
 align = 1
 
 [node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 0, -79 )
+position = Vector2( -37.3333, -56 )
 texture = ExtResource( 5 )
 
 [node name="Sprite2" type="Sprite" parent="."]
-position = Vector2( -48, -67 )
+position = Vector2( 0, -66.6667 )
 texture = ExtResource( 5 )
 
 [node name="Sprite3" type="Sprite" parent="."]
-position = Vector2( 51, -68 )
+position = Vector2( 37.3333, -60 )
 texture = ExtResource( 5 )
 
 [connection signal="pressed" from="TextureButton" to="." method="_on_TextureButton_pressed"]

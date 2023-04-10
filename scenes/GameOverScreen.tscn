@@ -16,7 +16,7 @@ func _ready():
 
 func _on_Quit_pressed():
 	get_tree().paused = false
-	Global.goto_scene(\"res://scenes/GameMenu.tscn\")
+	Global.goto_scene(\"res://scenes/LevelSelection.tscn\")
 	#get_tree().change_scene(\"res://scenes/LevelSelection.tscn\")
 
 

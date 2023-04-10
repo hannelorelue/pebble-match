@@ -47,6 +47,8 @@ func _ready():
 	max_score, counter_value, is_move, piece_value, is_sinker_in_scene, max_sinkers, no_piece_types)
 	for key in goals:
 		top_ui.make_goal(goals[key]["type"], goals[key]["value"])
+	if !is_move:
+		top_ui.move_label.text = "Seconds"
 	
 
 

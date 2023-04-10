@@ -3,13 +3,8 @@ extends Control
 signal read_sound
 
 func _ready():
-	$Settings.set_offset(Vector2(576, 0))
+	#$Settings.set_offset(Vector2(576, 0))
 	emit_signal("read_sound")
-
-
-func _on_Settings_back_button():
-	$Settings.slide_out()
-	$mainMenu.slide_in()
 
 
 func _on_mainMenu_play_pressed():
@@ -45,4 +40,7 @@ func _on_mainMenu_highscore_pressed():
 	$mainMenu.slide_out()
 	$HighScores.slide_in()
 
-	pass # Replace with function body.
+
+func _on_Settings_back_Button_pressed():
+	$Settings.slide_out()
+	$mainMenu.slide_in()

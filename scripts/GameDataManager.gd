@@ -43,8 +43,8 @@ var level_info = {
 		"lock_spaces" : [Vector2(4,3)],
 		"slime_spaces" : [Vector2(3,3)],
 		"piece_value" : 20,
-		"max_score" : 500,
-		"counter_value" : 2,
+		"max_score" : 1500,
+		"counter_value" : 15,
 		"is_move" : true,
 		"is_sinker_in_scene": false, 
 		"max_sinkers": 0,
@@ -52,11 +52,11 @@ var level_info = {
 		"goals" : {
 			1 : {
 				"type" : "IRON",
-				"value" : 3,
+				"value" : 15,
 			},
 			2 :  {
 				"type" : "COAL",
-				"value" : 5,
+				"value" : 10,
 			},
 			3 : {
 				"type" : "",
@@ -72,16 +72,16 @@ var level_info = {
 		"stars_unlocked" : 0,
 		"concrete_spaces" :[],
 		"empty_spaces" : [],
-		"ice_spaces" :[Vector2(2,2), Vector2(2,1), Vector2(3,2), Vector2(3,1)],
-		"lock_spaces" : [Vector2(4,3)],
-		"slime_spaces" : [Vector2(0,5), Vector2(0,6),Vector2(7,5), Vector2(7,6)],
+		"ice_spaces" :[Vector2(4,3), Vector2(4,4), Vector2(3,3), Vector2(3,4)],
+		"lock_spaces" : [],
+		"slime_spaces" : [Vector2(0,0), Vector2(0,7),Vector2(7,0), Vector2(7,7)],
 		"piece_value" : 20,
 		"max_score" : 500,
-		"counter_value" : 13,
-		"is_move" : true,
-		"is_sinker_in_scene": true, 
-		"max_sinkers": 2,
-		"No_piece_types" : 6,
+		"counter_value" : 60,
+		"is_move" : false,
+		"is_sinker_in_scene": false, 
+		"max_sinkers": 0,
+		"No_piece_types" : 5,
 		"goals" : {
 			1 : {
 				"type" : "ICE",
@@ -99,30 +99,39 @@ var level_info = {
 	},
 	
 	3:{
-		"unlocked" : false,
+		"unlocked" : true,
 		"high_score" : 0,
 		"date" : "",
 		"stars_unlocked" : 0,
 		"concrete_spaces" :[],
 		"empty_spaces" : [],
-		"ice_spaces" :[Vector2(2,2), Vector2(2,1), Vector2(3,2), Vector2(3,1)],
-		"lock_spaces" : [Vector2(4,3)],
+		"ice_spaces" :[
+			Vector2(2,2), 
+			Vector2(2,1), 
+			Vector2(3,2), 
+			Vector2(3,1), 
+			Vector2(4,2), 
+			Vector2(4,1),
+			Vector2(5,2), 
+			Vector2(5,1),
+			],
+		"lock_spaces" : [],
 		"slime_spaces" : [Vector2(0,5), Vector2(0,6),Vector2(7,5), Vector2(7,6)],
 		"piece_value" : 20,
-		"max_score" : 500,
-		"counter_value" : 13,
+		"max_score" : 3000,
+		"counter_value" : 25,
 		"is_move" : true,
 		"is_sinker_in_scene": true, 
 		"max_sinkers": 2,
-		"No_piece_types" : 4,
+		"No_piece_types" : 5,
 		"goals" : {
 			1 : {
-				"type" : "ICE",
-				"value" : 4,
+				"type" : "PINK",
+				"value" : 2,
 			},
 			2 :  {
-				"type" : "COAL",
-				"value" : 5,
+				"type" : "",
+				"value" : 0,
 			},
 			3 : {
 				"type" : "",
@@ -132,63 +141,63 @@ var level_info = {
 	},
 	
 	4:{
-		"unlocked" : false,
+		"unlocked" :  true,
 		"high_score" : 0,
 		"date" : "",
 		"stars_unlocked" : 0,
 		"concrete_spaces" :[],
-		"empty_spaces" : [],
-		"ice_spaces" :[Vector2(2,2), Vector2(2,1), Vector2(3,2), Vector2(3,1)],
-		"lock_spaces" : [Vector2(4,3)],
-		"slime_spaces" : [Vector2(0,5), Vector2(0,6),Vector2(7,5), Vector2(7,6)],
+		"empty_spaces" : [Vector2(4,3), Vector2(4,4), Vector2(3,3), Vector2(3,4)],
+		"ice_spaces" :[],
+		"lock_spaces" : [Vector2(5,3), Vector2(5,4), Vector2(2,3), Vector2(2,4)],
+		"slime_spaces" : [Vector2(0,5),Vector2(7,5)],
 		"piece_value" : 20,
-		"max_score" : 500,
-		"counter_value" : 13,
+		"max_score" : 1500,
+		"counter_value" : 50,
 		"is_move" : true,
-		"is_sinker_in_scene": true, 
-		"max_sinkers": 2,
-		"No_piece_types" : 4,
+		"is_sinker_in_scene": false, 
+		"max_sinkers": 0,
+		"No_piece_types" : 5,
 		"goals" : {
 			1 : {
-				"type" : "ICE",
+				"type" : "LOCK",
 				"value" : 4,
 			},
 			2 :  {
 				"type" : "COAL",
-				"value" : 5,
+				"value" : 10,
 			},
 			3 : {
-				"type" : "",
-				"value" : 0,
+				"type" : "MOSS",
+				"value" : 4,
 			},
 		},
 	},
 	
 	5:{
-		"unlocked" : false,
+		"unlocked" : true,
 		"high_score" : 0,
 		"date" : "",
 		"stars_unlocked" : 0,
 		"concrete_spaces" :[],
 		"empty_spaces" : [],
-		"ice_spaces" :[Vector2(2,2), Vector2(2,1), Vector2(3,2), Vector2(3,1)],
-		"lock_spaces" : [Vector2(4,3)],
-		"slime_spaces" : [Vector2(0,5), Vector2(0,6),Vector2(7,5), Vector2(7,6)],
+		"ice_spaces" :[],
+		"lock_spaces" : [Vector2(4,3), Vector2(4,4)],
+		"slime_spaces" : [Vector2(0,0), Vector2(0,1)],
 		"piece_value" : 20,
-		"max_score" : 500,
-		"counter_value" : 13,
-		"is_move" : true,
-		"is_sinker_in_scene": true, 
-		"max_sinkers": 2,
-		"No_piece_types" : 4,
+		"max_score" : 750,
+		"counter_value" : 40,
+		"is_move" : false,
+		"is_sinker_in_scene": false, 
+		"max_sinkers": 0,
+		"No_piece_types" : 5,
 		"goals" : {
 			1 : {
-				"type" : "ICE",
-				"value" : 4,
+				"type" : "QUARTZ",
+				"value" : 10,
 			},
 			2 :  {
-				"type" : "COAL",
-				"value" : 5,
+				"type" : "IRON",
+				"value" : 10,
 			},
 			3 : {
 				"type" : "",
@@ -216,7 +225,7 @@ var level_info = {
 		"No_piece_types" : 4,
 		"goals" : {
 			1 : {
-				"type" : "ICE",
+				"type" : "PINK",
 				"value" : 4,
 			},
 			2 :  {
@@ -234,7 +243,7 @@ var level_info = {
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	#save_data()
+	save_data()
 	level_info = load_data()
 
 

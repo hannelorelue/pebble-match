@@ -4,9 +4,10 @@ signal game_won
 
 export (PackedScene) var goal_ui
 onready var score_label = $MarginContainer/HBoxContainer/VBoxContainer/ScoreLabel
-onready var counter_label = $MarginContainer/HBoxContainer/CounterLabel
+onready var move_label = $MarginContainer/HBoxContainer/VBoxContainer2/MoveLabel
+onready var counter_label = $MarginContainer/HBoxContainer/VBoxContainer2/CounterLabel
 onready var score_bar = $MarginContainer/HBoxContainer/VBoxContainer/TextureProgress
-onready var goal_container = $MarginContainer/HBoxContainer/HBoxContainer
+onready var goal_container = $MarginContainer/HBoxContainer/VBoxContainer3/HBoxContainer
 
 var current_score = 0
 var current_count = 0

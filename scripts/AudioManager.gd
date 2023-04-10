@@ -47,10 +47,13 @@ func play_fixed_sound(sound):
 
 func set_volume():
 	if ConfigManager.sound_on:
-		music_player.set_volume_db(-15.0)
 		sound_player.set_volume_db(-15.0)
 	else:
-		music_player.set_volume_db(-80.0)
 		sound_player.set_volume_db(-80.0)
+		
+	if ConfigManager.music_on:
+		music_player.set_volume_db(-15.0)
+	else:
+		music_player.set_volume_db(-80.0)
 
 

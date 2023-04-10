@@ -32,7 +32,7 @@ window/stretch/aspect="keep_width"
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
-theme/custom="res://pixel_theme.tres"
+theme/custom="res://theme/pixel_theme.tres"
 
 [input]
 

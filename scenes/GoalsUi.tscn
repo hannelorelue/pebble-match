@@ -1,9 +1,9 @@
 [gd_scene load_steps=19 format=2]
 
+[ext_resource path="res://art/lock4.png" type="Texture" id=1]
 [ext_resource path="res://fonts/Kenney Future Narrow.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://art/UI/goal background.png" type="Texture" id=3]
 [ext_resource path="res://scripts/GoalsUi.gd" type="Script" id=4]
-[ext_resource path="res://art/Obstacles/lock2.png" type="Texture" id=5]
 [ext_resource path="res://art/Obstacles/Icon29.png" type="Texture" id=6]
 [ext_resource path="res://art/Obstacles/Icon12.png" type="Texture" id=7]
 [ext_resource path="res://art/Obstacles/iron.png" type="Texture" id=8]
@@ -39,7 +39,7 @@ pink = ExtResource( 9 )
 green = ExtResource( 6 )
 red = ExtResource( 7 )
 blue = ExtResource( 15 )
-lock = ExtResource( 5 )
+lock = ExtResource( 1 )
 moss = ExtResource( 12 )
 ice = ExtResource( 18 )
 
