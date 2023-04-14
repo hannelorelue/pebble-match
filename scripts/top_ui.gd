@@ -65,9 +65,8 @@ func _on_grid_update_score(amount):
 	score_label.text = String(current_score)
 
 
-func _on_grid_counter_changed(amount = -1):
-	current_count += amount
-	counter_label.text = String(current_count)
+func _on_grid_counter_changed(count):
+	counter_label.text = String(count)
 
 
 func _on_grid_set_max_score(max_score):

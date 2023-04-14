@@ -21,13 +21,10 @@ func save_config():
 
 func load_config() :
 	var config = ConfigFile.new()
-	var default_options = {
-			"sound": true,
-			"music": true,
-	}
 	var err = config.load(path)
 	if err != OK:
-		return default_options
-	#var options = {}
-	sound_on = config.get_value("audio", "sound", default_options.sound )
-	music_on = config.get_value("audio", "music", default_options.music )
+		sound_on = true
+		music_on  = true
+		return
+	sound_on = config.get_value("audio", "sound")
+	music_on = config.get_value("audio", "music")

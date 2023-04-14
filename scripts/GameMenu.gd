@@ -15,32 +15,38 @@ func _on_mainMenu_play_pressed():
 func _on_mainMenu_settings_pressed():
 	$mainMenu.slide_out()
 	$Settings.slide_in()
+	AudioManager.play_click()
 	pass # Replace with function body.
 
 
 func _on_mainMenu_credits_pressed():
 	$mainMenu.slide_out()
 	$Credits.slide_in()
+	AudioManager.play_click()
 	pass # Replace with function body.
 
 
 func _on_Credits_back_Button_pressed():
 	$Credits.slide_out()
 	$mainMenu.slide_in()
+	AudioManager.play_click()
 	pass # Replace with function body.
 
 
 func _on_HighScores_back_Button_pressed():
 	$HighScores.slide_out()
 	$mainMenu.slide_in()
+	AudioManager.play_click()
 	pass # Replace with function body.
 
 
 func _on_mainMenu_highscore_pressed():
 	$mainMenu.slide_out()
 	$HighScores.slide_in()
+	AudioManager.play_click()
 
 
 func _on_Settings_back_Button_pressed():
 	$Settings.slide_out()
 	$mainMenu.slide_in()
+	AudioManager.play_click()

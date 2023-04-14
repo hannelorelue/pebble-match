@@ -3,9 +3,17 @@
 [ext_resource path="res://scenes/menu.tscn" type="PackedScene" id=1]
 [ext_resource path="res://art/UI/Buttons/Settings Button.png" type="Texture" id=2]
 [ext_resource path="res://art/UI/Buttons/Play Button.png" type="Texture" id=3]
-[ext_resource path="res://art/UI/godot match 3 logo.png" type="Texture" id=4]
+[ext_resource path="res://art/logo.png" type="Texture" id=4]
 [ext_resource path="res://scripts/CanvasLayer.gd" type="Script" id=5]
 [ext_resource path="res://fonts/MxPlus_IBM_EGA_8x14.ttf" type="DynamicFontData" id=6]
+
+[sub_resource type="DynamicFont" id=6]
+font_data = ExtResource( 6 )
+
+[sub_resource type="StyleBoxFlat" id=7]
+bg_color = Color( 0.933333, 0.933333, 0.933333, 0.603922 )
+
+[sub_resource type="StyleBoxEmpty" id=2]
 
 [sub_resource type="DynamicFont" id=1]
 size = 60
@@ -14,17 +22,9 @@ font_data = ExtResource( 6 )
 [sub_resource type="StyleBoxFlat" id=3]
 bg_color = Color( 0.380392, 0.380392, 0.380392, 0.619608 )
 
-[sub_resource type="StyleBoxEmpty" id=2]
-
 [sub_resource type="DynamicFont" id=5]
 size = 30
 font_data = ExtResource( 6 )
-
-[sub_resource type="DynamicFont" id=6]
-font_data = ExtResource( 6 )
-
-[sub_resource type="StyleBoxFlat" id=7]
-bg_color = Color( 0.933333, 0.933333, 0.933333, 0.603922 )
 
 [sub_resource type="Animation" id=4]
 resource_name = "StartButtonWiggle"
@@ -45,6 +45,26 @@ tracks/0/keys = {
 
 [node name="CanvasLayer" instance=ExtResource( 1 )]
 script = ExtResource( 5 )
+
+[node name="MarginContainer" parent="." index="0"]
+custom_constants/margin_top = 100
+custom_constants/margin_bottom = 40
+
+[node name="Credits" type="Button" parent="MarginContainer" index="0"]
+margin_left = 20.0
+margin_top = 100.0
+margin_right = 556.0
+margin_bottom = 114.0
+size_flags_vertical = 0
+custom_colors/font_color_hover = Color( 0.729412, 0.0666667, 0.917647, 1 )
+custom_fonts/font = SubResource( 6 )
+custom_styles/hover = SubResource( 7 )
+custom_styles/normal = SubResource( 2 )
+text = "Credits"
+
+[node name="VBoxContainer" parent="MarginContainer" index="1"]
+margin_top = 100.0
+margin_bottom = 984.0
 
 [node name="Graphic" parent="MarginContainer/VBoxContainer" index="0"]
 texture = ExtResource( 4 )
@@ -96,25 +116,13 @@ margin_top = 73.0
 margin_bottom = 198.0
 texture_normal = ExtResource( 2 )
 
-[node name="Credits" type="Button" parent="MarginContainer" index="1"]
-margin_left = 20.0
-margin_top = 20.0
-margin_right = 556.0
-margin_bottom = 34.0
-size_flags_vertical = 0
-custom_colors/font_color_hover = Color( 0.729412, 0.0666667, 0.917647, 1 )
-custom_fonts/font = SubResource( 6 )
-custom_styles/hover = SubResource( 7 )
-custom_styles/normal = SubResource( 2 )
-text = "Credits"
-
 [node name="AnimationPlayer" parent="." index="1"]
 anims/StartButtonWiggle = SubResource( 4 )
 
+[connection signal="pressed" from="MarginContainer/Credits" to="." method="_on_Credits_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/VBoxContainer/StartButton" to="." method="_on_StartButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/VBoxContainer/HighscoresButton" to="." method="_on_HighscoresButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/VBoxContainer/SettingsButton" to="." method="_on_SettingsButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/VBoxContainer/Button1" to="." method="_on_Button1_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/VBoxContainer/Button2" to="." method="_on_Button2_pressed"]
-[connection signal="pressed" from="MarginContainer/Credits" to="." method="_on_Credits_pressed"]
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

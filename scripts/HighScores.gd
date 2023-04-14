@@ -31,4 +31,5 @@ func slide_out():
 
 func _on_BackButton_pressed():
 	emit_signal("back_Button_pressed")
+	AudioManager.play_click()
 	pass # Replace with function body.

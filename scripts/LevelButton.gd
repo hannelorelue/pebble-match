@@ -22,7 +22,8 @@ func _ready():
 	if GameDataManager.level_info.has(level):
 		is_enabled = GameDataManager.level_info[level]["unlocked"]
 	else:
-		is_enabled = false
+		self.visible = false
+		return
 	setup()
 
 
@@ -56,3 +57,4 @@ func setup():
 func _on_TextureButton_pressed():
 	if is_enabled:
 		Global.goto_level(level)
+		AudioManager.play_click()

@@ -25,8 +25,15 @@ func _on_SoundCheckBox_toggled(button_pressed):
 	ConfigManager.sound_on = button_pressed
 	ConfigManager.save_config()
 	AudioManager.set_volume()
-	AudioManager.play_fixed_sound(4)
+	AudioManager.play_click()
 
 
 func _on_BackButton_pressed():
 	emit_signal("back_Button_pressed")
+	AudioManager.play_click()
+
+
+func _on_ClearUserDataButton_pressed() -> void:
+	AudioManager.play_click()
+	GameDataManager.clear_data()
+	pass # Replace with function body.

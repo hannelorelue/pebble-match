@@ -2,6 +2,7 @@ extends Node2D
 
 onready var grid = $CanvasLayer/grid
 onready var top_ui = $CanvasLayer/top_ui
+onready var bottom_ui = $CanvasLayer/bottomUi
 
 var level := 1
 var no_piece_types: int = 4
@@ -49,6 +50,8 @@ func _ready():
 		top_ui.make_goal(goals[key]["type"], goals[key]["value"])
 	if !is_move:
 		top_ui.move_label.text = "Seconds"
+		bottom_ui.add_moves_button.texture_normal = bottom_ui.time_texture
+		
 	
 
 

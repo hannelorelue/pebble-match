@@ -1,13 +1,13 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=18 format=2]
 
-[ext_resource path="res://art/small-background-earth.png" type="Texture" id=1]
+[ext_resource path="res://art/UI/small-background-earth.png" type="Texture" id=1]
 [ext_resource path="res://scripts/grid.gd" type="Script" id=2]
 [ext_resource path="res://scenes/concrete.tscn" type="PackedScene" id=3]
 [ext_resource path="res://scripts/SoundPlayer.gd" type="Script" id=4]
 [ext_resource path="res://scripts/game_window.gd" type="Script" id=5]
+[ext_resource path="res://animations/grey-shader.tres" type="Shader" id=6]
 [ext_resource path="res://scenes/top_ui.tscn" type="PackedScene" id=7]
 [ext_resource path="res://scenes/GameOverScreen.tscn" type="PackedScene" id=8]
-[ext_resource path="res://scenes/sinker.tscn" type="PackedScene" id=9]
 [ext_resource path="res://scenes/GoalsUi.tscn" type="PackedScene" id=12]
 [ext_resource path="res://scenes/WinScreen.tscn" type="PackedScene" id=15]
 [ext_resource path="res://scenes/bottomUi.tscn" type="PackedScene" id=16]
@@ -17,16 +17,8 @@
 [ext_resource path="res://scenes/ice.tscn" type="PackedScene" id=20]
 [ext_resource path="res://scenes/ObstacleHolder.tscn" type="PackedScene" id=21]
 
-[sub_resource type="Shader" id=1]
-code = "shader_type canvas_item;
-
-void fragment(){
-	COLOR = texture(SCREEN_TEXTURE, SCREEN_UV);
-	COLOR.rgb = vec3(COLOR.r + COLOR.g + COLOR.b) / 3.0;
-}"
-
 [sub_resource type="ShaderMaterial" id=2]
-shader = SubResource( 1 )
+shader = ExtResource( 6 )
 
 [node name="GameWindow" type="Node2D"]
 script = ExtResource( 5 )
@@ -41,7 +33,7 @@ stretch_mode = 1
 
 [node name="bottomUi" parent="CanvasLayer" instance=ExtResource( 16 )]
 margin_top = -104.0
-margin_right = 576.0
+margin_right = 1.0
 margin_bottom = -12.0
 
 [node name="top_ui" parent="CanvasLayer" instance=ExtResource( 7 )]
@@ -50,13 +42,6 @@ goal_ui = ExtResource( 12 )
 
 [node name="grid" type="Node2D" parent="CanvasLayer"]
 script = ExtResource( 2 )
-y_offset = -2
-empty_spaces = PoolVector2Array( 0, 3 )
-ice_spaces = PoolVector2Array( 3, 3, 3, 4, 4, 3, 4, 4 )
-piece_value = 10
-max_score = 400
-sinker_piece = ExtResource( 9 )
-max_sinkers = 2
 
 [node name="IcyHolder" parent="CanvasLayer/grid" instance=ExtResource( 21 )]
 scene = ExtResource( 20 )
@@ -106,6 +91,9 @@ anchor_bottom = 1.0
 [node name="SoundPlayer" type="Node" parent="."]
 script = ExtResource( 4 )
 
+[connection signal="AddMovesBoost_pressed" from="CanvasLayer/bottomUi" to="CanvasLayer/grid" method="_on_bottomUi_AddMovesBoost_pressed"]
+[connection signal="DiamondBoost_pressed" from="CanvasLayer/bottomUi" to="CanvasLayer/grid" method="_on_bottomUi_DiamondBoost_pressed"]
+[connection signal="ShuffleBoost_pressed" from="CanvasLayer/bottomUi" to="CanvasLayer/grid" method="_on_bottomUi_ShuffleBoost_pressed"]
 [connection signal="game_paused" from="CanvasLayer/bottomUi" to="PausePanel" method="_on_bottomUi_game_paused"]
 [connection signal="game_won" from="CanvasLayer/top_ui" to="CanvasLayer/grid" method="_on_top_ui_game_won"]
 [connection signal="check_goal" from="CanvasLayer/grid" to="CanvasLayer/top_ui" method="_on_grid_check_goal"]
@@ -114,6 +102,8 @@ script = ExtResource( 4 )
 [connection signal="game_over" from="CanvasLayer/grid" to="GameOverScreen" method="_on_grid_game_over"]
 [connection signal="game_won" from="CanvasLayer/grid" to="." method="_on_grid_game_won"]
 [connection signal="game_won" from="CanvasLayer/grid" to="WinScreen" method="_on_grid_game_won"]
+[connection signal="max_score_not_reached" from="CanvasLayer/grid" to="CanvasLayer/bottomUi" method="_on_grid_max_score_not_reached"]
+[connection signal="max_score_reached" from="CanvasLayer/grid" to="CanvasLayer/bottomUi" method="_on_grid_max_score_reached"]
 [connection signal="play_sound" from="CanvasLayer/grid" to="SoundPlayer" method="_on_grid_play_sound"]
 [connection signal="set_max_score" from="CanvasLayer/grid" to="CanvasLayer/top_ui" method="_on_grid_set_max_score"]
 [connection signal="update_score" from="CanvasLayer/grid" to="CanvasLayer/top_ui" method="_on_grid_update_score"]

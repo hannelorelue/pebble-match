@@ -4,6 +4,8 @@ extends Node2D
 # Score
 signal update_score
 signal set_max_score
+signal max_score_reached
+signal max_score_not_reached
 # Counter
 signal counter_changed
 # Goals
@@ -19,20 +21,20 @@ enum {WAIT, MOVE, WON}
 
 
 # Export Variables
-export (int) var level
+var level
 # Grid Variables
-export (int) var y_offset
+var y_offset = -2
 
 # Obstacle Variables
-export (PoolVector2Array) var concrete_spaces
-export (PoolVector2Array) var empty_spaces
-export (PoolVector2Array) var ice_spaces
-export (PoolVector2Array) var lock_spaces
-export (PoolVector2Array) var slime_spaces
+var concrete_spaces
+var empty_spaces
+var ice_spaces
+var lock_spaces
+var slime_spaces
 
 # Scoring Variables
-export (int) var piece_value
-export (int) var max_score
+var piece_value
+var max_score
 
 # Counter
 var max_counter_value
@@ -40,9 +42,8 @@ var counter_value
 var is_move
 
 # Sinker
-export (PackedScene) var sinker_piece
-export (bool) var is_sinker_in_scene
-export (int) var max_sinkers
+var is_sinker_in_scene
+var max_sinkers
 
 # Preset pieces
 export (PoolVector3Array) var preset_pieces
@@ -54,7 +55,7 @@ var width = Global.width
 var offset =  Global.offset
 var x_start =  Global.x_start
 var y_start =  Global.y_start
-var no_piece_types: int 
+var no_piece_types: int
 
 var piece_prototype = preload("res://scenes/piece.tscn")
 var all_pieces = []
@@ -91,7 +92,6 @@ var state
 var color_bomb_used = false
 
 # Particle effects
-var particle_effect = preload("res://scenes/ParticleEffect.tscn")
 var animated_effect = preload("res://scenes/animatedExplosion.tscn")
 
 # Sinker
@@ -108,7 +108,7 @@ func _process(_delta):
 
 
 # Function used to initilize the grid
-func init(Level: int, Concrete_Spaces: PoolVector2Array, 
+func init(Level: int, Concrete_Spaces: PoolVector2Array,
 Empty_Spaces: PoolVector2Array, Ice_Spaces: PoolVector2Array, Lock_Spaces: PoolVector2Array, Slime_Spaces: PoolVector2Array,
 Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int, Is_sinker_in_scene: bool, Max_sinkers: int, No_piece_types: int):
 	level = Level
@@ -173,7 +173,7 @@ func touch_difference(grid_1: Vector2, grid_2: Vector2):
 			direction = Vector2.DOWN
 	else:
 		if difference.x > 0:
-			direction = Vector2.LEFT			
+			direction = Vector2.LEFT
 		elif difference.x < 0:
 			direction = Vector2.RIGHT
 			
@@ -218,6 +218,9 @@ func spawn_sinker(number):
 	for j in number:
 		var rand = allowed_places.pop_at(floor(rand_range(0, allowed_places.size())))
 		var current = piece_prototype.instance()
+		if all_pieces[rand][height - 1] != null:
+			all_pieces[rand][height - 1].queue_free()
+			all_pieces[rand][height - 1] = null
 		add_child(current)
 		current.is_sinker = true
 		current.init("PINK")
@@ -283,7 +286,7 @@ func find_matches(query = false, array = all_pieces, found_matches_array = curre
 	if query:
 		return false
 		
-	if found_match and array == all_pieces: 
+	if found_match and array == all_pieces:
 		#get_bombed_pieces()
 		$DestroyTimer.start()
 	else:
@@ -389,7 +392,7 @@ func find_bombs():
 		var current_column = current_matches[i].x
 		var current_row = current_matches[i].y
 		var current_color = all_pieces[current_column][current_row].color
-		var matches = find_col_row_matches(i) 
+		var matches = find_col_row_matches(i)
 		var col_matched = matches[0]
 		var row_matched = matches[1]
 		if col_matched >= 5 or row_matched >= 5:
@@ -474,7 +477,7 @@ func swap_pieces(column, row, direction):
 			return
 		clear_color(other_piece.color)
 		set_matched(first_piece)
-		add_to_array(Vector2(column, row), current_matches) 
+		add_to_array(Vector2(column, row), current_matches)
 		color_bomb_used = true
 	if other_piece.is_color_bomb:
 		if is_sinker(column + direction.x, row + direction.y):
@@ -509,15 +512,16 @@ func destroy_matched():
 			was_matched = true
 			all_pieces[column][row].queue_free()
 			all_pieces[column][row] = null
-#			make_effect(particle_effect, column, row)
 			make_effect(animated_effect, column, row)
 			score += piece_value * streak
+			if score >= max_score:
+				emit_signal("max_score_reached")
 			emit_signal("play_sound")
 			emit_signal("update_score", score)
 	move_checked = true
 	if was_matched:
 		$CollapseTimer.start()
-	else: 
+	else:
 		swap_back()
 	current_matches.clear()
 
@@ -600,8 +604,10 @@ func refill_columns():
 func after_refill():
 	for column in width:
 		for row in height:
-			if all_pieces[column][row] == null:
+			if is_fill_restricted_at(Vector2(column, row)):
 				continue
+#			if all_pieces[column][row] == null:
+#				continue
 			if is_match_at(column, row, all_pieces[column][row].color) or all_pieces[column][row].matched:
 				find_matches()
 				$DestroyTimer.start()
@@ -617,20 +623,24 @@ func after_refill():
 		shuffle_board()
 	if is_move:
 		counter_value -=1
-		emit_signal("counter_changed")
+		emit_signal("counter_changed", counter_value)
 		if counter_value == 0:
 			game_over()
 	$HintTimer.start()
 
 
 func destroy_sinkers():
+	var was_sinker_destroyed = false
 	for i in range(current_sinkers.size() - 1,  -1, -1):
 		if current_sinkers[i] != null:
 			var row = current_sinkers[i].get_row()
 			var column = current_sinkers[i].get_column()
 			if row == 0:
+				emit_signal("check_goal", all_pieces[column][row].color)
 				current_sinkers.remove(i)
-				all_pieces[column][row].matched = true
+				all_pieces[column][row].queue_free()
+				all_pieces[column][row] = null
+				
 
 
 # returns a random non-slime neighbor
@@ -673,7 +683,7 @@ func generate_slime():
 # Match pieces in columns, rows and the whole board
 func clear_column(column):
 	for i in height:
-		var current = all_pieces[column][i] 
+		var current = all_pieces[column][i]
 		if current == null or is_sinker(column, i):
 			continue
 		if  current.matched:
@@ -686,7 +696,7 @@ func clear_column(column):
 
 func clear_row(row):
 	for i in width:
-		var current = all_pieces[i][row] 
+		var current = all_pieces[i][row]
 		if current == null or is_sinker(i, row):
 			continue
 		if current.matched:
@@ -700,9 +710,9 @@ func clear_row(row):
 func clear_color(color):
 	for column in width:
 		for row in height:
-			if is_sinker(column, row):
-				continue
 			if all_pieces[column][row] == null or all_pieces[column][row].color != color:
+				continue
+			if is_sinker(column, row):
 				continue
 			set_matched(all_pieces[column][row])
 			add_to_array(Vector2(column, row), current_matches)
@@ -726,11 +736,12 @@ func shuffle_board():
 				continue
 			list.append(all_pieces[column][row])
 			all_pieces[column][row] = null
+			
 	for column in width:
 		for row in height:
 			if is_fill_restricted_at(Vector2(column, row)):
 				continue
-			if is_sinker(column, row):
+			if all_pieces[column][row] != null:
 				continue
 			var index = floor(rand_range(0, list.size()))
 			var rand = list[index]
@@ -744,6 +755,22 @@ func shuffle_board():
 			list.remove(index)
 	if is_deadlock():
 		shuffle_board()
+
+
+func add_diamond():
+	var diamond_added = false
+	while !diamond_added:
+		var row  = floor(rand_range(0, height))
+		var column = floor(rand_range(0, width))
+		if is_fill_restricted_at(Vector2(column, row)):
+			continue
+		if is_sinker(column, row):
+			continue
+		if all_pieces[column][row] == null:
+			continue
+		all_pieces[column][row].make_color_bomb()
+		diamond_added = true
+
 
 
 # helper functions
@@ -808,9 +835,10 @@ func is_match_at(column, row, color):
 
 
 func is_sinker(column, row):
-	for i in current_sinkers.size():
-		if current_sinkers[i].position == transform_grid_to_pixel(column, row):
-			return true
+	if all_pieces[column][row] == null:
+		return false
+	if all_pieces[column][row].is_sinker:
+		return true
 	return false
 
 
@@ -869,7 +897,7 @@ func _on_refill_timer_timeout():
 
 func _on_Timer_timeout():
 	counter_value -= 1
-	emit_signal("counter_changed")
+	emit_signal("counter_changed", counter_value)
 	if counter_value != 0:
 		return
 	$Timer.stop()
@@ -923,10 +951,38 @@ func _on_top_ui_game_won():
 	var ratio = high_score/max_score
 	if ratio < 1.2:
 		GameDataManager.level_info[level]["stars_unlocked"] = 1
-	elif ratio >= 2:
+	elif ratio >= 3:
 		GameDataManager.level_info[level]["stars_unlocked"] = 3
 	else:
 		GameDataManager.level_info[level]["stars_unlocked"] = 2
-		
 	GameDataManager.save_data()
 	emit_signal("game_won", high_score)
+
+
+func _on_bottomUi_ShuffleBoost_pressed():
+	shuffle_board()
+	score -= max_score/2
+	emit_signal("update_score")
+	if score <= max_score:
+		emit_signal("max_score_not_reached")
+	pass # Replace with function body.
+
+
+func _on_bottomUi_DiamondBoost_pressed() -> void:
+	add_diamond()
+	score -= max_score/2
+	emit_signal("update_score", score)
+	if score <= max_score:
+		emit_signal("max_score_not_reached")
+
+
+func _on_bottomUi_AddMovesBoost_pressed() -> void:
+	score -= max_score/2
+	emit_signal("update_score", score)
+	if score <= max_score:
+		emit_signal("max_score_not_reached")
+	if !is_move:
+		counter_value += 10
+	else:
+		counter_value += 5
+	emit_signal("counter_changed", counter_value)

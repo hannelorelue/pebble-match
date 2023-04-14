@@ -1,6 +1,6 @@
 extends Node
 
-onready var path =  "/Users/hanni/Programming/godot/candy-crush/savegame.save"
+onready var path =  "user://savegame.save"
 #var level_info = {}
 var level_info = {
 	1:{
@@ -38,7 +38,7 @@ var level_info = {
 			Vector2(5,7),
 			Vector2(6,7),
 		],
-		"concrete_spaces" :[Vector2(2,3)],
+		"concrete_spaces" :[],
 		"ice_spaces" :[Vector2(2,4)],
 		"lock_spaces" : [Vector2(4,3)],
 		"slime_spaces" : [Vector2(3,3)],
@@ -66,7 +66,7 @@ var level_info = {
 	},
 	
 	2:{
-		"unlocked" : true,
+		"unlocked" : false,
 		"high_score" : 0,
 		"date" : "",
 		"stars_unlocked" : 0,
@@ -99,7 +99,7 @@ var level_info = {
 	},
 	
 	3:{
-		"unlocked" : true,
+		"unlocked" : false,
 		"high_score" : 0,
 		"date" : "",
 		"stars_unlocked" : 0,
@@ -141,7 +141,7 @@ var level_info = {
 	},
 	
 	4:{
-		"unlocked" :  true,
+		"unlocked" : false,
 		"high_score" : 0,
 		"date" : "",
 		"stars_unlocked" : 0,
@@ -174,7 +174,7 @@ var level_info = {
 	},
 	
 	5:{
-		"unlocked" : true,
+		"unlocked" : false,
 		"high_score" : 0,
 		"date" : "",
 		"stars_unlocked" : 0,
@@ -214,11 +214,11 @@ var level_info = {
 		"concrete_spaces" :[],
 		"empty_spaces" : [],
 		"ice_spaces" :[Vector2(2,2), Vector2(2,1), Vector2(3,2), Vector2(3,1)],
-		"lock_spaces" : [Vector2(4,3)],
+		"lock_spaces" : [Vector2(4,3), Vector2(3,3),Vector2(5,3)],
 		"slime_spaces" : [Vector2(0,5), Vector2(0,6),Vector2(7,5), Vector2(7,6)],
 		"piece_value" : 20,
-		"max_score" : 500,
-		"counter_value" : 13,
+		"max_score" : 2500,
+		"counter_value" : 20,
 		"is_move" : true,
 		"is_sinker_in_scene": true, 
 		"max_sinkers": 2,
@@ -230,7 +230,7 @@ var level_info = {
 			},
 			2 :  {
 				"type" : "COAL",
-				"value" : 5,
+				"value" : 20,
 			},
 			3 : {
 				"type" : "",
@@ -243,7 +243,6 @@ var level_info = {
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	save_data()
 	level_info = load_data()
 
 
@@ -259,6 +258,8 @@ func save_data():
 
 func load_data():
 	var file = File.new()
+	if not file.file_exists(path):
+		save_data()
 	var err = file.open(path, File.READ)
 	if err != OK:
 		print ("something went wrong at loading")
@@ -266,3 +267,9 @@ func load_data():
 	var read = {}
 	read = file.get_var()
 	return read
+
+
+func clear_data():
+	var dir = Directory.new()
+	dir.remove(path)
+	get_tree().quit()

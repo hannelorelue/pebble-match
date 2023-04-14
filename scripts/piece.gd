@@ -96,6 +96,4 @@ func make_color_bomb():
 	sprite.visible = false
 	diamond_sprite.visible = true
 	diamond_sprite.playing = true
-	#sprite.texture = prism_texture
-	#sprite.modulate = Color(1,1,1,1)
 	color = "Color"

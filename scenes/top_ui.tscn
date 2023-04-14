@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://art/top-ui.png" type="Texture" id=1]
+[ext_resource path="res://art/UI/top-ui.png" type="Texture" id=1]
 [ext_resource path="res://fonts/MxPlus_IBM_EGA_8x14.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://scripts/top_ui.gd" type="Script" id=3]
 [ext_resource path="res://art/UI/Score Bar Fill.png" type="Texture" id=5]

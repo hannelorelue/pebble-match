@@ -10,10 +10,11 @@ config_version=4
 
 [application]
 
-config/name="Candy_Crush"
+config/name="Pebbel Match"
 run/main_scene="res://scenes/GameMenu.tscn"
-boot_splash/image="res://art/Loading-background.png"
-config/icon="res://icon.png"
+boot_splash/image="res://art/UI/Loading-background.png"
+boot_splash/use_filter=false
+config/icon="res://copper-icon-transparent.png"
 
 [autoload]
 
