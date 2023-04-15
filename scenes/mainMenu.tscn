@@ -48,11 +48,13 @@ script = ExtResource( 5 )
 custom_constants/margin_top = 100
 custom_constants/margin_bottom = 40
 
-[node name="Credits" type="Button" parent="MarginContainer" index="0"]
-margin_left = 20.0
+[node name="VBoxContainer" parent="MarginContainer" index="0"]
 margin_top = 100.0
-margin_right = 556.0
-margin_bottom = 114.0
+margin_bottom = 984.0
+
+[node name="Credits" type="Button" parent="MarginContainer/VBoxContainer" index="0"]
+margin_right = 536.0
+margin_bottom = 14.0
 size_flags_vertical = 0
 custom_colors/font_color_hover = Color( 0.729412, 0.0666667, 0.917647, 1 )
 custom_fonts/font = SubResource( 6 )
@@ -60,17 +62,16 @@ custom_styles/hover = SubResource( 7 )
 custom_styles/normal = SubResource( 2 )
 text = "Credits"
 
-[node name="VBoxContainer" parent="MarginContainer" index="1"]
-margin_top = 100.0
-margin_bottom = 984.0
-
-[node name="Graphic" parent="MarginContainer/VBoxContainer" index="0"]
+[node name="Graphic" parent="MarginContainer/VBoxContainer" index="1"]
+margin_top = 18.0
+margin_bottom = 530.0
 texture = ExtResource( 4 )
 
-[node name="VBoxContainer" parent="MarginContainer/VBoxContainer" index="1"]
+[node name="VBoxContainer" parent="MarginContainer/VBoxContainer" index="2"]
 margin_left = 133.0
+margin_top = 534.0
 margin_right = 403.0
-margin_bottom = 744.0
+margin_bottom = 762.0
 size_flags_horizontal = 4
 custom_constants/separation = 60
 alignment = 1
@@ -104,7 +105,7 @@ text = "Settings"
 [node name="AnimationPlayer" parent="." index="1"]
 anims/StartButtonWiggle = SubResource( 4 )
 
-[connection signal="pressed" from="MarginContainer/Credits" to="." method="_on_Credits_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Credits" to="." method="_on_Credits_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/VBoxContainer/StartButton" to="." method="_on_StartButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/VBoxContainer/HighscoresButton" to="." method="_on_HighscoresButton_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/VBoxContainer/SettingsButton" to="." method="_on_SettingsButton_pressed"]
