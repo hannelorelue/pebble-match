@@ -1,22 +1,7 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://art/Particles and effects/Explosion V2/explode_4_1.png" type="Texture" id=1]
-[ext_resource path="res://art/Particles and effects/Explosion V2/explode_6_1.png" type="Texture" id=2]
-[ext_resource path="res://art/Particles and effects/Explosion V2/explode_7.png" type="Texture" id=3]
-[ext_resource path="res://art/Particles and effects/Explosion V2/explode_5_1.png" type="Texture" id=4]
-[ext_resource path="res://art/Particles and effects/Explosion V2/explode_1_1.png" type="Texture" id=5]
-[ext_resource path="res://art/Particles and effects/Explosion V2/explode_3_1.png" type="Texture" id=6]
-[ext_resource path="res://art/Particles and effects/Explosion V2/explode_2_1.png" type="Texture" id=7]
 [ext_resource path="res://scripts/animtedExplosion.gd" type="Script" id=8]
-[ext_resource path="res://art/dust-cloud.png" type="Texture" id=9]
-
-[sub_resource type="SpriteFrames" id=1]
-animations = [ {
-"frames": [ ExtResource( 5 ), ExtResource( 7 ), ExtResource( 6 ), ExtResource( 1 ), ExtResource( 4 ), ExtResource( 4 ), ExtResource( 2 ), ExtResource( 2 ), ExtResource( 2 ), ExtResource( 3 ) ],
-"loop": true,
-"name": "explosion",
-"speed": 16.0
-} ]
+[ext_resource path="res://art/Particles and effects/dust-cloud.png" type="Texture" id=9]
 
 [sub_resource type="AtlasTexture" id=2]
 atlas = ExtResource( 9 )
@@ -57,17 +42,9 @@ animations = [ {
 [node name="animatedExplosion" type="Node2D"]
 script = ExtResource( 8 )
 
-[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
-visible = false
-scale = Vector2( 0.7, 0.7 )
-frames = SubResource( 1 )
-animation = "explosion"
-frame = 3
-
 [node name="AnimatedSprite2" type="AnimatedSprite" parent="."]
 scale = Vector2( 2, 2 )
 frames = SubResource( 9 )
 animation = "dust_cloud"
 
-[connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
 [connection signal="animation_finished" from="AnimatedSprite2" to="." method="_on_AnimatedSprite2_animation_finished"]

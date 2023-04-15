@@ -12,9 +12,9 @@ config_version=4
 
 config/name="Pebbel Match"
 run/main_scene="res://scenes/GameMenu.tscn"
-boot_splash/image="res://art/UI/Loading-background.png"
+boot_splash/image="res://art/UI/Backgrounds/Loading-background.png"
 boot_splash/use_filter=false
-config/icon="res://copper-icon-transparent.png"
+config/icon="res://art/copper-icon-transparent.png"
 
 [autoload]
 

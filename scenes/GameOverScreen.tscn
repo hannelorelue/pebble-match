@@ -1,10 +1,10 @@
 [gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://art/UI/panel-blue.png" type="Texture" id=2]
+[ext_resource path="res://art/UI/Panels/panel-blue.png" type="Texture" id=2]
 [ext_resource path="res://fonts/pixel.tres" type="DynamicFontData" id=4]
 [ext_resource path="res://fonts/MxPlus_IBM_EGA_8x14.ttf" type="DynamicFontData" id=5]
-[ext_resource path="res://art/UI/ui-button-red.png" type="Texture" id=6]
-[ext_resource path="res://art/UI/ui-button-green.png" type="Texture" id=7]
+[ext_resource path="res://art/UI/Buttons/ui-button-red.png" type="Texture" id=6]
+[ext_resource path="res://art/UI/Buttons/ui-button-green.png" type="Texture" id=7]
 
 [sub_resource type="GDScript" id=2]
 script/source = "extends \"res://scripts/menu.gd\"
