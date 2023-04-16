@@ -1,5 +1,7 @@
 extends Node2D
 
+# This script contains the main logic of the game
+
 # Signals
 # Score
 signal update_score
@@ -18,7 +20,6 @@ signal play_sound
 
 # Enum
 enum {WAIT, MOVE, WON}
-
 
 # Export Variables
 var level
@@ -89,7 +90,7 @@ var lock_bonus = 200
 var state
 
 # Bomb variables
-var color_bomb_used = false
+var diamond_bonus_used = false
 
 # Particle effects
 var animated_effect = preload("res://scenes/animatedExplosion.tscn")
@@ -107,7 +108,7 @@ func _process(_delta):
 		touch_input()
 
 
-# Function used to initilize the grid
+## Function used to initilize the grid
 func init(Level: int, Concrete_Spaces: PoolVector2Array,
 Empty_Spaces: PoolVector2Array, Ice_Spaces: PoolVector2Array, Lock_Spaces: PoolVector2Array, Slime_Spaces: PoolVector2Array,
 Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int, Is_sinker_in_scene: bool, Max_sinkers: int, No_piece_types: int):
@@ -144,6 +145,7 @@ Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int, Is_sinker_i
 	$HintTimer.start()
 
 
+# Input handeling
 func touch_input():
 	if Input.is_action_just_pressed("ui_touch"):
 		var mouse = get_global_mouse_position()
@@ -159,6 +161,7 @@ func touch_input():
 			touch_difference(first_touch, mouse)
 
 
+## Checks the direction of a swipe 
 func touch_difference(grid_1: Vector2, grid_2: Vector2):
 	$HintTimer.start()
 	var difference = grid_1-grid_2
@@ -183,7 +186,8 @@ func touch_difference(grid_1: Vector2, grid_2: Vector2):
 		swap_pieces(grid_1.x, grid_1.y, direction)
 		state = MOVE
 
-# spawns inital grid
+
+# spawns inital grid pieces
 func spawn_pieces():
 	for column in width:
 		for row in height:
@@ -231,7 +235,7 @@ func spawn_sinker(number):
 		current_sinkers.append(current)
 
 
-# spawns pieces for debugging
+# spawns specific pieces for debugging
 func spawn_preset_pieces():
 	if preset_pieces == null:
 		return
@@ -247,7 +251,7 @@ func spawn_preset_pieces():
 			piece.position = transform_grid_to_pixel(current.x, current.y)
 			all_pieces[current.x][current.y] = piece
 
-
+# Finds matches and marks the pieces as matched
 func find_matches(query = false, array = all_pieces, found_matches_array = current_matches):
 	var found_match = false
 	for column in width:
@@ -265,7 +269,6 @@ func find_matches(query = false, array = all_pieces, found_matches_array = curre
 						set_matched(array[column][row])
 						set_matched(array[column - 1][row])
 						set_matched(array[column + 1][row])
-						
 						add_to_array(Vector2(column, row), found_matches_array)
 						add_to_array(Vector2(column - 1, row), found_matches_array)
 						add_to_array(Vector2(column + 1, row), found_matches_array)
@@ -278,7 +281,6 @@ func find_matches(query = false, array = all_pieces, found_matches_array = curre
 						set_matched(array[column][row])
 						set_matched(array[column][row - 1])
 						set_matched(array[column][row + 1])
-
 						add_to_array(Vector2(column, row), found_matches_array)
 						add_to_array(Vector2(column, row -  1), found_matches_array)
 						add_to_array(Vector2(column, row + 1), found_matches_array)
@@ -294,8 +296,9 @@ func find_matches(query = false, array = all_pieces, found_matches_array = curre
 	return found_match
 
 
+# Generates a hint for the player
 func generate_hint():
-	find_all_matches()
+	find_all_possible_matches()
 	var array = hint_holder
 	if array == null:
 		return
@@ -313,31 +316,29 @@ func generate_hint():
 	hint_holder = []
 
 
-func find_all_matches():
+func find_all_possible_matches():
 	var copy = all_pieces.duplicate(true)
 	for column in width:
 		for row in height:
 			hint_matches = []
 			if copy[column][row] == null:
 				continue
-
 			var check = check_for_matches(Vector2(column, row), Vector2.UP, copy)
 			if check.size() != 0:
 				hint_holder.append([check[0], Vector2(column, row), Vector2.UP, check[1][0]])
 			hint_matches = []
-
 			check = check_for_matches(Vector2(column, row), Vector2.LEFT, copy)
 			if check.size() != 0:
 				hint_holder.append([check[0], Vector2(column, row), Vector2.LEFT, check[1][0]])
 
-
+# Swaps a piece in a direction and a list of matches by color and number
 func check_for_matches(place, direction, array):
 	var list = []
 	var out = []
 	for column in width:
 		for row in height:
 			if array[column][row] == null:
-				continue
+					continue
 			array[column][row].matched = false
 	
 	if switch_pieces(place, direction, array):
@@ -362,7 +363,7 @@ func check_for_matches(place, direction, array):
 		switch_pieces(place, direction, array)
 	return out
 
-
+# Swaps a piece in a direction and checks if there are matchs
 func switch_and_check(place, direction, array):
 	switch_pieces(place, direction, array)
 	if find_matches(true, array):
@@ -372,6 +373,7 @@ func switch_and_check(place, direction, array):
 	return false
 
 
+# Swaps pieces in a direction 
 func switch_pieces(place, direction, array):
 	if !is_in_grid(place.x, place.y) or !is_in_grid(place.x + direction.x, place.y + direction.y):
 		return false
@@ -384,9 +386,9 @@ func switch_pieces(place, direction, array):
 	array[place.x][place.y] = temp
 	return true
 
-
-func find_bombs():
-	if color_bomb_used:
+# Checks if special match conditions are met
+func check_special_match_conditions():
+	if diamond_bonus_used:
 		return
 	for i in current_matches.size():
 		var current_column = current_matches[i].x
@@ -396,15 +398,16 @@ func find_bombs():
 		var col_matched = matches[0]
 		var row_matched = matches[1]
 		if col_matched >= 5 or row_matched >= 5:
-			make_bomb(current_color)
+			make_bonus(current_color)
 		elif col_matched == 3 and row_matched == 3:
-			make_bomb(current_color)
+			make_bonus(current_color)
 		elif col_matched == 4:
 			clear_column(current_column)
 		elif row_matched == 4:
 			clear_row(current_row)
 
 
+# Finds and returns the number off matchs in a column and row 
 func find_col_row_matches(i, array = current_matches):
 	var current_column = array[i].x
 	var current_row = array[i].y
@@ -422,7 +425,7 @@ func find_col_row_matches(i, array = current_matches):
 	return [col_matched, row_matched]
 
 
-func make_bomb(color):
+func make_bonus(color):
 	for i in current_matches.size():
 		var current_column = current_matches[i].x
 		var current_row = current_matches[i].y
@@ -430,26 +433,15 @@ func make_bomb(color):
 			damage_special(current_column, current_row)
 			emit_signal("check_goal", piece_one.color)
 			piece_one.matched = false
-			piece_one.make_color_bomb()
+			piece_one.make_diamond_bonus()
 		if all_pieces[current_column][current_row] == piece_two and piece_two.color == color:
 			damage_special(current_column, current_row)
 			emit_signal("check_goal", piece_two.color)
 			piece_two.matched = false
-			piece_two.make_color_bomb()
+			piece_two.make_diamond_bonus()
 
 
-#func call_bomb(bomb_type, piece):
-#	match bomb_type:
-#		"color bomb":
-#			piece.make_color_bomb()
-#		"adjacent bomb":
-#			piece.make_adjacent_bomb()
-#		"column bomb":
-#			piece.make_column_bomb()
-#		"row bomb":
-#			piece.make_row_bomb()
-
-
+# Permanently Swaps pieces in a direction and moves them
 func swap_pieces(column, row, direction):
 	var first_piece = all_pieces[column][row]
 	var other_piece = all_pieces[column + direction.x][row + direction.y]
@@ -468,25 +460,25 @@ func swap_pieces(column, row, direction):
 	other_piece.set_row(row)
 	other_piece.set_column (column)
 	
-	if first_piece.is_color_bomb and other_piece.is_color_bomb:
+	if first_piece.is_diamond_bonus and other_piece.is_diamond_bonus:
 		clear_board()
 		return
-	if first_piece.is_color_bomb:
+	if first_piece.is_diamond_bonus:
 		if is_sinker(column, row):
 			swap_back()
 			return
 		clear_color(other_piece.color)
 		set_matched(first_piece)
 		add_to_array(Vector2(column, row), current_matches)
-		color_bomb_used = true
-	if other_piece.is_color_bomb:
+		diamond_bonus_used = true
+	if other_piece.is_diamond_bonus:
 		if is_sinker(column + direction.x, row + direction.y):
 			swap_back()
 			return
 		clear_color(first_piece.color)
 		set_matched(other_piece)
 		add_to_array(Vector2(column + direction.x, row + direction.y), current_matches)
-		color_bomb_used = true
+		diamond_bonus_used = true
 	if !move_checked:
 		find_matches()
 
@@ -498,8 +490,9 @@ func swap_back():
 	move_checked = false
 
 
+# Destroys matched pieces
 func destroy_matched():
-	find_bombs()
+	check_special_match_conditions()
 	var was_matched = false
 	for column in width:
 		for row in height:
@@ -526,18 +519,20 @@ func destroy_matched():
 	current_matches.clear()
 
 
+# Adds an effect at a column and row
 func make_effect(effect, column, row):
 	var curent = effect.instance()
 	curent.position = transform_grid_to_pixel(column, row)
 	add_child(curent)
 
-
+# Damages obstacles
 func damage_special(column, row):
 	$IcyHolder.damage(Vector2(column, row))
 	$LockHolder.damage(Vector2(column, row))
 	check_special(column, row)
 
 
+# Damages obstacles that are affected by matches next to them
 func check_special(column, row):
 	if column < width - 1:
 		$SlimeHolder.damage(Vector2(column + 1, row))
@@ -601,6 +596,7 @@ func refill_columns():
 	after_refill()
 
 
+# Checks if action has to be taken after columns have been refilled
 func after_refill():
 	for column in width:
 		for row in height:
@@ -618,7 +614,7 @@ func after_refill():
 	if !damaged_slime:
 		generate_slime()
 	damaged_slime = false
-	color_bomb_used = false
+	diamond_bonus_used = false
 	if is_deadlock():
 		shuffle_board()
 	if is_move:
@@ -629,6 +625,7 @@ func after_refill():
 	$HintTimer.start()
 
 
+# Checks if sinkers have reached the bottom and destroys them
 func destroy_sinkers():
 	var was_sinker_destroyed = false
 	for i in range(current_sinkers.size() - 1,  -1, -1):
@@ -680,7 +677,7 @@ func generate_slime():
 	damaged_slime = false
 
 
-# Match pieces in columns, rows and the whole board
+#Matches all pieces in a column
 func clear_column(column):
 	for i in height:
 		var current = all_pieces[column][i]
@@ -688,12 +685,12 @@ func clear_column(column):
 			continue
 		if  current.matched:
 			continue
-		if current.is_color_bomb:
+		if current.is_diamond_bonus:
 			all_pieces[column][i].matched = false
 			continue
 		all_pieces[column][i].matched = true
 
-
+# Matches all pieces in a row and the whole board
 func clear_row(row):
 	for i in width:
 		var current = all_pieces[i][row]
@@ -701,12 +698,13 @@ func clear_row(row):
 			continue
 		if current.matched:
 			continue
-		if current.is_color_bomb:
+		if current.is_diamond_bonus:
 			all_pieces[i][row].matched = false
 			continue
 		all_pieces[i][row].matched = true
 
 
+# Matches all pieces of a color
 func clear_color(color):
 	for column in width:
 		for row in height:
@@ -718,6 +716,7 @@ func clear_color(color):
 			add_to_array(Vector2(column, row), current_matches)
 
 
+# Matches all pieces on the grid
 func clear_board():
 	for column in width:
 		for row in height:
@@ -768,7 +767,7 @@ func add_diamond():
 			continue
 		if all_pieces[column][row] == null:
 			continue
-		all_pieces[column][row].make_color_bomb()
+		all_pieces[column][row].make_diamond_bonus()
 		diamond_added = true
 
 
@@ -868,6 +867,7 @@ func is_move_restricted_at(place):
 		return true
 	return false
 
+
 func set_matched(item):
 	item.matched = true
 
@@ -895,6 +895,7 @@ func _on_refill_timer_timeout():
 	refill_columns()
 
 
+# Timer used in is_moves = false mode
 func _on_Timer_timeout():
 	counter_value -= 1
 	emit_signal("counter_changed", counter_value)
@@ -942,6 +943,8 @@ func _on_top_ui_game_won():
 	state = WON
 	$Timer.stop()
 	var bonus = score * (1 + counter_value/max_counter_value)
+	if counter_value/max_counter_value >= 0.5:
+		bonus = 3
 	var high_score = score + bonus
 	if GameDataManager.level_info[level]["high_score"] < high_score:
 		GameDataManager.level_info[level]["high_score"] = high_score
@@ -962,13 +965,12 @@ func _on_top_ui_game_won():
 func _on_bottomUi_ShuffleBoost_pressed():
 	shuffle_board()
 	score -= max_score/2
-	emit_signal("update_score")
+	emit_signal("update_score", score)
 	if score <= max_score:
 		emit_signal("max_score_not_reached")
-	pass # Replace with function body.
 
 
-func _on_bottomUi_DiamondBoost_pressed() -> void:
+func _on_bottomUi_DiamondBoost_pressed():
 	add_diamond()
 	score -= max_score/2
 	emit_signal("update_score", score)
@@ -976,7 +978,7 @@ func _on_bottomUi_DiamondBoost_pressed() -> void:
 		emit_signal("max_score_not_reached")
 
 
-func _on_bottomUi_AddMovesBoost_pressed() -> void:
+func _on_bottomUi_AddMovesBoost_pressed():
 	score -= max_score/2
 	emit_signal("update_score", score)
 	if score <= max_score:

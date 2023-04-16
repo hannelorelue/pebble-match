@@ -13,7 +13,7 @@ var move_tween
 var wiggle_tween
 var matched = false
 var is_sinker = false
-var is_color_bomb = false
+var is_diamond_bonus = false
 
 
 # Called when the node enters the scene tree for the first time.
@@ -91,8 +91,8 @@ func dim():
 	sprite.modulate.a = 0.75
 
 
-func make_color_bomb():
-	is_color_bomb = true
+func make_diamond_bonus():
+	is_diamond_bonus = true
 	sprite.visible = false
 	diamond_sprite.visible = true
 	diamond_sprite.playing = true
