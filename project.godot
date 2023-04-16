@@ -8,16 +8,6 @@
 
 config_version=4
 
-_global_script_classes=[ {
-"base": "",
-"class": "GitAPI",
-"language": "NativeScript",
-"path": "res://addons/godot-git-plugin/git_api.gdns"
-} ]
-_global_script_class_icons={
-"GitAPI": ""
-}
-
 [application]
 
 config/name="Pebbel Match"
@@ -25,6 +15,8 @@ run/main_scene="res://scenes/GameMenu.tscn"
 boot_splash/image="res://art/UI/Backgrounds/Loading-background.png"
 boot_splash/use_filter=false
 config/icon="res://art/copper-icon-transparent.png"
+config/macos_native_icon="res://art/copper-icon-transparent.icns"
+config/windows_native_icon="res://art/copper.ico"
 
 [autoload]
 
@@ -39,6 +31,10 @@ window/size/width=576
 window/size/height=1024
 window/stretch/mode="2d"
 window/stretch/aspect="keep_width"
+
+[global]
+
+debug=false
 
 [gui]
 

@@ -32,66 +32,70 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 576.0
 margin_right = 540.0
-margin_bottom = -659.0
+margin_bottom = -2.0
 custom_constants/margin_right = 30
 custom_constants/margin_top = 30
 custom_constants/margin_left = 30
 custom_constants/margin_bottom = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer"]
 margin_left = 30.0
 margin_top = 30.0
 margin_right = 510.0
-margin_bottom = 365.0
+margin_bottom = 1022.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/ScrollContainer"]
+margin_right = 474.0
+margin_bottom = 1926.0
 size_flags_horizontal = 3
 custom_constants/separation = 40
 
-[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer"]
-margin_right = 480.0
+[node name="BackButton" type="Button" parent="MarginContainer/ScrollContainer/VBoxContainer"]
+margin_right = 474.0
 margin_bottom = 27.0
 text = "<<< Back"
 
-[node name="Header" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="Header" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer"]
 margin_top = 67.0
-margin_right = 480.0
+margin_right = 474.0
 margin_bottom = 112.0
 theme = ExtResource( 1 )
 custom_fonts/font = SubResource( 1 )
 text = "Credits"
 align = 1
 
-[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/ScrollContainer/VBoxContainer"]
 margin_top = 152.0
-margin_right = 480.0
+margin_right = 474.0
 margin_bottom = 335.0
 
-[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/CenterContainer"]
-margin_left = 22.0
-margin_right = 457.0
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer"]
+margin_left = 19.0
+margin_right = 454.0
 margin_bottom = 183.0
 custom_constants/vseparation = 12
 custom_constants/hseparation = 15
 columns = 2
 
-[node name="GameMadeBy" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+[node name="GameMadeBy" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer"]
 margin_right = 255.0
 margin_bottom = 27.0
 text = "Game made by "
 
-[node name="honeycodes" type="LinkButton" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+[node name="honeycodes" type="LinkButton" parent="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer"]
 margin_left = 270.0
 margin_right = 435.0
 margin_bottom = 27.0
 text = "honeycodes"
 underline = 1
 
-[node name="CaveTileset" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+[node name="CaveTileset" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer"]
 margin_top = 39.0
 margin_right = 255.0
 margin_bottom = 66.0
 text = "Cave Tileset: "
 
-[node name="szadiart" type="LinkButton" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+[node name="szadiart" type="LinkButton" parent="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer"]
 margin_left = 270.0
 margin_top = 39.0
 margin_right = 435.0
@@ -99,13 +103,13 @@ margin_bottom = 66.0
 text = "szadiart"
 underline = 1
 
-[node name="Music" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+[node name="Music" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer"]
 margin_top = 78.0
 margin_right = 255.0
 margin_bottom = 105.0
 text = "Music:"
 
-[node name="Abstraction" type="LinkButton" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+[node name="Abstraction" type="LinkButton" parent="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer"]
 margin_left = 270.0
 margin_top = 78.0
 margin_right = 435.0
@@ -113,13 +117,13 @@ margin_bottom = 105.0
 text = "Abstraction"
 underline = 1
 
-[node name="GameEngine" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+[node name="GameEngine" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer"]
 margin_top = 117.0
 margin_right = 255.0
 margin_bottom = 144.0
 text = "Game engine:"
 
-[node name="Godot" type="LinkButton" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+[node name="Godot" type="LinkButton" parent="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer"]
 margin_left = 270.0
 margin_top = 117.0
 margin_right = 435.0
@@ -129,13 +133,13 @@ size_flags_vertical = 3
 text = "Godot"
 underline = 1
 
-[node name="DrawingSoftware" type="Label" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+[node name="DrawingSoftware" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer"]
 margin_top = 156.0
 margin_right = 255.0
 margin_bottom = 183.0
 text = "Drawing Software:"
 
-[node name="Aseprite" type="LinkButton" parent="MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+[node name="Aseprite" type="LinkButton" parent="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer"]
 margin_left = 270.0
 margin_top = 156.0
 margin_right = 435.0
@@ -146,13 +150,42 @@ size_flags_vertical = 3
 text = "Aseprite"
 underline = 1
 
+[node name="LicencesLabel" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer"]
+margin_top = 375.0
+margin_right = 474.0
+margin_bottom = 402.0
+text = "Licences"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/ScrollContainer/VBoxContainer"]
+margin_top = 442.0
+margin_right = 474.0
+margin_bottom = 1926.0
+rect_min_size = Vector2( 0, 58 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "This game uses Godot Engine, available under the following license:
+
+Copyright (c) 2014-present Godot Engine contributors. Copyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+"
+fit_content_height = true
+scroll_active = false
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/RESET = SubResource( 2 )
 anims/slide_in = ExtResource( 4 )
 
-[connection signal="pressed" from="MarginContainer/VBoxContainer/BackButton" to="." method="_on_BackButton_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer/GridContainer/honeycodes" to="." method="_on_Button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer/GridContainer/szadiart" to="." method="_on_szadiart_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer/GridContainer/Abstraction" to="." method="_on_Abstraction_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer/GridContainer/Godot" to="." method="_on_LinkButton_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/CenterContainer/GridContainer/Aseprite" to="." method="_on_Aseprite_pressed"]
+[connection signal="pressed" from="MarginContainer/ScrollContainer/VBoxContainer/BackButton" to="." method="_on_BackButton_pressed"]
+[connection signal="pressed" from="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer/honeycodes" to="." method="_on_Button_pressed"]
+[connection signal="pressed" from="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer/szadiart" to="." method="_on_szadiart_pressed"]
+[connection signal="pressed" from="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer/Abstraction" to="." method="_on_Abstraction_pressed"]
+[connection signal="pressed" from="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer/Godot" to="." method="_on_LinkButton_pressed"]
+[connection signal="pressed" from="MarginContainer/ScrollContainer/VBoxContainer/CenterContainer/GridContainer/Aseprite" to="." method="_on_Aseprite_pressed"]
