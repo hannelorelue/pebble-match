@@ -5,7 +5,9 @@
 ## About
 
 Pebble Match is a short match-3 game in which you collect ores to advance to the next level.
-Play and share your highscores on itch.io!
+Play and share your highscores on [itch.io](https://honeycodes.itch.io/pebble-match)!
+
+This is my first game in Godot.
 
 ### Obstacles
 
