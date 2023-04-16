@@ -13,7 +13,7 @@ This is my first game in Godot.
 
 - [<img src="art/Pieces/moss.png" width="20" />](art/Pieces/moss.png) Moss grows if it's left unchecked
 - [<img src="art/Pieces/lock4.png" width="20" />](art/Pieces/lock4.png) Chains restrict movement
-- [<img src="art/Pieces/ice.png" width="20" />](art/Pieces/ice.png) Ice, it's just a glaze of frozen water
+- [<img src="art/Pieces/Ice.png" width="20" />](art/Pieces/Ice.png) Ice, it's just a glaze of frozen water
 
 ## Credits
 
