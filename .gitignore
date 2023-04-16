@@ -17,5 +17,8 @@ mono_crash.*.json
 # addons
 addons/godot-git-plugin
 
+# export
+export
+
 # macOS
 .DS_Store
