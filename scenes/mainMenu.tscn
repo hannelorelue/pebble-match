@@ -1,7 +1,7 @@
 [gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://scenes/menu.tscn" type="PackedScene" id=1]
-[ext_resource path="res://art/logo.png" type="Texture" id=4]
+[ext_resource path="res://art/itch-cover.png" type="Texture" id=2]
 [ext_resource path="res://scripts/CanvasLayer.gd" type="Script" id=5]
 [ext_resource path="res://fonts/MxPlus_IBM_EGA_8x14.ttf" type="DynamicFontData" id=6]
 
@@ -65,7 +65,7 @@ text = "Credits"
 [node name="Graphic" parent="MarginContainer/VBoxContainer" index="1"]
 margin_top = 18.0
 margin_bottom = 530.0
-texture = ExtResource( 4 )
+texture = ExtResource( 2 )
 
 [node name="VBoxContainer" parent="MarginContainer/VBoxContainer" index="2"]
 margin_left = 133.0
