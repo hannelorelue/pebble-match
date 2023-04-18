@@ -3,6 +3,7 @@
 [<img src="art/copper-icon-transparent.png" width="100" />](art/copper-icon-transparent.png)
 
 ## About
+[<img src="art/pebble-match-play.gif" width="300" />](art/pebble-match-play.gif)
 
 Pebble Match is a short match-3 game in which you collect ores to advance to the next level.
 Play and share your highscores on [itch.io](https://honeycodes.itch.io/pebble-match)!
