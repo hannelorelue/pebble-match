@@ -104,8 +104,9 @@ func _ready():
 
 
 func _process(_delta):
-	if state == MOVE:
-		touch_input()
+	pass
+#	if state == MOVE:
+#		touch_input()
 
 
 ## Function used to initilize the grid
@@ -146,19 +147,29 @@ Max_Score: int, Counter_Value: int, Is_Move: bool, Piece_Value: int, Is_sinker_i
 
 
 # Input handeling
-func touch_input():
-	if Input.is_action_just_pressed("ui_touch"):
-		var mouse = get_global_mouse_position()
-		mouse = transform_pixel_to_grid(mouse.x, mouse.y)
-		if is_in_grid(mouse.x, mouse.y):
-			first_touch = mouse
-			controlling = true
-	if Input.is_action_just_released("ui_touch"):
-		var mouse = get_global_mouse_position()
-		mouse = transform_pixel_to_grid(mouse.x, mouse.y)
-		if is_in_grid(mouse.x, mouse.y) and controlling:
-			controlling = false
-			touch_difference(first_touch, mouse)
+func _input(event: InputEvent) -> void:
+	if state != MOVE:
+		return
+	if event is InputEventSingleScreenSwipe:
+		var initial_position = event.position
+		var end_position = event.position + event.relative
+		initial_position = transform_pixel_to_grid(initial_position.x, initial_position.y)
+		end_position = transform_pixel_to_grid(end_position.x, end_position.y)
+		if is_in_grid(initial_position.x, initial_position.y) and is_in_grid(end_position.x, end_position.y):
+			touch_difference(initial_position, end_position)
+	if event is InputEventMouseButton:
+		if event.is_pressed():
+			var mouse = event.position
+			mouse = transform_pixel_to_grid(mouse.x, mouse.y)
+			if is_in_grid(mouse.x, mouse.y):
+				first_touch = mouse
+				controlling = true
+		if !event.is_pressed():
+			var mouse = event.position
+			mouse = transform_pixel_to_grid(mouse.x, mouse.y)
+			if is_in_grid(mouse.x, mouse.y) and controlling:
+				controlling = false
+				touch_difference(first_touch, mouse)
 
 
 ## Checks the direction of a swipe 
