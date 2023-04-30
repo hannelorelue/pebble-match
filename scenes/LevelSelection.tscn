@@ -1,33 +1,83 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://scenes/LevelBackground.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scripts/LevelButton.gd" type="Script" id=1]
+[ext_resource path="res://scenes/LevelButton.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scripts/LevelSelection.gd" type="Script" id=3]
+[ext_resource path="res://art/UI/Buttons/star-yellow.png" type="Texture" id=4]
+[ext_resource path="res://art/UI/Buttons/star-gray.png" type="Texture" id=5]
+[ext_resource path="res://art/UI/Backgrounds/mine.png" type="Texture" id=6]
+[ext_resource path="res://art/UI/Buttons/button-green-90.png" type="Texture" id=7]
+[ext_resource path="res://art/UI/Buttons/button-red-90.png" type="Texture" id=8]
 
 [node name="CanvasLayer" type="CanvasLayer"]
 script = ExtResource( 3 )
 
-[node name="ScrollContainer" type="ScrollContainer" parent="."]
+[node name="LevelBackground" type="TextureRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = 12.0
-margin_bottom = 4.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-scroll_horizontal_enabled = false
+texture = ExtResource( 6 )
+stretch_mode = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
-margin_right = 588.0
-margin_bottom = 1028.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
+[node name="LevelButton" type="Node2D" parent="LevelBackground" instance=ExtResource( 2 )]
+position = Vector2( 155, 266 )
+scale = Vector2( 0.75, 0.75 )
+script = ExtResource( 1 )
+level = 1
+is_enabled = true
+blocked_texture = ExtResource( 8 )
+open_texture = ExtResource( 7 )
+goal_met = ExtResource( 4 )
+goal_not_met = ExtResource( 5 )
 
-[node name="LevelBackground" parent="ScrollContainer/VBoxContainer" instance=ExtResource( 1 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 588.0
-margin_bottom = 1024.0
-rect_min_size = Vector2( 576, 1024 )
-expand = true
+[node name="LevelButton2" type="Node2D" parent="LevelBackground" instance=ExtResource( 2 )]
+position = Vector2( 467, 329 )
+scale = Vector2( 0.75, 0.75 )
+script = ExtResource( 1 )
+level = 2
+blocked_texture = ExtResource( 8 )
+open_texture = ExtResource( 7 )
+goal_met = ExtResource( 4 )
+goal_not_met = ExtResource( 5 )
+
+[node name="LevelButton3" type="Node2D" parent="LevelBackground" instance=ExtResource( 2 )]
+position = Vector2( 474, 543 )
+scale = Vector2( 0.75, 0.75 )
+script = ExtResource( 1 )
+level = 3
+blocked_texture = ExtResource( 8 )
+open_texture = ExtResource( 7 )
+goal_met = ExtResource( 4 )
+goal_not_met = ExtResource( 5 )
+
+[node name="LevelButton4" type="Node2D" parent="LevelBackground" instance=ExtResource( 2 )]
+position = Vector2( 160, 614 )
+scale = Vector2( 0.75, 0.75 )
+script = ExtResource( 1 )
+level = 4
+blocked_texture = ExtResource( 8 )
+open_texture = ExtResource( 7 )
+goal_met = ExtResource( 4 )
+goal_not_met = ExtResource( 5 )
+
+[node name="LevelButton5" type="Node2D" parent="LevelBackground" instance=ExtResource( 2 )]
+position = Vector2( 99, 780 )
+scale = Vector2( 0.75, 0.75 )
+script = ExtResource( 1 )
+level = 5
+blocked_texture = ExtResource( 8 )
+open_texture = ExtResource( 7 )
+goal_met = ExtResource( 4 )
+goal_not_met = ExtResource( 5 )
+
+[node name="LevelButton6" type="Node2D" parent="LevelBackground" instance=ExtResource( 2 )]
+position = Vector2( 287, 901 )
+scale = Vector2( 0.75, 0.75 )
+script = ExtResource( 1 )
+level = 6
+blocked_texture = ExtResource( 8 )
+open_texture = ExtResource( 7 )
+goal_met = ExtResource( 4 )
+goal_not_met = ExtResource( 5 )
 
 [node name="BackButton" type="Button" parent="."]
 anchor_left = 0.5
@@ -38,4 +88,15 @@ margin_right = 72.0
 margin_bottom = 23.0
 text = "<<< Back"
 
+[node name="NextButton" type="Button" parent="."]
+visible = false
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = 122.0
+margin_top = 746.0
+margin_right = 266.0
+margin_bottom = 773.0
+text = "Next >>>"
+
 [connection signal="pressed" from="BackButton" to="." method="_on_Button_pressed"]
+[connection signal="pressed" from="NextButton" to="." method="_on_NextButton_pressed"]

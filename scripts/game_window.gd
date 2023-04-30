@@ -51,8 +51,7 @@ func _ready():
 	if !is_move:
 		top_ui.move_label.text = "Seconds"
 		bottom_ui.add_moves_button.texture_normal = bottom_ui.time_texture
-		
-	
+
 
 
 func set_level_info(Level: int, Empty_Spaces: PoolVector2Array, 

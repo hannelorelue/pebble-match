@@ -4,7 +4,6 @@ onready var grid = $MarginContainer/VBoxContainer/GridContainer
 signal back_Button_pressed
 
 
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	var level_info = GameDataManager.level_info

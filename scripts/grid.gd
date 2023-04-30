@@ -194,7 +194,7 @@ func touch_difference(grid_1: Vector2, grid_2: Vector2):
 	swap_pieces(grid_1.x, grid_1.y, direction)
 	if !find_matches():
 		yield(temp_timer, "timeout")
-		swap_pieces(grid_1.x, grid_1.y, direction)
+		swap_back()
 		state = MOVE
 
 
@@ -453,9 +453,10 @@ func make_bonus(color):
 
 
 # Permanently Swaps pieces in a direction and moves them
-func swap_pieces(column, row, direction):
+func swap_pieces(column, row, direction, swap_undo = false):
 	var first_piece = all_pieces[column][row]
 	var other_piece = all_pieces[column + direction.x][row + direction.y]
+	
 	if first_piece == null or other_piece == null:
 		return
 	if is_move_restricted_at(Vector2(column, row)) or is_move_restricted_at(Vector2(column, row) + direction):
@@ -471,32 +472,30 @@ func swap_pieces(column, row, direction):
 	other_piece.set_row(row)
 	other_piece.set_column (column)
 	
-	if first_piece.is_diamond_bonus and other_piece.is_diamond_bonus:
-		clear_board()
-		return
-	if first_piece.is_diamond_bonus:
-		if is_sinker(column, row):
-			swap_back()
-			return
-		clear_color(other_piece.color)
-		set_matched(first_piece)
-		add_to_array(Vector2(column, row), current_matches)
-		diamond_bonus_used = true
-	if other_piece.is_diamond_bonus:
-		if is_sinker(column + direction.x, row + direction.y):
-			swap_back()
-			return
-		clear_color(first_piece.color)
-		set_matched(other_piece)
-		add_to_array(Vector2(column + direction.x, row + direction.y), current_matches)
-		diamond_bonus_used = true
+	if !swap_undo:
+		if first_piece.is_diamond_bonus:
+			if is_sinker(column, row):
+				swap_back()
+				return
+			clear_color(other_piece.color)
+			set_matched(first_piece)
+			add_to_array(Vector2(column, row), current_matches)
+			diamond_bonus_used = true
+		if other_piece.is_diamond_bonus:
+			if is_sinker(column + direction.x, row + direction.y):
+				swap_back()
+				return
+			clear_color(first_piece.color)
+			set_matched(other_piece)
+			add_to_array(Vector2(column + direction.x, row + direction.y), current_matches)
+			diamond_bonus_used = true
 	if !move_checked:
 		find_matches()
 
 
 func swap_back():
 	if piece_one != null and piece_two != null:
-		swap_pieces(last_place.x, last_place.y, last_direction)
+		swap_pieces(last_place.x, last_place.y, last_direction, true)
 	state = MOVE
 	move_checked = false
 
@@ -963,12 +962,15 @@ func _on_top_ui_game_won():
 	if GameDataManager.level_info.has(level + 1):
 		GameDataManager.level_info[level + 1]["unlocked"] = true
 	var ratio = high_score/max_score
+	var stars = 0
 	if ratio < 1.2:
-		GameDataManager.level_info[level]["stars_unlocked"] = 1
+		stars = 1
 	elif ratio >= 3:
-		GameDataManager.level_info[level]["stars_unlocked"] = 3
+		stars = 3
 	else:
-		GameDataManager.level_info[level]["stars_unlocked"] = 2
+		stars = 2
+	if GameDataManager.level_info[level]["stars_unlocked"] < stars:
+		GameDataManager.level_info[level]["stars_unlocked"] = stars
 	GameDataManager.save_data()
 	emit_signal("game_won", high_score)
 
